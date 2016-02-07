@@ -462,7 +462,7 @@ function start() {
                                     });
 
                                     new cron.CronJob("0 * * * * *", function () {
-                                        //saveHighscores();
+                                        saveHighscores();
                                     }, null, true).start();
 
                                 } else {
