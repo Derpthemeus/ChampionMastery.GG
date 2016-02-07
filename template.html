@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ChampionMasteryLookup</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
+        <script src="script.js"></script>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="navbar">
+                <div id="navbar-buttons">
+                    <a id="home" class="navbar-button" href="http://championmasterylookup-derpthemeus.rhcloud.com/">Home</a>
+                    <a id="highscores" class="navbar-button" href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores">Highscores</a>
+                    <a class="navbar-button" href="https://github.com/Derpthemeus/ChampionMasteryLookup">GitHub</a>                                   
+                    <div id="lookup">
+                        <input id="name" type="text" placeholder="Summoner Name" onkeypress="handleKey(event)">
+                        <select id="region">
+                            <!--REGIONS GO HERE-->
+                        </select>
+                        <input id="go" type="button" value="Lookup" onclick="lookup()">
+                    </div>
+                </div>
+            </div>
+            <div id="content">
+                <!--DATA GOES HERE-->
+            </div>
+            <div id="footer">                
+                <br><br><br><br>
+                If you like the site feel free (but not obligated) to <a href="https://www.paypal.me/MOslan">make a donation</a>. It helps cover server costs and encourages me to do more work.
+                <br>
+                Found a bug? <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me on Reddit</a>
+                <br><br>
+                ChampionMasteryLookup isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
+            </div>
+        </div>
+    </body>
+</html>
