@@ -307,7 +307,8 @@ function setScore(championId, place, name, summonerId, region, points, isNew) {
         region: region,
         points: points
     };
-    highscores[championId].splice(place, highscores[championId].length - HSCOUNT.track + 1, score);
+    highscores[championId].splice(place, 0, score);
+    highscores[championId].pop();
     if (isNew) {
         console.log("Created highscore for " + championId + " by " + score.id + " with " + score.points + " at " + place);
     } else {
