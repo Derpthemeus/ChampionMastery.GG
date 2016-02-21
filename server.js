@@ -8,7 +8,7 @@ var HSCOUNT = {
     track: 25
 };
 //auto updated, manual value is a backup
-var version = "6.1.1";
+var version = "6.3.1";
 var ddragon;
 var regions = {
     NA: {
@@ -274,6 +274,25 @@ function updateHighscores(data, summonerId, region) {
     });
 }
 
+/*
+ app.all("/test", function (req, res) {
+ var summoner = parseInt(req.query.summoner);
+ console.log(typeof (summoner));
+ updateHighscore({
+ player: {
+ name: req.query.summoner
+ }
+ }, summoner, regions.NA, {
+ championId: parseInt(req.query.champion),
+ championPoints: parseInt(req.query.points)
+ });
+ 
+ res.send("ok");
+ });
+ */
+
+
+
 function updateHighscore(data, summonerId, region, champion) {
     var championId = champion.championId;
     for (var i = 0; i < HSCOUNT.track; i++) {
@@ -281,6 +300,12 @@ function updateHighscore(data, summonerId, region, champion) {
             if (highscores[championId][i].id !== summonerId) {
                 if (champion.championPoints > highscores[championId][i].points) {
                     setScore(championId, i, data.player.name, summonerId, region.region, champion.championPoints, false);
+                    for (var currentPos = i + 1; currentPos < HSCOUNT.track; currentPos++) {
+                        if (highscores[championId][currentPos] && highscores[championId][currentPos].id === summonerId) {
+                            highscores[championId].splice(currentPos, 1);
+                            break;
+                        }
+                    }
                     break;
                 }
             } else {
