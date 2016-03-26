@@ -93,12 +93,16 @@ function makePage(req, response) {
                     res += '<th>Champion</th>';
                     res += '<th>Mastery level</th>';
                     res += '<th>Mastery points</th>';
+                    res += '<th>Grade</th>';
                     res += '<th>Last played</th>';
+                    res += '<th>Level up</th>';
+                    res += '<th>Chest</th>'
                     res += '</tr>';
                     res += '</thead>';
                     var total = {
                         championLevel: 0,
-                        championPoints: 0
+                        championPoints: 0,
+                        chests: 0
                     };
                     data.champions.forEach(function (champ) {
                         res += '<tr>';
@@ -111,7 +115,15 @@ function makePage(req, response) {
                         total.championLevel += champ.championLevel;
                         res += '<td class="score">' + champ.championPoints + '</td>';
                         total.championPoints += champ.championPoints;
+                        res += '<td class="grade">' + (champ.highestGrade || '') + '</td>';
                         res += '<td class="time">' + champ.lastPlayTime + '</td>';
+                        res += '<td class="score">' + champ.championPointsUntilNextLevel + '</td>';
+                        res += '<td class="chest">';
+                        if (champ.chestGranted) {
+                            total.chests++;
+                            res += '<img src="/img/chestIcon.png" />';
+                        }
+                        res += '</td>';
                         res += '</tr>';
                     });
                     res += '</tbody>';
@@ -121,6 +133,9 @@ function makePage(req, response) {
                     res += '<td>' + total.championLevel + '</td>';
                     res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
                     res += '<td></td>';
+                    res += '<td></td>';
+                    res += '<td></td>';
+                    res += '<td>' + total.chests + '</td>';
                     res += '</tr>';
                     res += '</tfoot>';
                     res += '</table>';

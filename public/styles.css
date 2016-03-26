@@ -147,3 +147,8 @@ table, td {
 .place-2 {
     background-color: rgba(204, 102, 0, .35);
 }
+
+.chest img {
+    width: 14px;
+    height: 14px;
+}
