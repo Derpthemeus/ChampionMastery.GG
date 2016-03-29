@@ -86,19 +86,19 @@ function makePage(req, response) {
                     res += data.player.name;
                     res += '</div>';
                     res += '<div id="chart">';
-                    res += '<table id="playerscores">';
-                    res += '<tbody>';
+                    res += '<table id="playerscores" class="tablesorter">';
                     res += '<thead>';
                     res += '<tr>';
-                    res += '<th>Champion</th>';
-                    res += '<th>Mastery level</th>';
-                    res += '<th>Mastery points</th>';
-                    res += '<th>Grade</th>';
-                    res += '<th>Last played</th>';
-                    res += '<th>Level up</th>';
-                    res += '<th>Chest</th>'
+                    res += '<th data-sortInitialOrder="asc">Champion</th>';
+                    res += '<th data-sortInitialOrder="desc">Mastery level</th>';
+                    res += '<th data-sortInitialOrder="desc">Mastery points</th>';
+                    res += '<th data-sortInitialOrder="desc">Grade</th>';
+                    res += '<th data-sortInitialOrder="desc">Last played</th>';
+                    res += '<th data-sortInitialOrder="asc">Level up</th>';
+                    res += '<th data-sortInitialOrder="desc">Chest</th>'
                     res += '</tr>';
                     res += '</thead>';
+                    res += '<tbody>';
                     var total = {
                         championLevel: 0,
                         championPoints: 0,
@@ -113,12 +113,12 @@ function makePage(req, response) {
                         res += '</td>';
                         res += '<td>' + champ.championLevel + '</td>';
                         total.championLevel += champ.championLevel;
-                        res += '<td class="score">' + champ.championPoints + '</td>';
+                        res += '<td data-text="' + champ.championPoints + '" class="score">' + champ.championPoints + '</td>';
                         total.championPoints += champ.championPoints;
-                        res += '<td class="grade">' + (champ.highestGrade || '') + '</td>';
-                        res += '<td class="time">' + champ.lastPlayTime + '</td>';
-                        res += '<td class="score">' + champ.championPointsUntilNextLevel + '</td>';
-                        res += '<td class="chest">';
+                        res += '<td data-text="' + ['', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'].indexOf(champ.highestGrade || '') + '" class="grade">' + (champ.highestGrade || '') + '</td>';
+                        res += '<td data-text="' + champ.lastPlayTime + '" class="time">' + champ.lastPlayTime + '</td>';
+                        res += '<td data-text="' + (champ.championPointsUntilNextLevel || 999999) + '" class="score">' + champ.championPointsUntilNextLevel + '</td>';
+                        res += '<td data-text="' + (champ.chestGranted?1:0) + '" class="chest">';
                         if (champ.chestGranted) {
                             total.chests++;
                             res += '<img src="/img/chestIcon.png" />';

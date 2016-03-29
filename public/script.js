@@ -37,6 +37,8 @@ window.onload = function () {
         scores[i].innerHTML = parseInt(timestamp).toLocaleString();
     }
     updateSelectedRegion();
+
+    $("#playerscores").tablesorter({"sortRestart":true});
 };
 
 //Google Analytics
