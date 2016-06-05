@@ -93,6 +93,7 @@ function makePage(req, response) {
                     res += '<th data-sortInitialOrder="desc">Mastery level</th>';
                     res += '<th data-sortInitialOrder="desc">Mastery points</th>';
                     res += '<th data-sortInitialOrder="desc">Grade</th>';
+                    res += '<th data-sortInitialOrder="desc">Tokens</th>';
                     res += '<th data-sortInitialOrder="desc">Last played</th>';
                     res += '<th data-sortInitialOrder="asc">Level up</th>';
                     res += '<th data-sortInitialOrder="desc">Chest</th>'
@@ -102,6 +103,7 @@ function makePage(req, response) {
                     var total = {
                         championLevel: 0,
                         championPoints: 0,
+                        championTokens: 0,
                         chests: 0
                     };
                     data.champions.forEach(function (champ) {
@@ -116,6 +118,8 @@ function makePage(req, response) {
                         res += '<td data-text="' + champ.championPoints + '" class="score">' + champ.championPoints + '</td>';
                         total.championPoints += champ.championPoints;
                         res += '<td data-text="' + ['', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'].indexOf(champ.highestGrade || '') + '" class="grade">' + (champ.highestGrade || '') + '</td>';
+                        res += '<td>' + ((champ.championLevel == 6 ? 2 : 0) + champ.tokensEarned) + '</td>';
+                        total.championTokens += (champ.championLevel == 6 ? 2 : 0) + champ.tokensEarned;
                         res += '<td data-text="' + champ.lastPlayTime + '" class="time">' + champ.lastPlayTime + '</td>';
                         res += '<td data-text="' + (champ.championPointsUntilNextLevel || 999999) + '" class="score">' + champ.championPointsUntilNextLevel + '</td>';
                         res += '<td data-text="' + (champ.chestGranted?1:0) + '" class="chest">';
@@ -133,6 +137,7 @@ function makePage(req, response) {
                     res += '<td>' + total.championLevel + '</td>';
                     res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
                     res += '<td></td>';
+                    res += '<td>' + total.championTokens + '</td>';
                     res += '<td></td>';
                     res += '<td></td>';
                     res += '<td>' + total.chests + '</td>';
