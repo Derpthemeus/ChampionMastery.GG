@@ -80,6 +80,12 @@ function makePage(req, response) {
         if (region) {
             getMasteredChampions(region, req.query.summoner, function (data) {
                 if (!data.error) {
+                    var showGrade = data.champions.some(function (champ) {
+                        return champ.highestGrade;
+                    }); // this is not in the API any more. it remains to be seen if we're getting it back.
+                    var showTokens = data.champions.some(function (champ) {
+                        return champ.championLevel == 5 || champ.championLevel == 6;
+                    });
                     var res = '';
                     res += '<div class="title">';
                     res += '<img src="' + data.player.icon + '">';
@@ -92,8 +98,8 @@ function makePage(req, response) {
                     res += '<th data-sortInitialOrder="asc">Champion</th>';
                     res += '<th data-sortInitialOrder="desc">Mastery level</th>';
                     res += '<th data-sortInitialOrder="desc">Mastery points</th>';
-                    res += '<th data-sortInitialOrder="desc">Grade</th>';
-                    res += '<th data-sortInitialOrder="desc">Tokens</th>';
+                    if (showGrade) res += '<th data-sortInitialOrder="desc">Grade</th>';
+                    if (showTokens) res += '<th data-sortInitialOrder="desc">Tokens</th>';
                     res += '<th data-sortInitialOrder="desc">Last played</th>';
                     res += '<th data-sortInitialOrder="asc">Level up</th>';
                     res += '<th data-sortInitialOrder="desc">Chest</th>'
@@ -117,11 +123,19 @@ function makePage(req, response) {
                         total.championLevel += champ.championLevel;
                         res += '<td data-text="' + champ.championPoints + '" class="score">' + champ.championPoints + '</td>';
                         total.championPoints += champ.championPoints;
-                        res += '<td data-text="' + ['', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'].indexOf(champ.highestGrade || '') + '" class="grade">' + (champ.highestGrade || '') + '</td>';
-                        res += '<td>' + ((champ.championLevel == 6 ? 2 : 0) + champ.tokensEarned) + '</td>';
+                        if (showGrade) res += '<td data-text="' + ['', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'].indexOf(champ.highestGrade || '') + '" class="grade">' + (champ.highestGrade || '') + '</td>';
+                        if (showTokens) {
+                            res += '<td>';
+                            if (champ.championLevel == 5) {
+                                res += champ.tokensEarned;
+                            } else if (champ.championLevel == 6) {
+                                res += 2 + champ.tokensEarned;
+                            }
+                            res += '</td>';
+                        }
                         total.championTokens += (champ.championLevel == 6 ? 2 : 0) + champ.tokensEarned;
                         res += '<td data-text="' + champ.lastPlayTime + '" class="time">' + champ.lastPlayTime + '</td>';
-                        res += '<td data-text="' + (champ.championPointsUntilNextLevel || 999999) + '" class="score">' + champ.championPointsUntilNextLevel + '</td>';
+                        res += '<td data-text="' + (champ.championPointsUntilNextLevel || 999999) + '" class="score">' + (champ.championPointsUntilNextLevel || '') + '</td>';
                         res += '<td data-text="' + (champ.chestGranted?1:0) + '" class="chest">';
                         if (champ.chestGranted) {
                             total.chests++;
@@ -136,8 +150,8 @@ function makePage(req, response) {
                     res += '<td><a href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores?champion=-1">TOTAL</a></td>';
                     res += '<td>' + total.championLevel + '</td>';
                     res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
-                    res += '<td></td>';
-                    res += '<td>' + total.championTokens + '</td>';
+                    if (showGrade) res += '<td></td>';
+                    if (showTokens) res += '<td>' + total.championTokens + '</td>';
                     res += '<td></td>';
                     res += '<td></td>';
                     res += '<td>' + total.chests + '</td>';
