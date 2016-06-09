@@ -34,9 +34,12 @@ window.onload = function () {
     var scores = document.getElementsByClassName("score");
     for (var i = 0; i < scores.length; i++) {
         var timestamp = scores[i].innerHTML;
-        scores[i].innerHTML = parseInt(timestamp).toLocaleString();
+        if (timestamp)
+            scores[i].innerHTML = parseInt(timestamp).toLocaleString();
     }
     updateSelectedRegion();
+
+    $("#playerscores").tablesorter({"sortRestart":true});
 };
 
 //Google Analytics

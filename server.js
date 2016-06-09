@@ -80,25 +80,37 @@ function makePage(req, response) {
         if (region) {
             getMasteredChampions(region, req.query.summoner, function (data) {
                 if (!data.error) {
+                    var showGrade = data.champions.some(function (champ) {
+                        return champ.highestGrade;
+                    }); // this is not in the API any more. it remains to be seen if we're getting it back.
+                    var showTokens = data.champions.some(function (champ) {
+                        return champ.championLevel == 5 || champ.championLevel == 6;
+                    });
                     var res = '';
                     res += '<div class="title">';
                     res += '<img src="' + data.player.icon + '">';
                     res += data.player.name;
                     res += '</div>';
                     res += '<div id="chart">';
-                    res += '<table id="playerscores">';
-                    res += '<tbody>';
+                    res += '<table id="playerscores" class="tablesorter">';
                     res += '<thead>';
                     res += '<tr>';
-                    res += '<th>Champion</th>';
-                    res += '<th>Mastery level</th>';
-                    res += '<th>Mastery points</th>';
-                    res += '<th>Last played</th>';
+                    res += '<th data-sortInitialOrder="asc">Champion</th>';
+                    res += '<th data-sortInitialOrder="desc">Mastery level</th>';
+                    res += '<th data-sortInitialOrder="desc">Mastery points</th>';
+                    if (showGrade) res += '<th data-sortInitialOrder="desc">Grade</th>';
+                    if (showTokens) res += '<th data-sortInitialOrder="desc">Tokens</th>';
+                    res += '<th data-sortInitialOrder="desc">Last played</th>';
+                    res += '<th data-sortInitialOrder="asc">Level up</th>';
+                    res += '<th data-sortInitialOrder="desc">Chest</th>'
                     res += '</tr>';
                     res += '</thead>';
+                    res += '<tbody>';
                     var total = {
                         championLevel: 0,
-                        championPoints: 0
+                        championPoints: 0,
+                        championTokens: 0,
+                        chests: 0
                     };
                     data.champions.forEach(function (champ) {
                         res += '<tr>';
@@ -109,9 +121,27 @@ function makePage(req, response) {
                         res += '</td>';
                         res += '<td>' + champ.championLevel + '</td>';
                         total.championLevel += champ.championLevel;
-                        res += '<td class="score">' + champ.championPoints + '</td>';
+                        res += '<td data-text="' + champ.championPoints + '" class="score">' + champ.championPoints + '</td>';
                         total.championPoints += champ.championPoints;
-                        res += '<td class="time">' + champ.lastPlayTime + '</td>';
+                        if (showGrade) res += '<td data-text="' + ['', 'D-', 'D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+', 'S-', 'S', 'S+'].indexOf(champ.highestGrade || '') + '" class="grade">' + (champ.highestGrade || '') + '</td>';
+                        if (showTokens) {
+                            res += '<td>';
+                            if (champ.championLevel == 5) {
+                                res += champ.tokensEarned;
+                            } else if (champ.championLevel == 6) {
+                                res += 2 + champ.tokensEarned;
+                            }
+                            res += '</td>';
+                        }
+                        total.championTokens += (champ.championLevel == 6 ? 2 : 0) + champ.tokensEarned;
+                        res += '<td data-text="' + champ.lastPlayTime + '" class="time">' + champ.lastPlayTime + '</td>';
+                        res += '<td data-text="' + (champ.championPointsUntilNextLevel || 999999) + '" class="score">' + (champ.championPointsUntilNextLevel || '') + '</td>';
+                        res += '<td data-text="' + (champ.chestGranted?1:0) + '" class="chest">';
+                        if (champ.chestGranted) {
+                            total.chests++;
+                            res += '<img src="/img/chestIcon.png" />';
+                        }
+                        res += '</td>';
                         res += '</tr>';
                     });
                     res += '</tbody>';
@@ -120,7 +150,11 @@ function makePage(req, response) {
                     res += '<td><a href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores?champion=-1">TOTAL</a></td>';
                     res += '<td>' + total.championLevel + '</td>';
                     res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
+                    if (showGrade) res += '<td></td>';
+                    if (showTokens) res += '<td>' + total.championTokens + '</td>';
                     res += '<td></td>';
+                    res += '<td></td>';
+                    res += '<td>' + total.chests + '</td>';
                     res += '</tr>';
                     res += '</tfoot>';
                     res += '</table>';
@@ -428,7 +462,7 @@ function start() {
             requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
                 console.log("got versions");
                 version = versions[0];
-                ddragon = "http://ddragon.leagueoflegends.com/cdn/" + version + "/";
+                ddragon = "https://ddragon.leagueoflegends.com/cdn/" + version + "/";
                 requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
                     console.log("got champion data");
                     champions = _champions.data;
