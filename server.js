@@ -1,5 +1,12 @@
 #!/bin/env node
-var riotAPIKey = process.env.RIOT_API_KEY;
+//secrets.js contains authorization/login details and is not included in the repository. Check out 'secrets-EXAMPLE.js' for more info
+var secrets;
+try {
+    secrets = require("./secrets.js");
+} catch (e) {
+    //secrets.js will not exist on the server since files are pushed via git, no problem here
+}
+var riotAPIKey = process.env.RIOT_API_KEY || secrets.riotApiKey;
 var champions;
 var championIds;
 var highscores = {};
@@ -70,7 +77,7 @@ var mongodb = require("mongodb");
 var fs = require("fs");
 var cron = require("cron");
 var ipaddr = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 80;
 var app = express();
 var db;
 
@@ -456,7 +463,7 @@ function start() {
                         makePage(req, response);
                     });
 
-                    var url = "mongodb://" + process.env.OPENSHIFT_MONGODB_DB_USERNAME + ":" + process.env.OPENSHIFT_MONGODB_DB_PASSWORD + "@" + process.env.OPENSHIFT_MONGODB_DB_HOST + ":" + process.env.OPENSHIFT_MONGODB_DB_PORT + "/";
+                    var url = process.env.OPENSHIFT_MONGODB_DB_URL || secrets.mongoDbUrl;
                     mongodb.MongoClient.connect(url, function (err, _db) {
                         if (!err) {
                             console.log("connected to mongodb");

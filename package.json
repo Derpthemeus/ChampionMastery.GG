@@ -1,5 +1,5 @@
 {
-    "name": "ChampionMasteryLookup-BETA",
+    "name": "ChampionMasteryLookup",
     "version": "1.0.0",
     "description": "Displays mastery info for champions",
     "engines": {
@@ -7,11 +7,10 @@
         "npm": ">= 1.0.0"
     },
     "dependencies": {
-        "express": "~3.4.4",
-        "cron": "~1.1.0"
+        "express": "^3.4.4",
+        "cron": "^1.1.0",
+        "mongodb": "^2.1.18"
     },
-    "devDependencies": {},
-    "bundleDependencies": [],
     "private": true,
     "main": "server.js"
 }
