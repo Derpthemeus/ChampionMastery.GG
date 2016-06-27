@@ -110,7 +110,7 @@ function makePage(req, response) {
                     data.champions.forEach(function (champ) {
                         res += '<tr>';
                         res += '<td>';
-                        res += '<a href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores?champion=' + champ.championId + '">';
+                        res += '<a href="http://championmasterylookup.derpthemeus.com/highscores?champion=' + champ.championId + '">';
                         res += champions[champ.championId].name;
                         res += '</a>';
                         res += '</td>';
@@ -124,7 +124,7 @@ function makePage(req, response) {
                     res += '</tbody>';
                     res += '<tfoot>';
                     res += '<tr>';
-                    res += '<td><a href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores?champion=-1">TOTAL</a></td>';
+                    res += '<td><a href="http://championmasterylookup.derpthemeus.com/highscores?champion=-1">TOTAL</a></td>';
                     res += '<td>' + total.championLevel + '</td>';
                     res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
                     res += '<td></td>';
@@ -208,7 +208,7 @@ function makeChampionHighscores(response, championId) {
             res += '<td>' + places[i] + '</td>';
             var score = highscores[championId][i];
             if (score) {
-                res += '<td><a href="http://championmasterylookup-derpthemeus.rhcloud.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
+                res += '<td><a href="http://championmasterylookup.derpthemeus.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
                 res += '<td class="score">' + score.points + '</td>';
             } else {
                 res += '<td>Nobody</td><td>0</td>';
@@ -246,7 +246,7 @@ function makeSummaryHighscores(response) {
             res += '<tr>';
             if (i === 0) {
                 res += '<td rowspan="3"><img src="' + champion.icon + '" width="80" height="80"></td>';
-                res += '<td rowspan="3"><a class="championName" href="http://championmasterylookup-derpthemeus.rhcloud.com/highscores?champion=' + champion.id + '">';
+                res += '<td rowspan="3"><a class="championName" href="http://championmasterylookup.derpthemeus.com/highscores?champion=' + champion.id + '">';
                 //res += '<br>';
                 res += champion.name;
                 res += '</a></td>';
@@ -254,7 +254,7 @@ function makeSummaryHighscores(response) {
             res += '<td class="place-' + i + '">' + places[i] + '</td>';
             var score = highscores[champion.id][i];
             if (score) {
-                res += '<td class="place-' + i + '"><a href="http://championmasterylookup-derpthemeus.rhcloud.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
+                res += '<td class="place-' + i + '"><a href="http://championmasterylookup.derpthemeus.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
                 res += '<td class="score place-' + i + '">' + score.points + '</td>';
             } else {
                 res += '<td class="place-' + i + '">Nobody</td><td class="place-' + i + '">0</td>';
