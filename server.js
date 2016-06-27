@@ -7,6 +7,7 @@ try {
     //secrets.js will not exist on the server since files are pushed via git, no problem here
 }
 var riotAPIKey = process.env.RIOT_API_KEY || secrets.riotApiKey;
+var highscoreDataPath = (process.env.OPENSHIFT_DATA_DIR || "") + "highscoreData.json";
 var champions;
 var championIds;
 var highscores = {};
@@ -73,13 +74,11 @@ var express = require("express");
 var URL = require("url");
 var HTTP = require("http");
 var HTTPS = require("https");
-var mongodb = require("mongodb");
 var fs = require("fs");
 var cron = require("cron");
 var ipaddr = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 80;
 var app = express();
-var db;
 
 function makePage(req, response) {
     if (req.query.summoner && req.query.region) {
@@ -349,7 +348,7 @@ function setScore(championId, place, name, summonerId, region, points, isNew) {
 }
 
 function saveHighscores() {
-    db.collection("highscoreData").update({}, highscores, function (err) {
+    fs.writeFile(highscoreDataPath, JSON.stringify(highscores, null, "\t"), function (err) {
         if (err) {
             console.log("Error saving highscores: " + err);
         } else {
@@ -462,50 +461,37 @@ function start() {
                     app.all("/", function (req, response) {
                         makePage(req, response);
                     });
-
-                    var url = process.env.OPENSHIFT_MONGODB_DB_URL || secrets.mongoDbUrl;
-                    mongodb.MongoClient.connect(url, function (err, _db) {
+                    fs.readFile(highscoreDataPath, function (err, json) {
                         if (!err) {
-                            console.log("connected to mongodb");
-                            db = _db;
-                            db.collection("highscoreData").findOne({}, function (err, _highscores) {
-                                if (!err) {
-                                    highscores = _highscores || {};
-                                    foreach(champions, function (index, champion) {
-                                        if (!highscores[champion.id]) {
-                                            highscores[champion.id] = [];
-                                        }
-                                    });
-
-                                    //There were some errors earlier, this should fix them. Kept just in case
-                                    foreach(highscores, function (key, champion) {
-                                        for (var i = champion.length - 1; i >= 0; i--) {
-                                            for (var j = 0; j < i; j++) {
-                                                //no idea what happened, but I fixed it
-                                                if (champion[j] && champion[i] && champion[j].id === champion[i].id) {
-                                                    console.log(champion[j].id + " has highscores for " + key + " at " + i + " and " + j);
-                                                    highscores[key].splice(i, 1);
-                                                }
-                                            }
-                                        }
-                                    });
-
-                                    app.all("/highscores", function (req, response) {
-                                        makeHighscores(req, response);
-                                    });
-
-                                    new cron.CronJob("0 * * * * *", function () {
-                                        saveHighscores();
-                                    }, null, true).start();
-
-                                } else {
-                                    app.all("/highscores", function (req, response) {
-                                        error(response, {error: "There was an error setting up highscores or this feature is currently disabled. Check again later (actually later. Refreshing won't help)"});
-                                    });
+                            highscores = json ? JSON.parse(json) : {};
+                            console.log("loaded highscore data");
+                            foreach(champions, function (key, champion) {
+                                if (!highscores[champion.id]) {
+                                    highscores[champion.id] = [];
                                 }
                             });
+
+                            //There were some errors earlier, this should fix them. Kept just in case
+                            foreach(highscores, function (key, champion) {
+                                for (var i = champion.length - 1; i >= 0; i--) {
+                                    for (var j = 0; j < i; j++) {
+                                        //no idea what happened, but I fixed it
+                                        if (champion[j] && champion[i] && champion[j].id === champion[i].id) {
+                                            console.log(champion[j].id + " has highscores for " + key + " at " + i + " and " + j);
+                                            highscores[key].splice(i, 1);
+                                        }
+                                    }
+                                }
+                            });
+
+                            app.all("/highscores", function (req, response) {
+                                makeHighscores(req, response);
+                            });
+                            new cron.CronJob("0 * * * * *", function () {
+                                saveHighscores();
+                            }, null, true).start();
                         } else {
-                            console.log("CRITICAL ERROR CONNECTING TO MONGODB (" + err + ")");
+                            console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
                             app.all("/highscores", function (req, response) {
                                 error(response, {error: "There was an error setting up highscores or this feature is currently disabled. Check again later (actually later. Refreshing won't help)"});
                             });

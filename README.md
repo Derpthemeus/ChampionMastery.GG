@@ -7,7 +7,7 @@ This is the source code for [ChampionMasteryLookup](http://championmasterylookup
 This section is if you want to host your own version of the website. If you just want to use it, check out the [live version](http://championmasterylookup.derpthemeus.com)
 
 The live website is hosted on [OpenShift](https://www.openshift.com/), so if you want to host your own site thats the easiest way to do it.
-It uses the Node.js 0.10 and MongoDB 2.4 cartridges and requires the RIOT_API_KEY environment variable to be set to a Riot API key. If you don't have a key, you can easily get one from the [Riot developer website](https://developer.riotgames.com/).
+It uses the Node.js 0.10 cartridge and requires the RIOT_API_KEY environment variable to be set to a Riot API key. If you don't have a key, you can easily get one from the [Riot developer website](https://developer.riotgames.com/).
 
 
 
