@@ -15,8 +15,6 @@ var HSCOUNT = {
     display: 20,
     track: 25
 };
-//auto updated, manual value is a backup
-var version = "6.3.1";
 var ddragon;
 var regions = {
     NA: {
@@ -68,6 +66,11 @@ var regions = {
         region: "RU",
         platform: "RU",
         host: "https://ru.api.pvp.net"
+    },
+    JP: {
+        region: "RU",
+        platform: "JP1",
+        host: "https://jp.api.pvp.net"
     }
 };
 var express = require("express");
@@ -75,7 +78,6 @@ var URL = require("url");
 var HTTP = require("http");
 var HTTPS = require("https");
 var fs = require("fs");
-var cron = require("cron");
 var ipaddr = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 80;
 var app = express();
@@ -269,7 +271,7 @@ function makeSummaryHighscores(response) {
 
 function updateHighscores(data, summonerId, region) {
     var totalPoints = 0;
-    foreach(data.champions, function (index, champion) {
+    foreach(data.champions, function (key, champion) {
         updateHighscore(data, summonerId, region, champion);
         totalPoints += champion.championPoints;
     });
@@ -279,25 +281,6 @@ function updateHighscores(data, summonerId, region) {
         championPoints: totalPoints
     });
 }
-
-/*
- app.all("/test", function (req, res) {
- var summoner = parseInt(req.query.summoner);
- console.log(typeof (summoner));
- updateHighscore({
- player: {
- name: req.query.summoner
- }
- }, summoner, regions.NA, {
- championId: parseInt(req.query.champion),
- championPoints: parseInt(req.query.points)
- });
- 
- res.send("ok");
- });
- */
-
-
 
 function updateHighscore(data, summonerId, region, champion) {
     var championId = champion.championId;
@@ -350,7 +333,7 @@ function setScore(championId, place, name, summonerId, region, points, isNew) {
 function saveHighscores() {
     fs.writeFile(highscoreDataPath, JSON.stringify(highscores, null, "\t"), function (err) {
         if (err) {
-            console.log("Error saving highscores: " + err);
+            console.error("Error saving highscores: " + err);
         } else {
             console.log("Saved highscores");
         }
@@ -391,9 +374,8 @@ function getMasteredChampions(region, name, callback) {
         }
     });
 }
-
 function requestJSON(url, success, errors) {
-    HTTPS.get(url, function (response) {
+    (url.toLowerCase().indexOf("https://") === 0 ? HTTPS : HTTP).get(url, function (response) {
         if (response.statusCode === 200) {
             var body = "";
             response.on("data", function (segment) {
@@ -404,14 +386,20 @@ function requestJSON(url, success, errors) {
                 success(data);
             });
         } else if (errors) {
-            if (errors[response.statusCode]) {
-                errors[response.statusCode]();
-            } else if (errors[0]) {
-                errors[0](response.statusCode);
+            if (typeof (errors) === "function") {
+                errors(response.statusCode);
+            } else {
+                if (errors[response.statusCode]) {
+                    errors[response.statusCode]();
+                } else if (errors[0]) {
+                    errors[0](response.statusCode);
+                }
             }
         }
     });
 }
+
+
 function foreach(obj, func) {
     var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++) {
@@ -433,7 +421,7 @@ function start() {
             template = _template.replace(" <!--REGIONS GO HERE-->", regionHTML);
             requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
                 console.log("got versions");
-                version = versions[0];
+                var version = versions[0];
                 ddragon = "http://ddragon.leagueoflegends.com/cdn/" + version + "/";
                 requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
                     console.log("got champion data");
@@ -487,9 +475,8 @@ function start() {
                             app.all("/highscores", function (req, response) {
                                 makeHighscores(req, response);
                             });
-                            new cron.CronJob("0 * * * * *", function () {
-                                saveHighscores();
-                            }, null, true).start();
+
+                            setTimeout(saveHighscores, 60 * 1000);
                         } else {
                             console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
                             app.all("/highscores", function (req, response) {

@@ -24,7 +24,7 @@ function updateSelectedRegion() {
     });
 }
 
-window.onload = function () {
+window.addEventListener("load", function () {
     var times = document.getElementsByClassName("time");
     for (var i = 0; i < times.length; i++) {
         var timestamp = times[i].innerHTML;
@@ -37,7 +37,7 @@ window.onload = function () {
         scores[i].innerHTML = parseInt(timestamp).toLocaleString();
     }
     updateSelectedRegion();
-};
+});
 
 //Google Analytics
 (function (i, s, o, g, r, a, m) {
