@@ -68,7 +68,7 @@ var regions = {
         host: "https://ru.api.pvp.net"
     },
     JP: {
-        region: "RU",
+        region: "JP",
         platform: "JP1",
         host: "https://jp.api.pvp.net"
     }
