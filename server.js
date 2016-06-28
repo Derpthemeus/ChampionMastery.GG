@@ -476,7 +476,7 @@ function start() {
                                 makeHighscores(req, response);
                             });
 
-                            setTimeout(saveHighscores, 60 * 1000);
+                            setInterval(saveHighscores, 60 * 1000);
                         } else {
                             console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
                             app.all("/highscores", function (req, response) {
