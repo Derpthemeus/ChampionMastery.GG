@@ -82,213 +82,140 @@ var ipaddr = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 80;
 var app = express();
 
-function makePage(req, response) {
-    if (req.query.summoner && req.query.region) {
-        var region = regions[req.query.region.toUpperCase()];
-        if (region) {
-            getMasteredChampions(region, req.query.summoner, function (data) {
-                if (!data.error) {
-                    var res = '';
-                    res += '<div class="title">';
-                    res += '<img src="' + data.player.icon + '">';
-                    res += data.player.name;
-                    res += '</div>';
-                    res += '<div id="chart">';
-                    res += '<table id="playerscores">';
-                    res += '<tbody>';
-                    res += '<thead>';
-                    res += '<tr>';
-                    res += '<th>Champion</th>';
-                    res += '<th>Mastery level</th>';
-                    res += '<th>Mastery points</th>';
-                    res += '<th>Last played</th>';
-                    res += '</tr>';
-                    res += '</thead>';
-                    var total = {
-                        championLevel: 0,
-                        championPoints: 0
+//a list of regions
+function getRegions(req, res) {
+    res.status(200).send(Object.keys(regions));
+}
+
+//top 3 for each champion
+function getHighscores(req, res) {
+    var response = {
+        champions: []
+    };
+    championIds.forEach(function (championId) {
+        var champion = champions[championId];
+        var resChampion = {
+            icon: champion.icon,
+            name: champion.name,
+            id: champion.id,
+            scores: []
+        };
+
+        for (var i = 0; i < 3; i++) {
+            var score = highscores[champion.id][i];
+            resChampion.scores[i] = (score ? {
+                points: score.points,
+                name: score.name,
+                region: score.region
+            } : null);
+        }
+        response.champions.push(resChampion);
+    });
+    res.status(200).send(response);
+}
+
+
+//gets top 20 players for specified champion
+function getChampion(req, res) {
+    var championId = req.query.champion;
+    if (championId) {
+        var champion = champions[championId];
+        if (champion) {
+            var response = {
+                champion: champion,
+                scores: []
+            };
+            for (var i = 0; i < HSCOUNT.display; i++) {
+                var score = highscores[championId][i];
+                response.scores[i] = score ? {
+                    points: score.points,
+                    name: score.name,
+                    region: score.region
+                } : null;
+            }
+            res.status(200).send(response);
+        } else {
+            res.status(404).send("Champion not found");
+        }
+    } else {
+        res.status(400).send("Champion not specified");
+    }
+}
+
+//displays info for a player
+function getPlayer(req, res) {
+    if (req.query.summoner) {
+        if (req.query.region && regions[req.query.region]) {
+            var region = regions[req.query.region];
+            requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(req.query.summoner) + "?api_key=" + riotAPIKey, function (players) {
+                var player = players[Object.keys(players)[0]];
+                requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
+                    var result = {
+                        player: {
+                            icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
+                            name: player.name
+                        },
+                        champions: []
                     };
-                    data.champions.forEach(function (champ) {
-                        res += '<tr>';
-                        res += '<td>';
-                        res += '<a href="http://championmasterylookup.derpthemeus.com/highscores?champion=' + champ.championId + '">';
-                        res += champions[champ.championId].name;
-                        res += '</a>';
-                        res += '</td>';
-                        res += '<td>' + champ.championLevel + '</td>';
-                        total.championLevel += champ.championLevel;
-                        res += '<td class="score">' + champ.championPoints + '</td>';
-                        total.championPoints += champ.championPoints;
-                        res += '<td class="time">' + champ.lastPlayTime + '</td>';
-                        res += '</tr>';
+                    data.forEach(function (champion) {
+                        var info = {
+                            name: champions[champion.championId].name,
+                            id: champion.championId,
+                            level: champion.championLevel,
+                            points: champion.championPoints,
+                            lastPlayed: champion.lastPlayTime,
+                            chest: champion.chestGranted
+                        };
+                        if (champion.championPointsUntilNextLevel === 0) {
+                            info.tokens = champion.tokensEarned;
+                        } else {
+                            info.pointsSinceLastLevel = champion.championPointsSinceLastLevel;
+                            info.pointsNeeded = champion.championPointsUntilNextLevel;
+                        }
+
+                        result.champions.push(info);
                     });
-                    res += '</tbody>';
-                    res += '<tfoot>';
-                    res += '<tr>';
-                    res += '<td><a href="http://championmasterylookup.derpthemeus.com/highscores?champion=-1">TOTAL</a></td>';
-                    res += '<td>' + total.championLevel + '</td>';
-                    res += '<td class="score">' + total.championPoints.toLocaleString() + '</td>';
-                    res += '<td></td>';
-                    res += '</tr>';
-                    res += '</tfoot>';
-                    res += '</table>';
-                    res += '<br>';
-                    res += 'All times are local';
-                    res += '</div>';
-                    response.send(makeHTML(res));
-                } else {
-                    error(response, data);
+                    updateHighscores(result, player.id, region);
+                    res.status(200).send(result);
+                }, function (code) {
+                    res.status(500).send("Error from Riot's API server (" + code + ")");
+                });
+            }, {
+                404: function () {
+                    res.status(404).send("Summoner not found. Make sure the name and region are correct.");
+                },
+                0: function (code) {
+                    res.status(500).send("Unknown error: " + code);
                 }
             });
         } else {
-            error(response, {error: "Invalid region"});
+            res.status(400).send("Invalid region");
         }
     } else {
-        makeHome(response);
+        res.status(400).send("Player not specified");
     }
 }
-
-var template;
-function makeHTML(data) {
-    return template.replace("<!--DATA GOES HERE-->", data);
-}
-
-function makeHome(response) {
-    var res = '';
-    res += '<div id=about>';
-    res += '<h2>Enter a summoner name and region in the top right to look up their champion mastery scores</h2>';
-    res += '<br>';
-    res += 'I just added a highscore feature, be sure to check it out!';
-    res += '<br>';
-    res += 'Hopefully stuff isn\'t as ugly as before, I got a friend to help fix things';
-    res += '</div>';
-    response.send(makeHTML(res));
-}
-
-function error(response, error) {
-    var res = '';
-    res += '<h1>Uh... whoops</h1>';
-    res += 'Error: ' + error.error;
-    res += '<br><br>';
-    res += 'Something went wrong. Make sure summoner name and region are correct and try again. If it still doesn\'t work, blame Teemo and try again later.';
-    response.send(makeHTML(res));
-}
-
-
-var places = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th"];
-
-function makeHighscores(req, response) {
-    if (req.query.champion) {
-        makeChampionHighscores(response, req.query.champion);
-    } else {
-        makeSummaryHighscores(response);
-    }
-}
-
-function makeChampionHighscores(response, championId) {
-    var champion = champions[championId];
-    if (champion) {
-        var res = '';
-        res += '<div class="title">';
-        res += '<img src="' + champion.icon + '">';
-        res += champion.name;
-        res += '<br>';
-        res += '</div>';
-        res += '<div id="chart">';
-        res += '<div class="hsdisclaimer">Players must be looked up for their scores to be shown here. If you think somebody is missing or has a wrong score, look them up.</div>';
-        res += '<table id="championhighscores">';
-        res += '<thead>';
-        res += '<tr>';
-        res += '<th>Rank</td>';
-        res += '<th>Player (Region)</th>';
-        res += '<th>Score</th>';
-        res += '</tr>';
-        res += '</thead>';
-        for (var i = 0; i < HSCOUNT.display; i++) {
-            res += '<tr>';
-            res += '<td>' + places[i] + '</td>';
-            var score = highscores[championId][i];
-            if (score) {
-                res += '<td><a href="http://championmasterylookup.derpthemeus.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
-                res += '<td class="score">' + score.points + '</td>';
-            } else {
-                res += '<td>Nobody</td><td>0</td>';
-            }
-            res += '</tr>';
-        }
-        res += '</table>';
-        res += '</div>';
-        response.send(makeHTML(res));
-    } else {
-        error(response, {error: "Invalid champion"});
-    }
-}
-
-function makeSummaryHighscores(response) {
-    var res = '';
-    res += '<div class="title">';
-    res += 'Highscores';
-    res += '</div>';
-    res += '<div class="hsdisclaimer">Players must be looked up for their scores to be shown here. If you think somebody is missing or has a wrong score, look them up.</div>';
-    res += '<div id="chart">';
-    res += '<table id="highscoresummary">';
-    res += '<thead>';
-    res += '<tr>';
-    res += '<th></th>';
-    res += '<th>Champion</td>';
-    res += '<th>Rank</th>';
-    res += '<th>Player (Region)</th>';
-    res += '<th>Score</th>';
-    res += '</tr>';
-    res += '</thead>';
-    championIds.forEach(function (championId) {
-        var champion = champions[championId];
-        for (var i = 0; i < 3; i++) {
-            res += '<tr>';
-            if (i === 0) {
-                res += '<td rowspan="3"><img src="' + champion.icon + '" width="80" height="80"></td>';
-                res += '<td rowspan="3"><a class="championName" href="http://championmasterylookup.derpthemeus.com/highscores?champion=' + champion.id + '">';
-                //res += '<br>';
-                res += champion.name;
-                res += '</a></td>';
-            }
-            res += '<td class="place-' + i + '">' + places[i] + '</td>';
-            var score = highscores[champion.id][i];
-            if (score) {
-                res += '<td class="place-' + i + '"><a href="http://championmasterylookup.derpthemeus.com/?summoner=' + score.name + '&region=' + score.region + '">' + score.name + " (" + score.region + ")" + '</a></td>';
-                res += '<td class="score place-' + i + '">' + score.points + '</td>';
-            } else {
-                res += '<td class="place-' + i + '">Nobody</td><td class="place-' + i + '">0</td>';
-            }
-            res += '</tr>';
-        }
-    });
-    res += '</table>';
-    res += '</div>';
-    response.send(makeHTML(res));
-}
-
 
 function updateHighscores(data, summonerId, region) {
     var totalPoints = 0;
     foreach(data.champions, function (key, champion) {
         updateHighscore(data, summonerId, region, champion);
-        totalPoints += champion.championPoints;
+        totalPoints += champion.points;
     });
 
     updateHighscore(data, summonerId, region, {
-        championId: -1,
-        championPoints: totalPoints
+        id: -1,
+        points: totalPoints
     });
 }
 
 function updateHighscore(data, summonerId, region, champion) {
-    var championId = champion.championId;
+    var championId = champion.id;
     for (var i = 0; i < HSCOUNT.track; i++) {
         if (highscores[championId][i]) {
             if (highscores[championId][i].id !== summonerId) {
-                if (champion.championPoints > highscores[championId][i].points) {
-                    setScore(championId, i, data.player.name, summonerId, region.region, champion.championPoints, false);
+                if (champion.points > highscores[championId][i].points) {
+                    setScore(championId, i, data.player.name, summonerId, region.region, champion.points, false);
                     for (var currentPos = i + 1; currentPos < HSCOUNT.track; currentPos++) {
                         if (highscores[championId][currentPos] && highscores[championId][currentPos].id === summonerId) {
                             highscores[championId].splice(currentPos, 1);
@@ -302,13 +229,13 @@ function updateHighscore(data, summonerId, region, champion) {
                     name: data.player.name,
                     id: summonerId,
                     region: region.region,
-                    points: champion.championPoints
+                    points: champion.points
                 };
-                console.log("Updated highscore for " + championId + " by " + summonerId + " with " + champion.championPoints + " at " + i);
+                console.log("Updated highscore for " + championId + " by " + summonerId + " with " + champion.points + " at " + i);
                 break;
             }
         } else {
-            setScore(championId, i, data.player.name, summonerId, region.region, champion.championPoints, true);
+            setScore(championId, i, data.player.name, summonerId, region.region, champion.points, true);
             break;
         }
     }
@@ -340,40 +267,6 @@ function saveHighscores() {
     });
 }
 
-
-function getMasteredChampions(region, name, callback) {
-    requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(name) + "?api_key=" + riotAPIKey, function (players) {
-        var player = players[Object.keys(players)[0]];
-        requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
-            var result = {
-                player: {
-                    icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
-                    name: player.name
-                },
-                champions: data
-            };
-            updateHighscores(result, player.id, region);
-            callback(result);
-        }, {
-            404: function () {
-                callback({error: "champion mastery data not found"});
-            },
-            500: function () {
-                callback({error: "shit got cray"});
-            },
-            0: function (code) {
-                callback({error: "Unknown error: " + code});
-            }
-        });
-    }, {
-        404: function () {
-            callback({error: "summoner not found"});
-        },
-        0: function (code) {
-            callback({error: "Unknown error: " + code});
-        }
-    });
-}
 function requestJSON(url, success, errors) {
     (url.toLowerCase().indexOf("https://") === 0 ? HTTPS : HTTP).get(url, function (response) {
         if (response.statusCode === 200) {
@@ -399,7 +292,6 @@ function requestJSON(url, success, errors) {
     });
 }
 
-
 function foreach(obj, func) {
     var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++) {
@@ -411,85 +303,70 @@ function foreach(obj, func) {
 
 function start() {
     console.log("starting...");
-    fs.readFile("./template.html", "utf8", function (err, _template) {
-        if (!err) {
-            console.log("template loaded");
-            var regionHTML = '';
-            foreach(regions, function (key, region) {
-                regionHTML += '<option value="' + region.region + '">' + region.region + '</option>';
+    requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
+        var version = versions[0];
+        console.log("Got DDragon version");
+        ddragon = "http://ddragon.leagueoflegends.com/cdn/" + version + "/";
+        requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
+            console.log("Got champion data from DDragon");
+            champions = _champions.data;
+            foreach(champions, function (key, champion) {
+                champion.icon = ddragon + "img/champion/" + champion.key + ".png";
+                champions[key] = champion;
             });
-            template = _template.replace(" <!--REGIONS GO HERE-->", regionHTML);
-            requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
-                console.log("got versions");
-                var version = versions[0];
-                ddragon = "http://ddragon.leagueoflegends.com/cdn/" + version + "/";
-                requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
-                    console.log("got champion data");
-                    champions = _champions.data;
+
+            championIds = Object.keys(champions);
+            championIds.sort(function (a, b) {
+                var nameA = champions[a].name.toUpperCase();
+                var nameB = champions[b].name.toUpperCase();
+                return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+            });
+            champions[-1] = {
+                id: -1,
+                name: "Total",
+                icon: "/masteryIcon.png"
+            };
+            championIds.unshift(-1);
+
+            fs.readFile(highscoreDataPath, function (err, json) {
+                if (!err) {
+                    highscores = json ? JSON.parse(json) : {};
+                    console.log("loaded highscore data");
                     foreach(champions, function (key, champion) {
-                        champion.icon = ddragon + "img/champion/" + champion.key + ".png";
-                        champions[key] = champion;
-                    });
-
-
-                    championIds = Object.keys(champions);
-                    championIds.sort(function (a, b) {
-                        var nameA = champions[a].name.toUpperCase();
-                        var nameB = champions[b].name.toUpperCase();
-                        return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
-                    });
-                    champions[-1] = {
-                        id: -1,
-                        name: "Total",
-                        icon: "/img/masteryIcon.png"
-                    };
-                    championIds.push(-1);
-
-                    app.use(express.static("public"));
-                    app.all("/", function (req, response) {
-                        makePage(req, response);
-                    });
-                    fs.readFile(highscoreDataPath, function (err, json) {
-                        if (!err) {
-                            highscores = json ? JSON.parse(json) : {};
-                            console.log("loaded highscore data");
-                            foreach(champions, function (key, champion) {
-                                if (!highscores[champion.id]) {
-                                    highscores[champion.id] = [];
-                                }
-                            });
-
-                            //There were some errors earlier, this should fix them. Kept just in case
-                            foreach(highscores, function (key, champion) {
-                                for (var i = champion.length - 1; i >= 0; i--) {
-                                    for (var j = 0; j < i; j++) {
-                                        //no idea what happened, but I fixed it
-                                        if (champion[j] && champion[i] && champion[j].id === champion[i].id) {
-                                            console.log(champion[j].id + " has highscores for " + key + " at " + i + " and " + j);
-                                            highscores[key].splice(i, 1);
-                                        }
-                                    }
-                                }
-                            });
-
-                            app.all("/highscores", function (req, response) {
-                                makeHighscores(req, response);
-                            });
-
-                            setInterval(saveHighscores, 60 * 1000);
-                        } else {
-                            console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
-                            app.all("/highscores", function (req, response) {
-                                error(response, {error: "There was an error setting up highscores or this feature is currently disabled. Check again later (actually later. Refreshing won't help)"});
-                            });
+                        if (!highscores[champion.id]) {
+                            highscores[champion.id] = [];
                         }
                     });
+
+                    //There were some errors earlier, this should fix them. Kept just in case
+                    foreach(highscores, function (key, champion) {
+                        for (var i = champion.length - 1; i >= 0; i--) {
+                            for (var j = 0; j < i; j++) {
+                                //no idea what happened, but I fixed it
+                                if (champion[j] && champion[i] && champion[j].id === champion[i].id) {
+                                    console.log(champion[j].id + " has highscores for " + key + " at " + i + " and " + j);
+                                    highscores[key].splice(i, 1);
+                                }
+                            }
+                        }
+                    });
+                    //allows the homepage contents to be stored in their own folder
+                    app.use(express.static("public/home"));
+                    app.use(express.static("public"));
+                    app.all("/getRegions", getRegions);
+                    app.all("/getHighscores", getHighscores);
+                    app.all("/getChampion", getChampion);
+                    app.all("/getPlayer", getPlayer);
+
+                    setInterval(saveHighscores, 60 * 1000);
+
                     app.listen(port, ipaddr);
-                });
+                    console.log("started");
+                } else {
+                    console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
+                }
             });
-        } else {
-            throw err;
-        }
+        });
     });
 }
 

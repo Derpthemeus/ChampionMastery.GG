@@ -1,0 +1,26 @@
+.championIcon {
+    padding-left: 10px;
+    width: 90px;
+}
+
+.place {
+    font-weight: bold;
+    padding-right: 4px;
+}
+
+.entry {
+    width: 100%;
+}
+
+.championText {
+    padding-left: 15px;
+    width: 75%;
+}
+
+#content {
+    padding-top: 15px;
+}
+
+.championName {
+    font-weight: bold;
+}

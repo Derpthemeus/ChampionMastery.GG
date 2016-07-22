@@ -1,7 +1,5 @@
 {
     "name": "ChampionMasteryLookup",
-    "version": "1.0.0",
-    "description": "Displays mastery info for champions",
     "engines": {
         "node": ">= 0.6.0",
         "npm": ">= 1.0.0"
