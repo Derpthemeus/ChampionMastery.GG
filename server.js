@@ -306,7 +306,7 @@ function start() {
     requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
         var version = versions[0];
         console.log("Got DDragon version");
-        ddragon = "http://ddragon.leagueoflegends.com/cdn/" + version + "/";
+        ddragon = "https://ddragon.leagueoflegends.com/cdn/" + version + "/";
         requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
             console.log("Got champion data from DDragon");
             champions = _champions.data;
