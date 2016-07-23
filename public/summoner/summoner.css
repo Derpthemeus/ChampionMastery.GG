@@ -3,7 +3,7 @@
 }
 
 .chest {
-    width: 17px;
+    height: 17px;
     filter: brightness(115%);
     -webkit-filter: brightness(115%);  
 }
@@ -32,4 +32,21 @@
 
 .tablesorter-headerUnSorted span {
     background: url("bg.gif") right center no-repeat;
+}
+
+.token {
+    height: 17px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.progressBar-outer {
+    background-color: rgb(220,220,220);
+    height: 15px;
+    width: 100%;
+}
+
+.progressBar-inner {
+    background-color: rgb(160,180,230);
+    height: 100%;
 }

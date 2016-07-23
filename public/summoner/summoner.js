@@ -1,3 +1,9 @@
+//how many tokens are needed to continue from a level
+var tokensNeeded = {
+    5: 2,
+    6: 3
+};
+
 //sorts based on the "data-value" attribute
 $.tablesorter.addParser({
     id: "data-value",
@@ -57,6 +63,34 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
         lastPlayed.title = new moment(champion.lastPlayed).from(new moment());
         tr.appendChild(lastPlayed);
 
+        var progress = document.createElement("td");
+        if (champion.level === 7) {
+            progress.appendChild(document.createTextNode("Completed"));
+            progress.dataset.value = 300;
+        } else if (champion.level === 5 || champion.level === 6) {
+            for (var i = 0; i < tokensNeeded[champion.level]; i++) {
+                var token = document.createElement("img");
+                token.src = "token.png";
+                token.className = i < champion.tokens ? "token" : "token notEarned";
+                progress.appendChild(token);
+            }
+            //hacky solution to organize things.
+            progress.dataset.value = ((champion.level - 4) * 100) + (champion.tokens / tokensNeeded[champion.level]);
+        } else {
+            //I don't like Bootstrap's progress bars
+            var outer = document.createElement("div");
+            outer.className = "progressBar-outer";
+            var inner = document.createElement("div");
+            inner.className = "progressBar-inner";
+            var pct = Math.round(champion.pointsSinceLastLevel / (champion.pointsSinceLastLevel + champion.pointsNeeded) * 10000) / 100;
+            inner.style.width = pct + "%";
+            outer.dataset.toggle = "tooltip";
+            outer.title = champion.pointsSinceLastLevel + "/" + (champion.pointsSinceLastLevel + champion.pointsNeeded) + " (" + pct + "%)";
+            progress.dataset.value = pct;
+            outer.appendChild(inner);
+            progress.appendChild(outer);
+        }
+        tr.appendChild(progress);
 
         tbody.appendChild(tr);
     });
@@ -64,7 +98,7 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
 
 
     var thead = document.createElement("thead");
-    var columns = ["Champion", "Mastery Level", "Mastery Points", "Chest Earned", "Last Played"];
+    var columns = ["Champion", "Mastery Level", "Mastery Points", "Chest Earned", "Last Played", "Progress"];
     var labels = document.createElement("tr");
     columns.forEach(function (column) {
         var th = document.createElement("th");
@@ -86,6 +120,7 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
         formatNumber(totalLevel),
         formatNumber(totalPoints),
         totalChests + "/" + data.champions.length,
+        "",
         ""
     ].forEach(function (total) {
         var th = document.createElement("th");
