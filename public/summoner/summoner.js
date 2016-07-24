@@ -46,6 +46,7 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
 
         var points = document.createElement("td");
         points.appendChild(document.createTextNode(formatNumber(champion.points)));
+        points.dataset.value = champion.points;
         tr.appendChild(points);
 
         var chest = document.createElement("td");
