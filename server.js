@@ -182,7 +182,28 @@ function getPlayer(req, res) {
                 });
             }, {
                 404: function () {
-                    res.status(404).send("Summoner not found. Make sure the name and region are correct.");
+                    // check if the summoner does exist in the highscores and if update the summoner
+                    var summonerId;
+                    if (function() {
+                            for (var i = 0; i < highscores.length; i++) {
+                                var score = highscores[i].filter(function(score) {
+                                    return (score.region == region.region && score.name == req.query.summoner);
+                                })
+                                if (score.length > 0) {
+                                    summonerId = score.id;
+                                    highscores[i].splice(highscores[i].indexOf(score), 1);
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }
+                        }) {
+                        requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + summonerId + "/name?api_key=" + riotAPIKey, function (player) {
+                            res.redirect(302, "/summoner/?summoner=" + encodeURIComponent(player[0]) + "&region=" + region.region);
+                        }
+                    } else {
+                        res.status(404).send("Summoner not found. Make sure the name and region are correct.");
+                    }
                 },
                 0: function (code) {
                     res.status(500).send("Unknown error: " + code);
