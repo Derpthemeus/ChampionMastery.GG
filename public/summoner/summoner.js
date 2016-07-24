@@ -137,6 +137,7 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
 
     $("#table").tablesorter({
         headers: {
+            2: {sorter: "data-value"},
             3: {sorter: "data-value"},
             4: {sorter: "data-value"},
             5: {sorter: "data-value"}
