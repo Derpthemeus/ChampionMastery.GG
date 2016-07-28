@@ -148,7 +148,8 @@ function getPlayer(req, res) {
         if (req.query.region && regions[req.query.region]) {
             var region = regions[req.query.region];
             requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(req.query.summoner) + "?api_key=" + riotAPIKey, function (players) {
-                var player = players[Object.keys(players)[0]];
+                var standardizedName = Object.keys(players)[0];
+                var player = players[standardizedName];
                 requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
                     var result = {
                         player: {
@@ -175,13 +176,31 @@ function getPlayer(req, res) {
 
                         result.champions.push(info);
                     });
-                    updateHighscores(result, player.id, region);
+                    updateHighscores(result, player.id, region, standardizedName);
                     res.status(200).send(result);
                 }, function (code) {
                     res.status(500).send("Error from Riot's API server (" + code + ")");
                 });
             }, {
                 404: function () {
+                    //TODO standardize preexisting names
+                    var standardizedName = standardizeName(req.query.summoner);
+                    var keys = Object.keys(highscores);
+                    for (var i = 0; i < keys.length; i++) {
+                        var champion = highscores[keys[i]];
+                        for (var j = 0; j < champion.length; j++) {
+                            var score = champion[j];
+                            if (standardizedName === score.standardizedName) {
+                                requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
+                                    var player = players[Object.keys(players)[0]].name;
+                                    res.status(302).send(encodeURIComponent(player));
+                                }, function (code) {
+                                    res.status(500).send("Unknown error: " + code);
+                                });
+                                return;
+                            }
+                        }
+                    }
                     res.status(404).send("Summoner not found. Make sure the name and region are correct.");
                 },
                 0: function (code) {
@@ -196,26 +215,30 @@ function getPlayer(req, res) {
     }
 }
 
-function updateHighscores(data, summonerId, region) {
+function standardizeName(name) {
+    return name.replace(/ /g, "").toLowerCase();
+}
+
+function updateHighscores(data, summonerId, region, standardizedName) {
     var totalPoints = 0;
     foreach(data.champions, function (key, champion) {
-        updateHighscore(data, summonerId, region, champion);
+        updateHighscore(data, summonerId, region, champion, standardizedName);
         totalPoints += champion.points;
     });
 
     updateHighscore(data, summonerId, region, {
         id: -1,
         points: totalPoints
-    });
+    }, standardizedName);
 }
 
-function updateHighscore(data, summonerId, region, champion) {
+function updateHighscore(data, summonerId, region, champion, standardizedName) {
     var championId = champion.id;
     for (var i = 0; i < HSCOUNT.track; i++) {
         if (highscores[championId][i]) {
             if (highscores[championId][i].id !== summonerId) {
                 if (champion.points > highscores[championId][i].points) {
-                    setScore(championId, i, data.player.name, summonerId, region.region, champion.points, false);
+                    setScore(championId, i, data.player.name, summonerId, region.region, champion.points, false, standardizedName);
                     for (var currentPos = i + 1; currentPos < HSCOUNT.track; currentPos++) {
                         if (highscores[championId][currentPos] && highscores[championId][currentPos].id === summonerId) {
                             highscores[championId].splice(currentPos, 1);
@@ -229,24 +252,26 @@ function updateHighscore(data, summonerId, region, champion) {
                     name: data.player.name,
                     id: summonerId,
                     region: region.region,
-                    points: champion.points
+                    points: champion.points,
+                    standardizedName: standardizedName
                 };
                 console.log("Updated highscore for " + championId + " by " + summonerId + " with " + champion.points + " at " + i);
                 break;
             }
         } else {
-            setScore(championId, i, data.player.name, summonerId, region.region, champion.points, true);
+            setScore(championId, i, data.player.name, summonerId, region.region, champion.points, true, standardizedName);
             break;
         }
     }
 }
 
-function setScore(championId, place, name, summonerId, region, points, isNew) {
+function setScore(championId, place, name, summonerId, region, points, isNew, standardizedName) {
     var score = {
         name: name,
         id: summonerId,
         region: region,
-        points: points
+        points: points,
+        standardizedName: standardizedName
     };
     highscores[championId].splice(place, 0, score);
     highscores[championId] = highscores[championId].slice(0, HSCOUNT.track);

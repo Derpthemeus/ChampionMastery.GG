@@ -146,6 +146,9 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
         sortList: [[1, 1], [2, 1]]
     });
 }, {
+    302: function (message) {
+        window.location.href = "/summoner?summoner=" + message + "&region=" + getURLParameter("region");
+    },
     400: function (message) {
         error("Invalid request", message);
     },
