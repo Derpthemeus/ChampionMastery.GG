@@ -66,7 +66,7 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
 
         var progress = document.createElement("td");
         if (champion.level === 7) {
-            progress.appendChild(document.createTextNode("Completed"));
+            progress.appendChild(document.createTextNode("Mastered"));
             progress.dataset.value = 300;
         } else if (champion.level === 5 || champion.level === 6) {
             for (var i = 0; i < tokensNeeded[champion.level]; i++) {
@@ -116,8 +116,14 @@ requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + 
     var tfoot = document.createElement("tfoot");
     var totalsRow = document.createElement("tr");
 
+    var th = document.createElement("th");
+    var a = document.createElement("a");
+    a.appendChild(document.createTextNode(data.champions.length + " champions"));
+    a.href = "/champion?champion=-1";
+    th.appendChild(a);
+    totalsRow.appendChild(th);
+
     [
-        data.champions.length + " champions",
         formatNumber(totalLevel),
         formatNumber(totalPoints),
         totalChests + "/" + data.champions.length,
