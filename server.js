@@ -221,7 +221,7 @@ function standardizeName(name) {
 
 function updateHighscores(data, summonerId, region, standardizedName) {
     var totalPoints = 0;
-    foreach(data.champions, function (key, champion) {
+    forEach(data.champions, function (champion) {
         updateHighscore(data, summonerId, region, champion, standardizedName);
         totalPoints += champion.points;
     });
@@ -317,12 +317,12 @@ function requestJSON(url, success, errors) {
     });
 }
 
-function foreach(obj, func) {
+function forEach(obj, func) {
     var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
         var value = obj[key];
-        func(key, value);
+        func(value, key);
     }
 }
 
@@ -335,7 +335,7 @@ function start() {
         requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
             console.log("Got champion data from DDragon");
             champions = _champions.data;
-            foreach(champions, function (key, champion) {
+            forEach(champions, function (champion, key) {
                 champion.icon = ddragon + "img/champion/" + champion.key + ".png";
                 champions[key] = champion;
             });
@@ -357,14 +357,14 @@ function start() {
                 if (!err) {
                     highscores = json ? JSON.parse(json) : {};
                     console.log("loaded highscore data");
-                    foreach(champions, function (key, champion) {
+                    forEach(champions, function (champion) {
                         if (!highscores[champion.id]) {
                             highscores[champion.id] = [];
                         }
                     });
 
                     //There were some errors earlier, this should fix them. Kept just in case
-                    foreach(highscores, function (key, champion) {
+                    forEach(highscores, function (champion, key) {
                         for (var i = champion.length - 1; i >= 0; i--) {
                             for (var j = 0; j < i; j++) {
                                 //no idea what happened, but I fixed it
