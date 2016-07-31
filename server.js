@@ -183,7 +183,6 @@ function getPlayer(req, res) {
                 });
             }, {
                 404: function () {
-                    //TODO standardize preexisting names
                     var standardizedName = standardizeName(req.query.summoner);
                     var keys = Object.keys(highscores);
                     for (var i = 0; i < keys.length; i++) {
@@ -236,11 +235,11 @@ function updateHighscore(data, summonerId, region, champion, standardizedName) {
     var championId = champion.id;
     for (var i = 0; i < HSCOUNT.track; i++) {
         if (highscores[championId][i]) {
-            if (highscores[championId][i].id !== summonerId) {
+            if (highscores[championId][i].id !== summonerId || highscores[championId][i].region !== region.region) {
                 if (champion.points > highscores[championId][i].points) {
                     setScore(championId, i, data.player.name, summonerId, region.region, champion.points, false, standardizedName);
                     for (var currentPos = i + 1; currentPos < HSCOUNT.track; currentPos++) {
-                        if (highscores[championId][currentPos] && highscores[championId][currentPos].id === summonerId) {
+                        if (highscores[championId][currentPos] && highscores[championId][currentPos].id === summonerId && highscores[championId][i].region === region.region) {
                             highscores[championId].splice(currentPos, 1);
                             break;
                         }
