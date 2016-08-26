@@ -146,66 +146,70 @@ function getChampion(req, res) {
 function getPlayer(req, res) {
     if (req.query.summoner) {
         if (req.query.region && regions[req.query.region]) {
-            var region = regions[req.query.region];
-            requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(req.query.summoner) + "?api_key=" + riotAPIKey, function (players) {
-                var standardizedName = Object.keys(players)[0];
-                var player = players[standardizedName];
-                requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
-                    var result = {
-                        player: {
-                            icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
-                            name: player.name
-                        },
-                        champions: []
-                    };
-                    data.forEach(function (champion) {
-                        var info = {
-                            name: champions[champion.championId].name,
-                            id: champion.championId,
-                            level: champion.championLevel,
-                            points: champion.championPoints,
-                            lastPlayed: champion.lastPlayTime,
-                            chest: champion.chestGranted
+            if (!req.query.summoner.match(/[\!\"\#\$\%\&\'\(\)\*\+\,\-\/\:\;\<\=\>\?\@\[\\\]\^\`\{\|\}\~]/)) {
+                var region = regions[req.query.region];
+                requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(req.query.summoner) + "?api_key=" + riotAPIKey, function (players) {
+                    var standardizedName = Object.keys(players)[0];
+                    var player = players[standardizedName];
+                    requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
+                        var result = {
+                            player: {
+                                icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
+                                name: player.name
+                            },
+                            champions: []
                         };
-                        if (champion.championPointsUntilNextLevel === 0) {
-                            info.tokens = champion.tokensEarned;
-                        } else {
-                            info.pointsSinceLastLevel = champion.championPointsSinceLastLevel;
-                            info.pointsNeeded = champion.championPointsUntilNextLevel;
-                        }
+                        data.forEach(function (champion) {
+                            var info = {
+                                name: champions[champion.championId].name,
+                                id: champion.championId,
+                                level: champion.championLevel,
+                                points: champion.championPoints,
+                                lastPlayed: champion.lastPlayTime,
+                                chest: champion.chestGranted
+                            };
+                            if (champion.championPointsUntilNextLevel === 0) {
+                                info.tokens = champion.tokensEarned;
+                            } else {
+                                info.pointsSinceLastLevel = champion.championPointsSinceLastLevel;
+                                info.pointsNeeded = champion.championPointsUntilNextLevel;
+                            }
 
-                        result.champions.push(info);
+                            result.champions.push(info);
+                        });
+                        updateHighscores(result, player.id, region, standardizedName);
+                        res.status(200).send(result);
+                    }, function (code) {
+                        res.status(500).send("Error from Riot's API server (" + code + ")");
                     });
-                    updateHighscores(result, player.id, region, standardizedName);
-                    res.status(200).send(result);
-                }, function (code) {
-                    res.status(500).send("Error from Riot's API server (" + code + ")");
-                });
-            }, {
-                404: function () {
-                    var standardizedName = standardizeName(req.query.summoner);
-                    var keys = Object.keys(highscores);
-                    for (var i = 0; i < keys.length; i++) {
-                        var champion = highscores[keys[i]];
-                        for (var j = 0; j < champion.length; j++) {
-                            var score = champion[j];
-                            if (standardizedName === score.standardizedName) {
-                                requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
-                                    var player = players[Object.keys(players)[0]].name;
-                                    res.status(302).send(encodeURIComponent(player));
-                                }, function (code) {
-                                    res.status(500).send("Unknown error: " + code);
-                                });
-                                return;
+                }, {
+                    404: function () {
+                        var standardizedName = standardizeName(req.query.summoner);
+                        var keys = Object.keys(highscores);
+                        for (var i = 0; i < keys.length; i++) {
+                            var champion = highscores[keys[i]];
+                            for (var j = 0; j < champion.length; j++) {
+                                var score = champion[j];
+                                if (standardizedName === score.standardizedName) {
+                                    requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
+                                        var player = players[Object.keys(players)[0]].name;
+                                        res.status(302).send(encodeURIComponent(player));
+                                    }, function (code) {
+                                        res.status(500).send("Unknown error: " + code);
+                                    });
+                                    return;
+                                }
                             }
                         }
+                        res.status(404).send("Summoner not found. Make sure the name and region are correct.");
+                    },
+                    0: function (code) {
+                        res.status(500).send("Unknown error: " + code);
                     }
-                    res.status(404).send("Summoner not found. Make sure the name and region are correct.");
-                },
-                0: function (code) {
-                    res.status(500).send("Unknown error: " + code);
-                }
-            });
+                });
+            } else {
+                res.status(400).send("Name contains invalid characters");
+            }
         } else {
             res.status(400).send("Invalid region");
         }
