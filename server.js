@@ -218,6 +218,10 @@ function getPlayer(req, res) {
     }
 }
 
+function downloadData(req, res) {
+    res.status(200).send(highscores);
+}
+
 function standardizeName(name) {
     return name.replace(/ /g, "").toLowerCase();
 }
@@ -385,6 +389,7 @@ function start() {
                     app.all("/getHighscores", getHighscores);
                     app.all("/getChampion", getChampion);
                     app.all("/getPlayer", getPlayer);
+                    app.all("/downloadData", downloadData);
 
                     setInterval(saveHighscores, 60 * 1000);
 

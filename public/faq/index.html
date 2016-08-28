@@ -33,6 +33,14 @@
                 <h3 class="question">Can you extend highscore lists beyond 20 players?</h3>
                 I have no plans to do this. Data becomes too unreliable past the top players for each champion since players with lower scores are less likely to be looked up (they would only be looked up because somebody encountered them in a game whereas top players may be looked up because they are known among the community).
             </div>
+            <div class="col-sm-12 well well-sm">
+                <h3 class="question">Can I have a copy of the highscores list?</h3>
+                You can download a copy of the data <a href="/downloadData">here</a>. Download your own copy, DO NOT use this site as a CDN. You can download a new copy every 24 hours to keep it current.
+                <br>
+                It is in JSON format with champion IDs as keys (-1 for total). Each champion contains the top 25 players' name, summoner ID, region (using region codes from <a href="https://developer.riotgames.com/docs/regional-endpoints">here</a>, points on the champion, and their standardized name (all lowercase, no spaces)
+                <br>
+                Feel free to <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">message me on Reddit</a> if you have any questions
+            </div>
         </div>
     </body>
 </html>
