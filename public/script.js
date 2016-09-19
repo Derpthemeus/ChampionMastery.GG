@@ -6,14 +6,6 @@ function lookup() {
     return false;
 }
 
-function handleKey(e) {
-    e = e || window.event;
-    if (e.keyCode === 13) {
-        document.getElementById("go").click();
-    }
-}
-
-
 function updateSelectedRegion() {
     document.getElementById("region").value = getURLParameter("region") || "NA";
 }
