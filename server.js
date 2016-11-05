@@ -74,7 +74,7 @@ var regions = {
     }
 };
 var express = require("express");
-var URL = require("url");
+var Promise = require("promise");
 var HTTP = require("http");
 var HTTPS = require("https");
 var fs = require("fs");
@@ -148,63 +148,47 @@ function getPlayer(req, res) {
         if (req.query.region && regions[req.query.region]) {
             if (!req.query.summoner.match(/[\!\"\#\$\%\&\'\(\)\*\+\,\-\/\:\;\<\=\>\?\@\[\\\]\^\`\{\|\}\~]/)) {
                 var region = regions[req.query.region];
-                requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(req.query.summoner) + "?api_key=" + riotAPIKey, function (players) {
-                    var standardizedName = Object.keys(players)[0];
-                    var player = players[standardizedName];
-                    requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
-                        var result = {
-                            player: {
-                                icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
-                                name: player.name
-                            },
-                            champions: []
-                        };
-                        data.forEach(function (champion) {
-                            var info = {
-                                name: champions[champion.championId].name,
-                                id: champion.championId,
-                                level: champion.championLevel,
-                                points: champion.championPoints,
-                                lastPlayed: champion.lastPlayTime,
-                                chest: champion.chestGranted
+                getPlayerInfo(req.query.summoner, region).then(function (playerInfo) {
+                    if (!playerInfo.redirect) {
+                        var player = playerInfo.player;
+                        requestJSON(region.host + "/championmastery/location/" + region.platform + "/player/" + player.id + "/champions?api_key=" + riotAPIKey, function (data) {
+                            var result = {
+                                player: {
+                                    icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
+                                    name: player.name
+                                },
+                                champions: []
                             };
-                            if (champion.championPointsUntilNextLevel === 0) {
-                                info.tokens = champion.tokensEarned;
-                            } else {
-                                info.pointsSinceLastLevel = champion.championPointsSinceLastLevel;
-                                info.pointsNeeded = champion.championPointsUntilNextLevel;
-                            }
-
-                            result.champions.push(info);
-                        });
-                        updateHighscores(result, player.id, region, standardizedName);
-                        res.status(200).send(result);
-                    }, function (code) {
-                        res.status(500).send("Error from Riot's API server (" + code + ")");
-                    });
-                }, {
-                    404: function () {
-                        var standardizedName = standardizeName(req.query.summoner);
-                        var keys = Object.keys(highscores);
-                        for (var i = 0; i < keys.length; i++) {
-                            var champion = highscores[keys[i]];
-                            for (var j = 0; j < champion.length; j++) {
-                                var score = champion[j];
-                                if (standardizedName === score.standardizedName) {
-                                    requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
-                                        var player = players[Object.keys(players)[0]].name;
-                                        res.status(302).send(encodeURIComponent(player));
-                                    }, function (code) {
-                                        res.status(500).send("Unknown error: " + code);
-                                    });
-                                    return;
+                            data.forEach(function (champion) {
+                                var info = {
+                                    name: champions[champion.championId].name,
+                                    id: champion.championId,
+                                    level: champion.championLevel,
+                                    points: champion.championPoints,
+                                    lastPlayed: champion.lastPlayTime,
+                                    chest: champion.chestGranted
+                                };
+                                if (champion.championPointsUntilNextLevel === 0) {
+                                    info.tokens = champion.tokensEarned;
+                                } else {
+                                    info.pointsSinceLastLevel = champion.championPointsSinceLastLevel;
+                                    info.pointsNeeded = champion.championPointsUntilNextLevel;
                                 }
-                            }
-                        }
-                        res.status(404).send("Summoner not found. Make sure the name and region are correct.");
-                    },
-                    0: function (code) {
-                        res.status(500).send("Unknown error: " + code);
+
+                                result.champions.push(info);
+                            });
+                            updateHighscores(result, player.id, region, player.standardizedName);
+                            res.status(200).send(result);
+                        }, function (code) {
+                            res.status(500).send("Error from Riot's API server (" + code + ")");
+                        });
+                    } else {
+                        res.status(302).send(encodeURIComponent(playerInfo.redirect));
+                    }
+                }, function (error) {
+                    res.status(error.code).send(error.message);
+                    if (error.details) {
+                        console.error(error.details);
                     }
                 });
             } else {
@@ -224,6 +208,54 @@ function downloadData(req, res) {
 
 function standardizeName(name) {
     return name.replace(/ /g, "").toLowerCase();
+}
+
+function getPlayerInfo(name, region) {
+    return new Promise(function (resolve, reject) {
+        requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(name) + "?api_key=" + riotAPIKey, function (players) {
+            var standardizedName = Object.keys(players)[0];
+            var player = players[standardizedName];
+            player.standardizedName = standardizedName;
+            resolve({
+                player: player
+            });
+        }, {
+            404: function () {
+                var standardizedName = standardizeName(name);
+                var keys = Object.keys(highscores);
+                for (var i = 0; i < keys.length; i++) {
+                    var champion = highscores[keys[i]];
+                    for (var j = 0; j < champion.length; j++) {
+                        var score = champion[j];
+                        if (standardizedName === score.standardizedName) {
+                            requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
+                                var player = players[Object.keys(players)[0]].name;
+                                resolve({redirect: player});
+                            }, function (code) {
+                                reject({
+                                    code: 500,
+                                    message: "Unknown error",
+                                    details: "Error " + code + " while looking up fallback player ID"
+                                });
+                            });
+                            return;
+                        }
+                    }
+                }
+                reject({
+                    code: 404,
+                    message: "Summoner not found. Make sure the name and region are correct."
+                });
+            },
+            0: function (code) {
+                reject({
+                    code: 500,
+                    message: "Unknown error",
+                    details: "Error " + code + " while looking up player ID"
+                });
+            }
+        });
+    });
 }
 
 function updateHighscores(data, summonerId, region, standardizedName) {
