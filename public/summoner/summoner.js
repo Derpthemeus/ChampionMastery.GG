@@ -4,6 +4,22 @@ var tokensNeeded = {
     6: 3
 };
 
+var profileSites = [
+    {
+        name: "op.gg",
+        url: "http://%region%.op.gg/summoner/userName=%name%"
+    },
+    {
+        name: "LolKing",
+        url: "http://lolking.net/summoner/%region%/%id%",
+        unsupportedRegions: ["JP"]
+    },
+    {
+        name: "replay.gg",
+        url: "http://replay.gg/search/%region%/%name%"
+    }
+];
+
 //sorts based on the "data-value" attribute
 $.tablesorter.addParser({
     id: "data-value",
@@ -19,6 +35,24 @@ $.tablesorter.addParser({
 requestJSON("/getPlayer?summoner=" + getURLParameter("summoner") + "&region=" + getURLParameter("region"), function (data) {
     document.getElementById("summonerName").appendChild(document.createTextNode(data.player.name));
     document.getElementById("summonerIcon").src = data.player.icon;
+
+    var links = document.createElement("div");
+    links.className = "text-center";
+    profileSites.forEach(function (site) {
+        if (!site.unsupportedRegions || site.unsupportedRegions.indexOf(data.player.region) === -1) {
+            var link = document.createElement("a");
+            link.className = "profileLink";
+            var url = site.url;
+            url = url.replace(/%name%/g, data.player.name);
+            url = url.replace(/%id%/g, data.player.id);
+            url = url.replace(/%region%/g, data.player.region.toLowerCase());
+            link.href = url;
+            link.appendChild(document.createTextNode(site.name));
+            links.appendChild(link);
+        }
+    });
+    document.getElementById("content").appendChild(links);
+
     var table = document.createElement("table");
     table.id = "table";
     table.className = "table well well-sm";

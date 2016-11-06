@@ -155,7 +155,9 @@ function getPlayer(req, res) {
                             var result = {
                                 player: {
                                     icon: ddragon + "img/profileicon/" + player.profileIconId + ".png",
-                                    name: player.name
+                                    name: player.name,
+                                    id: player.id,
+                                    region: region.region
                                 },
                                 champions: []
                             };

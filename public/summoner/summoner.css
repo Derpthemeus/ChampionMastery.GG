@@ -50,3 +50,8 @@
     background-color: rgb(160,180,230);
     height: 100%;
 }
+
+.profileLink {
+    padding-left: 4px;
+    padding-right: 4px;
+}
