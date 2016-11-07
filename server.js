@@ -229,7 +229,7 @@ function getPlayerInfo(name, region) {
                     var champion = highscores[keys[i]];
                     for (var j = 0; j < champion.length; j++) {
                         var score = champion[j];
-                        if (standardizedName === score.standardizedName) {
+                        if (standardizedName === score.standardizedName && region.region === score.region) {
                             requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id + "?api_key=" + riotAPIKey, function (players) {
                                 var player = players[Object.keys(players)[0]].name;
                                 resolve({redirect: player});
