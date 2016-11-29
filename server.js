@@ -215,12 +215,21 @@ function standardizeName(name) {
 function getPlayerInfo(name, region) {
     return new Promise(function (resolve, reject) {
         requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(name) + "?api_key=" + riotAPIKey, function (players) {
-            var standardizedName = Object.keys(players)[0];
-            var player = players[standardizedName];
-            player.standardizedName = standardizedName;
-            resolve({
-                player: player
-            });
+            //Some regions are returning empty responses with 200 codes instead of 404 codes (https://developer.riotgames.com/discussion/community-discussion/show/BYHLfTld)
+            if (Object.keys(players).length > 0) {
+                var standardizedName = Object.keys(players)[0];
+                var player = players[standardizedName];
+                player.standardizedName = standardizedName;
+                resolve({
+                    player: player
+                });
+            } else {
+                //doesn't check if the name was changed, but it should just be a temporary fix
+                reject({
+                    code: 404,
+                    message: "Summoner not found. Make sure the name and region are correct."
+                });
+            }
         }, {
             404: function () {
                 var standardizedName = standardizeName(name);
