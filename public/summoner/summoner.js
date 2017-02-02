@@ -13,10 +13,6 @@ var profileSites = [
         name: "LolKing",
         url: "http://lolking.net/summoner/%region%/%id%",
         unsupportedRegions: ["JP"]
-    },
-    {
-        name: "replay.gg",
-        url: "http://replay.gg/search/%region%/%name%"
     }
 ];
 
