@@ -215,7 +215,7 @@ function standardizeName(name) {
 function getPlayerInfo(name, region) {
     return new Promise(function (resolve, reject) {
         requestJSON(region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(name) + "?api_key=" + riotAPIKey, function (players) {
-            //Some regions are returning empty responses with 200 codes instead of 404 codes (https://developer.riotgames.com/discussion/community-discussion/show/BYHLfTld)
+            //There was a point where some regions were returning empty responses with 200 codes instead of 404 codes. This check is kept in case that happens again
             if (Object.keys(players).length > 0) {
                 var standardizedName = Object.keys(players)[0];
                 var player = players[standardizedName];
@@ -224,7 +224,7 @@ function getPlayerInfo(name, region) {
                     player: player
                 });
             } else {
-                //doesn't check if the name was changed, but it should just be a temporary fix
+                //doesn't check if the name was changed, but this should never even be reached
                 reject({
                     code: 404,
                     message: "Summoner not found. Make sure the name and region are correct."
@@ -442,7 +442,11 @@ function start() {
                     console.error("CRITICAL ERROR LOADING HIGHSCORE DATA (" + err + ")");
                 }
             });
+        }, function (code) {
+            console.error("CRITICAL ERROR GETTING STATIC CHAMPION DATA (" + code + ")");
         });
+    }, function (code) {
+        console.error("CRITICAL ERROR GETTING DDRAGON VERSION (" + code + ")");
     });
 }
 
