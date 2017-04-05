@@ -21,57 +21,57 @@ var regions = {
     NA: {
         region: "NA",
         platform: "NA1",
-        host: "https://na.api.pvp.net"
+        host: "https://na1.api.riotgames.com"
     },
     BR: {
         region: "BR",
         platform: "BR1",
-        host: "https://br.api.pvp.net"
+        host: "https://br1.api.riotgames.com"
     },
     EUNE: {
         region: "EUNE",
         platform: "EUN1",
-        host: "https://eune.api.pvp.net"
+        host: "https://eun1.api.riotgames.com"
     },
     EUW: {
         region: "EUW",
         platform: "EUW1",
-        host: "https://euw.api.pvp.net"
+        host: "https://euw1.api.riotgames.com"
     },
     KR: {
         region: "KR",
         platform: "KR",
-        host: "https://kr.api.pvp.net"
+        host: "https://kr.api.riotgames.com"
     },
     LAN: {
         region: "LAN",
         platform: "LA1",
-        host: "https://lan.api.pvp.net"
+        host: "https://la1.api.riotgames.com"
     },
     LAS: {
         region: "LAS",
         platform: "LA2",
-        host: "https://las.api.pvp.net"
+        host: "https://la2.api.riotgames.com"
     },
     OCE: {
         region: "OCE",
         platform: "OC1",
-        host: "https://oce.api.pvp.net"
+        host: "https://oc1.api.riotgames.com"
     },
     TR: {
         region: "TR",
         platform: "TR1",
-        host: "https://tr.api.pvp.net"
+        host: "https://tr1.api.riotgames.com"
     },
     RU: {
         region: "RU",
         platform: "RU",
-        host: "https://ru.api.pvp.net"
+        host: "https://ru.api.riotgames.com"
     },
     JP: {
         region: "JP",
         platform: "JP1",
-        host: "https://jp.api.pvp.net"
+        host: "https://jp1.api.riotgames.com"
     }
 };
 var express = require("express");
@@ -214,23 +214,12 @@ function standardizeName(name) {
 
 function getPlayerInfo(name, region) {
     return new Promise(function (resolve, reject) {
-        var request = region.host + "/api/lol/" + region.region + "/v1.4/summoner/by-name/" + encodeURIComponent(name);
-        requestJSON(request + "?api_key=" + riotAPIKey, function (players) {
-            //There was a point where some regions were returning empty responses with 200 codes instead of 404 codes. This check is kept in case that happens again
-            if (Object.keys(players).length > 0) {
-                var standardizedName = Object.keys(players)[0];
-                var player = players[standardizedName];
-                player.standardizedName = standardizedName;
-                resolve({
-                    player: player
-                });
-            } else {
-                //doesn't check if the name was changed, but this should never even be reached
-                reject({
-                    code: 404,
-                    message: "Summoner not found. Make sure the name and region are correct."
-                });
-            }
+        var request = region.host + "/lol/summoner/v3/summoners/by-name/" + encodeURIComponent(name);
+        requestJSON(request + "?api_key=" + riotAPIKey, function (player) {
+            player.standardizedName = standardizeName(player.name);
+            resolve({
+                player: player
+            });
         }, {
             404: function () {
                 var standardizedName = standardizeName(name);
@@ -240,13 +229,12 @@ function getPlayerInfo(name, region) {
                     for (var j = 0; j < champion.length; j++) {
                         var score = champion[j];
                         if (standardizedName === score.standardizedName && region.region === score.region) {
-                            var fallbackRequest = region.host + "/api/lol/" + region.region + "/v1.4/summoner/" + score.id;
-                            requestJSON(fallbackRequest + "?api_key=" + riotAPIKey, function (players) {
-                                var player = players[Object.keys(players)[0]].name;
+                            var fallbackRequest = region.host + "/lol/summoner/v3/summoners/" + score.id;
+                            requestJSON(fallbackRequest + "?api_key=" + riotAPIKey, function (player) {
                                 if (LOG_HIGHSCORE_CHANGES) {
-                                    console.log("Player %d on %s has had their name updated from '%s' to '%s'", score.id, score.region, score.name, player);
+                                    console.log("Player %d on %s has had their name updated from '%s' to '%s'", score.id, score.region, score.name, player.name);
                                 }
-                                resolve({redirect: player});
+                                resolve({redirect: player.name});
                             }, {
                                 404: function () {
                                     console.error("Unable to find fallback summoner for ID %d on %s (previously known as %s)", score.id, score.region, score.name);
@@ -400,11 +388,11 @@ function forEach(obj, func) {
 
 function start() {
     console.log("starting...");
-    requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
+    requestJSON("https://global.api.riotgames.com/api/lol/static-data/na/v1.2/versions?api_key=" + riotAPIKey, function (versions) {
         var version = versions[0];
         console.log("Got DDragon version");
         ddragon = "https://ddragon.leagueoflegends.com/cdn/" + version + "/";
-        requestJSON("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
+        requestJSON("https://global.api.riotgames.com/api/lol/static-data/na/v1.2/champion?dataById=true&api_key=" + riotAPIKey, function (_champions) {
             console.log("Got champion data from DDragon");
             champions = _champions.data;
             forEach(champions, function (champion, key) {
