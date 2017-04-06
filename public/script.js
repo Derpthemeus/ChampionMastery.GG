@@ -22,6 +22,16 @@ window.addEventListener("load", function () {
             });
             updateSelectedRegion();
         });
+        requestJSON("/getAnnouncement", function (announcement) {
+            if (announcement.message) {
+                var announcementBody = document.getElementById("announcementBody");
+                announcementBody.appendChild(document.createTextNode(announcement.message));
+                if (announcement.link) {
+                    announcementBody.href = announcement.link;
+                }
+                document.getElementById("announcement").hidden = false;
+            }
+        });
     });
 
     jQuery.get("/footer.html", function (data) {

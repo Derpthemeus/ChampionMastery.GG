@@ -9,6 +9,10 @@ try {
 var riotAPIKey = process.env.RIOT_API_KEY || secrets.riotApiKey;
 var highscoreDataPath = (process.env.OPENSHIFT_DATA_DIR || "") + "highscoreData.json";
 var LOG_HIGHSCORE_CHANGES = (process.env.LOG_HIGHSCORE_CHANGES === undefined) ? true : (process.env.LOG_HIGHSCORE_CHANGES === "true");
+var ANNOUNCEMENT = {
+    message: process.env.ANNOUNCEMENT_MESSAGE,
+    link: process.env.ANNOUNCEMENT_LINK
+};
 var champions;
 var championIds;
 var highscores = {};
@@ -202,6 +206,10 @@ function getPlayer(req, res) {
     } else {
         res.status(400).send("Player not specified");
     }
+}
+
+function getAnnouncement(req, res) {
+    res.status(200).send(ANNOUNCEMENT);
 }
 
 function downloadData(req, res) {
@@ -443,6 +451,7 @@ function start() {
                     app.all("/getChampion", getChampion);
                     app.all("/getPlayer", getPlayer);
                     app.all("/downloadData", downloadData);
+                    app.all("/getAnnouncement", getAnnouncement);
 
                     setInterval(saveHighscores, 60 * 1000);
 
