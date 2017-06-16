@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noEmitOnError": true,
+		"outDir": "js/",
+		"sourceMap": true,
+		"skipLibCheck": true
+	},
+	"include": [
+		"ts/**/*"
+	]
+}

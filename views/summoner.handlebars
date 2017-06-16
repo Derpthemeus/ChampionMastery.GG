@@ -1,0 +1,90 @@
+{{#extend "layout"}}
+	{{#content "title"}}
+		{{summoner.name}} ({{summoner.region}}) - ChampionMasteryLookup
+	{{/content}}
+
+	{{#content "css"}}
+		<link rel="stylesheet" type="text/css" href="/css/summoner.css">
+	{{/content}}
+
+	{{#content "scripts"}}
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.12/js/jquery.tablesorter.min.js"></script>
+		<script src="/js/summoner.js"></script>
+	{{/content}}
+
+
+	{{#content "body"}}
+		<div class="col-sm-10 col-sm-offset-1">
+			<div class="text-center">
+				<h1>
+					<img src="{{summoner.icon}}" id="summonerIcon">
+					<span>{{summoner.name}} ({{summoner.region}})</span>
+				</h1>
+				<a class="profileLink" href="https://{{summoner.region}}.op.gg/summoner/userName={{encodeURI summoner.name}}">op.gg</a>
+				<a class="profileLink" href="http://lolking.net/summoner/{{lowercase summoner.region}}/{{summoner.id}}">LolKing</a>
+				<a class="profileLink" href="https://stats.mobalytics.gg/profile/{{lowercase summoner.region}}/{{encodeURI summoner.name}}/">Mobalytics</a>
+				<div>Information will only update once every 10 minutes.</div>
+			</div>
+			<table id="table" class="table well well-sm">
+				<thead>
+					<tr>
+						{{>headerColumn name="Champion"}}
+						{{>headerColumn name="Level"}}
+						{{>headerColumn name="Points"}}
+						{{>headerColumn name="Chest Earned"}}
+						{{>headerColumn name="Last Played"}}
+						{{>headerColumn name="Progress"}}
+					</tr>
+				</thead>
+				<tbody>
+					{{#each champions}}
+						<tr>
+							<td>
+								<a href="/champion?champion={{this.championId}}">{{this.championName}}</a>
+								<td>{{this.championLevel}}</td>
+								<td data-format-number="{{this.championPoints}}" data-value="{{this.championPoints}}">{{this.championPoints}}</td>
+								<td data-value="{{#if this.chestGranted}}1{{else}}0{{/if}}">
+									<img src="/img/chest.png" class="chest{{#unless this.chestGranted}} notEarned{{/unless}}">
+								</td>
+								<td class="lastPlayed" data-format-time="{{this.lastPlayTime}}" data-value="{{this.lastPlayTime}}" data-toggle="tooltip"></td>
+								<td data-value="{{this.sortingValue}}" data-tooltip="tooltip" title="{{this.tooltip}}">
+									{{#eq this.championLevel 7}}
+										Mastered
+									{{else}}
+										{{#gte this.championLevel 5}}
+											{{{getTokens}}}
+										{{else}}
+											<div class="progressBar-outer">
+												{{! sortingValue is the percentage to next level when champion level is <5}}
+												<div class="progressBar-inner" style="width: {{this.sortingValue}}%"></div>
+											</div>
+										{{/gte}}
+									{{/eq}}
+								</td>
+							</td>
+						</tr>
+					{{/each}}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td><a href="/champion?champion=-1">{{totals.champions}} champions</a></td>
+						<td data-format-number="{{totals.level}}">{{totals.level}}</td>
+						<td data-format-number="{{totals.points}}">{{totals.points}}</td>
+						<td>{{totals.chests}}/{{totals.champions}}</td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	{{/content}}
+{{/extend}}
+
+
+{{#*inline "headerColumn"}}
+	<th>
+		{{name}}
+		<span>{{! the icon used for sorting goes in this column}}</span>
+	</th>
+{{/inline}}

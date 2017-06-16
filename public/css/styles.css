@@ -1,0 +1,21 @@
+#region {
+	width: auto;
+}
+
+body {
+	padding-top: 55px;
+}
+
+#navbarLogo {
+	padding-top: 6px;
+}
+
+#footer {
+	padding-top: 60px;
+	padding-bottom: 10px;
+}
+
+#footer span {
+	padding-left: 7px;
+	padding-right: 7px;
+}

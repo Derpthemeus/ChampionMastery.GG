@@ -1,0 +1,73 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="google-site-verification" content="alkAXvVRRlUYhxyDLGOky7uTxdjil4P3n86Ax4Jbpsg">
+	<title>{{#block "title"}}ChampionMasteryLookup{{/block}}</title>
+	<link rel="shortcut icon" href="/img/logo-icon.png">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	{{{block "css"}}}
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/js/script.js"></script>
+	<script>
+		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+		ga('create', 'UA-72665536-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+	<script async src="https://www.google-analytics.com/analytics.js"></script>
+	{{{block "scripts"}}}
+</head>
+
+<body class="col-sm-12">
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<button type="button" data-toggle="collapse" data-target="#navbar-collapsible" class="navbar-toggle">
+				<span class="glyphicon glyphicon-menu-down"></span>
+		</button>
+		<div class="container">
+			<div id="navbarLogo" class="navbar-header center-block">
+				<a href="/">
+					<img src="/img/logo-header.png" alt="ChampionMasteryLookup">
+				</a>
+			</div>
+			<div id="navbar-collapsible" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="/highscores">Highscores</a></li>
+					<li><a href="/faq">FAQ</a></li>
+					<li><a href="https://github.com/Derpthemeus/ChampionMasteryLookup">GitHub</a></li>
+				</ul>
+				<form action="/summoner" class="navbar-form navbar-right">
+					<div class="form-group">
+						<input type="text" name="summoner" placeholder="Summoner name" class="form-control">
+						<select id="region" class="selectpicker form-control" name="region">
+							{{#each regions}}
+								<option value="{{this}}">{{this}}</option>
+							{{/each}}
+						</select>
+						<button type="submit" class="btn btn-default">Lookup</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	{{#if announcement.message}}
+		<div class="alert alert-info">
+			{{#if announcement.link}}
+				<a href="{{announcement.link}}">{{announcement.message}}</a>
+			{{else}}
+				{{announcement.message}}
+			{{/if}}
+		</div>
+	{{/if}}
+
+	{{{block "body"}}}
+
+	<div id="footer" class="col-sm-12 text-center">
+		<span><a href="https://www.paypal.me/MOslan">Donate</a></span>
+		<span><a href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me</a> (please read <a href="/faq">the FAQ</a> first)</span>
+		<span><a href="/legal">Legal info</a></span>
+	</div>
+</body>
+</html>

@@ -1,5 +1,6 @@
-/nbproject/
 /node_modules/
-/notes.txt
-/secrets.js
+/npm-debug.log
+/.vscode/
+/private/
+/js/
 /highscoreData.json

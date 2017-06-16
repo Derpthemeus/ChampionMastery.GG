@@ -1,30 +1,25 @@
 # ChampionMasteryLookup
-This is the source code for [ChampionMasteryLookup](http://championmasterylookup.derpthemeus.com)
 
+You can find a live version at <http://championmasterylookup.derpthemeus.com/>
 
+## Setup
 
-# Setup
-This section is if you want to host your own version of the website. If you just want to use it, check out the [live version](http://championmasterylookup.derpthemeus.com)
+Prerequisites: Node.js, NPM, Git
 
-The live website is hosted on [OpenShift](https://www.openshift.com/), so if you want to host your own site thats the easiest way to do it.
-It uses the Node.js 0.10 cartridge and requires the RIOT_API_KEY environment variable to be set to a Riot API key. If you don't have a key, you can easily get one from the [Riot developer website](https://developer.riotgames.com/).
+* Clone the project:
+  ```bash
+  git clone https://github.com/Derpthemeus/ChampionMasteryLookup.git
+  cd ChampionMasteryLookup
+  ```
+* Install Node dependencies with `npm install`.
+* Setup environmental variables and/or change `Config.ts`. The default `Config.ts` expects the environmental variable `RIOT_API_KEY` to be set to a [Riot Games API](https://developer.riotgames.com/) key. This is the only thing that needs to be set to run the server, but you may also want to change other options.
+* Compile the TypeScript with `npm run compile`. Make sure you run this before starting the server each time you make changes.
+* Start the server with `npm start`.
 
+## Notes
 
+* The technologies that this project uses may change even if the current technologies work fine. I sometimes use this project as a way for me to learn/practice new technologies.
+* If you have an idea for a pull request, please [create an issue](https://github.com/Derpthemeus/ChampionMasteryLookup/issues/new) so we can discuss it first. I don't want you to waste your time creating a feature that I don't want to add for some reason.
 
-# Notes
-The code has very few comments and my be hard to understand. I don't have much experience working with Javascript, so I'm sure there are plenty of amateur mistakes.
-Feel free to make a pull request or open an issue if you want to add or improve anything.
-
-Also, I don't like documenting stuff, so there isn't much info in this README
-
-# License
-Licensed under the "Do whatever you want as long as you're not a dick license".
-Everything I know about Javascript I learned from the internet and playing around with other peoples' code. I want everyone to have the same opportunity I did, so feel free to modify the code as much as you want and host your own version of the website as long as you're not a dick. Examples of dickish behavior include:
-
-* Claiming content made by others to be your own
-* Taking advantage of exploits you find
-* Destroying the world
-
-
-#
+---
 ChampionMasteryLookup isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.

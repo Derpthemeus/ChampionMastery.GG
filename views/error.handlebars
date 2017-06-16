@@ -1,0 +1,12 @@
+{{#extend "layout"}}
+	{{#content "title"}}Error - ChampionMasteryLookup{{/content}}
+	{{#content "body"}}
+		<div class="text-center">
+			<h1>An error has occurred</h1>
+			<h3>{{error.error}}</h3>
+			{{#if error.details}}
+				{{error.details}}
+			{{/if}}
+		</div>
+	{{/content}}
+{{/extend}}

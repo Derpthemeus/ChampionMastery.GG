@@ -1,13 +1,41 @@
 {
-    "name": "ChampionMasteryLookup",
-    "engines": {
-        "node": ">= 0.6.0",
-        "npm": ">= 1.0.0"
-    },
-    "dependencies": {
-        "express": "^4.14.0",
-        "promise": "^7.1.1"
-    },
-    "private": true,
-    "main": "server.js"
+	"name": "championmasterylookup",
+	"version": "1.0.0",
+	"author": "Derpthemeus",
+	"license": "MIT",
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Derpthemeus/ChampionMasteryLookup.git"
+	},
+	"dependencies": {
+		"@types/express": "4.0.35",
+		"@types/express-handlebars": "0.0.29",
+		"@types/handlebars": "4.0.32",
+		"@types/node": "7.0.22",
+		"@types/node-cache": "3.0.31",
+		"@types/xregexp": "3.0.28",
+		"express": "4.15.3",
+		"express-handlebars": "3.0.0",
+		"handlebars": "4.0.10",
+		"handlebars-helpers": "0.8.2",
+		"handlebars-layouts": "3.1.4",
+		"node-cache": "4.1.1",
+		"rimraf": "2.6.1",
+		"typescript": "2.3.3",
+		"xregexp": "3.2.0"
+	},
+	"devDependencies": {
+		"tslint": "5.4.3"
+	},
+	"main": "js/server.js",
+	"scripts": {
+		"start": "node js/server.js",
+		"clean": "rimraf js/",
+		"compile": "tsc",
+		"precompile": "npm run clean",
+		"lint": "npm run lint:ts && npm run lint:js",
+		"lint:ts": "tslint --force --type-check --project ./tsconfig.json",
+		"lint:js": "tslint --force ./public/js/**/*.js"
+	}
 }

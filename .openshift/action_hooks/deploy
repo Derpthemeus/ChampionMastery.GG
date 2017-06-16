@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#  Source utility functions.
+source "$OPENSHIFT_REPO_DIR/.openshift/lib/utils"
+
+
+#  On slave/serving gears, need to do the install as part of deploy
+#  so check if its needed. Just ensure the custom Node[.js] version is
+#  installed.
+ensure_node_is_installed
+

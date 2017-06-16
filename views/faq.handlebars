@@ -1,0 +1,49 @@
+{{#extend "layout"}}
+
+	{{#content "css"}}
+		<link rel="stylesheet" type="text/css" href="/css/faq.css">
+	{{/content}}
+
+	{{#content "title"}}FAQ - ChampionMasteryLookup{{/content}}
+
+	{{#content "body"}}
+		<h1 class="text-center">Frequently Asked Questions</h1>
+		<div class="col-sm-10 col-sm-offset-1">
+			{{#>question question="Somebody is missing from the highscores list"}}
+				Players must be looked up on the site to appear on the highscores.
+				Look them up (using the search box in the top right) and they will be added to the list.
+			{{/question}}
+			{{#>question question="When I click a player on the highscores list it says they weren't found or it brings me to the wrong player"}}
+				<b>If their mastery data is slightly outdated:</b> champion mastery info is cached for 10 minutes. Try refreshing the page in a few minutes to update it.
+				<br>
+				<b>If a link brought you to a player with a different name, but they have the correct mastery data:</b> the player changed their name and you have been automatically redirected.
+				<br>
+				<b>If the mastery data is completely incorrect:</b> this can happen in certain rare situations. <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me on Reddit</a> or <a href="https://github.com/Derpthemeus/ChampionMasteryLookup/issues">create an issue on GitHub</a> and I will fix it manually.
+			{{/question}}
+			{{#>question question="Can you add a separate highscores list for each region?"}}
+				I have no plans to do this. The regional distribution of players looked up on the site is very different from the distribution of players from each region.
+				Data for certain regions (especially ones where English is not the primary language) would not be very accurate.
+			{{/question}}
+			{{#>question question="Can you show everybody on the highscores (instead of just the top 20 players)?"}}
+				I have no plans to do this.
+				Data becomes too unreliable beyond the top handful of players for each champion.
+				Players with lower scores are less likely to be looked up (top players are often looked up by people who have heard of them due to their dedication to a single champion), so the list would not accurately represent all players.
+			{{/question}}
+			{{#>question question="Do you have an API for the highscores list?"}}
+				You can download a copy of the data <a href="/downloadData"> here</a>. Please download and cache your own copy of the data to avoid putting unnecessary strain on the server.
+				<br>
+				The data is a JSON object with <a href="https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList">champion IDs</a> as keys ("-1" for total points).
+				Each champion contains the summoner name, <a href="https://developer.riotgames.com/api-methods/#summoner-v3/GET_getBySummonerId">summoner ID</a>, <a href="https://developer.riotgames.com/regional-endpoints.html">region</a>, points on the champion, and standardized name (all lowercase, spaces removed) for each of the top 30 players.
+				<br>
+				Feel free to <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">message me on Reddit</a> or <a href="https://github.com/Derpthemeus/ChampionMasteryLookup/issues">create an issue on GitHub</a> if you have any questions
+			{{/question}}
+		</div>
+	{{/content}}
+{{/extend}}
+
+{{#*inline "question"}}
+	<div class="col-sm-12 well well-sm">
+		<h3 class="question">{{question}}</h3>
+		{{{@partial-block}}}
+	</div>
+{{/inline}}
