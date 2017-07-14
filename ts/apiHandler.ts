@@ -7,6 +7,10 @@ import http = require("http");
 import https = require("https");
 import Config from "./Config";
 
+/** The default region to use when downloading static data */
+const DEFAULT_STATIC_DATA_REGION_ID: string = "NA";
+/** The region to download static data from if there is an error when using the default region */
+const FALLBACK_STATIC_DATA_REGION_ID: string = "EUW";
 
 const APP_RATE_LIMIT = new RateLimit("application", Config.rateLimits.application);
 const METHOD_RATE_LIMITS = {
@@ -222,12 +226,12 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 
 /**
  * Gets a list of champions and the latest DDragon version from the static data API.
- * @param region (Optional) the region to get static data from. Defaults to NA
+ * @param region (Optional) the region to get static data from. Defaults to DEFAULT_STATIC_DATA_REGION_ID.
  * @async
  * @returns A ChampionList containing all champions and the latest DDragon version
  * @throws {Error} Thrown if an error occurs when retrieving or parsing static data from both the default region and the fallback region.
  */
-export async function getChampions(region: Region = REGIONS.get("NA")): Promise<ChampionList> {
+export async function getChampions(region: Region = REGIONS.get(DEFAULT_STATIC_DATA_REGION_ID)): Promise<ChampionList> {
 	try {
 		const body: string = await makeAPIRequest(null, region, "/lol/static-data/v3/champions", "tags=image&dataById=true");
 		const championList: ChampionList = JSON.parse(body);
@@ -236,9 +240,9 @@ export async function getChampions(region: Region = REGIONS.get("NA")): Promise<
 		if (ex instanceof APIError) {
 			logApiError(ex);
 		}
-		if (region.id === "NA") {
-			console.log("Could not access static data, attempting to access backup region");
-			return getChampions(REGIONS.get("EUW"));
+		if (region.id !== FALLBACK_STATIC_DATA_REGION_ID) {
+			console.log(`Could not access static data from ${region.id}, attempting to access static data from ${FALLBACK_STATIC_DATA_REGION_ID}`);
+			return getChampions(REGIONS.get(FALLBACK_STATIC_DATA_REGION_ID));
 		} else {
 			throw ex;
 		}
