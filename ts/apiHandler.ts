@@ -222,20 +222,26 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 
 /**
  * Gets a list of champions and the latest DDragon version from the static data API.
+ * @param region (Optional) the region to get static data from. Defaults to NA
  * @async
  * @returns A ChampionList containing all champions and the latest DDragon version
- * @throws {APIError} Thrown if an API error occurs
+ * @throws {Error} Thrown if an error occurs when retrieving or parsing static data from both the default region and the fallback region.
  */
-export async function getChampions(): Promise<ChampionList> {
+export async function getChampions(region: Region = REGIONS.get("NA")): Promise<ChampionList> {
 	try {
-		const body: string = await makeAPIRequest(null, REGIONS.get("NA"), "/lol/static-data/v3/champions", "tags=image&dataById=true");
+		const body: string = await makeAPIRequest(null, region, "/lol/static-data/v3/champions", "tags=image&dataById=true");
 		const championList: ChampionList = JSON.parse(body);
 		return championList;
 	} catch (ex) {
 		if (ex instanceof APIError) {
 			logApiError(ex);
 		}
-		throw ex;
+		if (region.id === "NA") {
+			console.log("Could not access static data, attempting to access backup region");
+			return getChampions(REGIONS.get("EUW"));
+		} else {
+			throw ex;
+		}
 	}
 }
 
