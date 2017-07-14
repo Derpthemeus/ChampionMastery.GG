@@ -18,8 +18,8 @@
 		<div class="col-sm-10 col-sm-offset-1">
 			<div class="text-center">
 				<h1>
-					<img src="{{summoner.icon}}" id="summonerIcon">
-					<span>{{summoner.name}} ({{summoner.region}})</span>
+					<img src="/img/profileIcons/{{summoner.icon}}.png" id="summonerIcon">
+					<span id="summonerName">{{summoner.name}} ({{summoner.region}})</span>
 				</h1>
 				<a class="profileLink" href="https://{{summoner.region}}.op.gg/summoner/userName={{encodeURI summoner.name}}">op.gg</a>
 				<a class="profileLink" href="http://lolking.net/summoner/{{lowercase summoner.region}}/{{summoner.id}}">LolKing</a>

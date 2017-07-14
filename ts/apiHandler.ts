@@ -227,9 +227,16 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
  * @throws {APIError} Thrown if an API error occurs
  */
 export async function getChampions(): Promise<ChampionList> {
-	const body: string = await makeAPIRequest(null, REGIONS.get("NA"), "/lol/static-data/v3/champions", "tags=image&dataById=true");
-	const championList: ChampionList = JSON.parse(body);
-	return championList;
+	try {
+		const body: string = await makeAPIRequest(null, REGIONS.get("NA"), "/lol/static-data/v3/champions", "tags=image&dataById=true");
+		const championList: ChampionList = JSON.parse(body);
+		return championList;
+	} catch (ex) {
+		if (ex instanceof APIError) {
+			logApiError(ex);
+		}
+		throw ex;
+	}
 }
 
 /**

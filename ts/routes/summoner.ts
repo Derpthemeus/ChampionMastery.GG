@@ -1,6 +1,6 @@
 import {Champion, ChampionMasteryInfo, Region, Summoner} from "../types";
 import * as apiHandler from "../apiHandler";
-import {CHAMPIONS, COMMON_DATA, ddragonUrl, getSummoner, highscores, REGIONS, renderError} from "../server";
+import {CHAMPIONS, COMMON_DATA, getSummoner, highscores, REGIONS, renderError} from "../server";
 import {RateLimitError} from "../RateLimit";
 import express = require("express");
 import XRegExp = require("xregexp");
@@ -72,7 +72,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 							res.status(200).render("summoner", {
 								...COMMON_DATA,
 								summoner: {
-									icon: `${ddragonUrl}img/profileicon/${summoner.profileIconId}.png`,
+									icon: summoner.profileIconId,
 									name: summoner.name,
 									id: summoner.id,
 									region: region.id

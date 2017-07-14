@@ -17,20 +17,23 @@ export interface Summoner extends BasicSummonerInfo {
 }
 
 /**
- * A response from https://developer.riotgames.com/api-methods/#static-data-v3/GET_getChampionList
+ * A response from https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList
  */
 export interface ChampionList {
 	data: {
-		[id: string]: {
-			image: {
-				/** The file name of the icon (e.g. "Annie.png") */
-				full: string
-			},
-			id: number,
-			name: string
-		}
+		[id: string]: ChampionListEntry
 	};
 	version: string;
+}
+
+/**
+ * An entry for a single champion from https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList
+ */
+export interface ChampionListEntry extends Champion {
+	image: {
+		/** The filename of the icon (e.g. "Annie.png") */
+		full: string
+	};
 }
 
 /**
@@ -76,7 +79,7 @@ export interface RateLimitsConfig {
 export interface Champion {
 	id: number;
 	name: string;
-	/** The full icon path (e.g. https://ddragon.leagueoflegends.com/cdn/7.10.1/img/champion/Annie.png) */
+	/** The filename of the icon (e.g. "Annie.png") */
 	icon: string;
 }
 
