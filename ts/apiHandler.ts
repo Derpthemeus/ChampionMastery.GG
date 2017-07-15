@@ -3,9 +3,9 @@ import CacheHandler from "./CacheHandler";
 import {ChampionList, ChampionMasteryInfo, Region, Summoner} from "./types";
 import RateLimit from "./RateLimit";
 import {RateLimitError} from "./RateLimit";
+import Config from "./Config";
 import http = require("http");
 import https = require("https");
-import Config from "./Config";
 
 /** The default region to use when downloading static data */
 const DEFAULT_STATIC_DATA_REGION_ID: string = "NA";
@@ -93,10 +93,8 @@ export function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: st
 											if (intervalLimit && intervalLimit.maxRequests < headerLimit.usedRequests) {
 												intervalLimit.remainingRequests = 0;
 												intervalLimit.resetTimer.reschedule(retryAfter);
-												/*
-												Even if multiple IntervalLimit's were exceeded, only 1 needs to be updated
-												(the entire RateLimit is considered exceeded if 1 IntervalLimit is exceeded)
-												*/
+												/* Even if multiple IntervalLimit's were exceeded, only 1 needs to be updated
+												(the entire RateLimit is considered exceeded if 1 IntervalLimit is exceeded) */
 												break;
 											}
 										}
@@ -146,7 +144,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 	}
 	try {
 		// A cache hit (on both summoner ID and summoner info) would have already resulted in this function returning by now
-		const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `/lol/summoner/v3/summoners/by-name/${encodeURIComponent(standardizedName)}`);
+		const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(standardizedName)}`);
 		const summoner: Summoner = JSON.parse(body);
 		summoner.standardizedName = standardizedName;
 		cacheHandler.store(cacheHandler.makeSummonerKey(region, summoner.id), summoner, Config.cacheDurations.summoner);
@@ -178,7 +176,7 @@ export async function getSummonerById(region: Region, summonerId: number): Promi
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `/lol/summoner/v3/summoners/${summonerId}`);
+			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `lol/summoner/v3/summoners/${summonerId}`);
 			const summoner: Summoner = JSON.parse(body);
 			summoner.standardizedName = standardizeName(summoner.name);
 			cacheHandler.store(key, summoner, Config.cacheDurations.summoner);
@@ -210,7 +208,7 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.championMastery], region, `/lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`);
+			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.championMastery], region, `lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`);
 			const masteries: ChampionMasteryInfo[] = JSON.parse(body);
 			cacheHandler.store(key, masteries, Config.cacheDurations.championMastery);
 			return masteries;
@@ -233,7 +231,7 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
  */
 export async function getChampions(region: Region = REGIONS.get(DEFAULT_STATIC_DATA_REGION_ID)): Promise<ChampionList> {
 	try {
-		const body: string = await makeAPIRequest(null, region, "/lol/static-data/v3/champions", "tags=image&dataById=true");
+		const body: string = await makeAPIRequest(null, region, "lol/static-data/v3/champions", "tags=image&dataById=true");
 		const championList: ChampionList = JSON.parse(body);
 		return championList;
 	} catch (ex) {

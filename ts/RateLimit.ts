@@ -105,10 +105,8 @@ class ResetTimer {
 	 */
 	private reset = (): void => {
 		this.intervalLimit.remainingRequests = this.intervalLimit.maxRequests;
-		/*
-		The target reset time may be less than 'interval' seconds away (since setTimeout may take longer than the specified time to execute its callback)
-		The next reset time is recalculated every interval to prevent the time from drifting too far
-		*/
+		/* The target reset time may be less than 'interval' seconds away (since setTimeout may take longer than the specified time to execute its callback)
+		The next reset time is recalculated every interval to prevent the time from drifting too far */
 		const now: number = Date.now();
 		const delay: number = (this.intervalLimit.interval * 1000) - (now - this.targetTime);
 		this.targetTime = now + delay;

@@ -11,8 +11,8 @@ export default class Config {
 		application: [
 			// Default development key limits
 			/*
-			{interval: 10, maxRequests: 10},
-			{interval: 600, maxRequests: 500}
+			{interval: 1, maxRequests: 20},
+			{interval: 120, maxRequests: 100}
 			*/
 
 			// Default production key limits

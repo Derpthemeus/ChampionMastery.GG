@@ -6,7 +6,7 @@ import express = require("express");
 import XRegExp = require("xregexp");
 import handlebars = require("handlebars");
 
-/** A RegEx to match valid summoner names (from https://developer.riotgames.com/getting-started.html) */
+/** A regex to match valid summoner names (from https://developer.riotgames.com/getting-started.html) */
 const SUMMONER_NAME_REGEX = XRegExp("^[0-9\\p{L} _\\.]+$");
 /** How many tokens are needed to continue from a level (the key) to the next */
 const TOKENS_NEEDED = new Map([[5, 2], [6, 3]]);
