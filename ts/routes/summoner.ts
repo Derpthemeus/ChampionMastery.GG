@@ -12,8 +12,8 @@ const SUMMONER_NAME_REGEX = XRegExp("^[0-9\\p{L} _\\.]+$");
 const TOKENS_NEEDED = new Map([[5, 2], [6, 3]]);
 
 export async function renderSummoner(req: express.Request, res: express.Response): Promise<void> {
-	if (req.query.summoner) {
-		if (req.query.region) {
+	if (req.query.summoner && typeof req.query.summoner === "string") {
+		if (req.query.region && typeof req.query.region === "string") {
 			const region: Region = REGIONS.get(req.query.region.toUpperCase());
 			if (region) {
 				if (SUMMONER_NAME_REGEX.test(req.query.summoner)) {
