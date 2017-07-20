@@ -254,19 +254,28 @@ async function start(): Promise<void> {
 	console.log("Loaded highscore data");
 
 	try {
+		await apiHandler.updateRateLimits();
+	} catch (ex) {
+		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR DETERMINING RATE LIMITS")));
+		process.exit(1);
+	}
+
+	try {
 		await updateStaticData();
 	} catch (ex) {
 		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR UPDATING STATIC DATA")));
 		process.exit(1);
 	}
 
-	// Schedule static data updater
-	setInterval(async () => {
-		try {
-			await updateStaticData();
-		} catch (ex) {
+	// Schedule static data and rate limit updater
+	setInterval(() => {
+		updateStaticData().catch((ex) => {
 			console.error(VError.fullStack(new VError(ex, "Error updating static data (will continue using older version)")));
-		}
+		});
+
+		apiHandler.updateRateLimits().catch((ex) => {
+			console.error(VError.fullStack(new VError(ex, "Error updating rate limits (will continue using older limits)")));
+		});
 	}, Config.staticDataUpdateInterval * 1000 * 60);
 
 	layouts.register(handlebars);

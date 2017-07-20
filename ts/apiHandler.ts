@@ -1,43 +1,46 @@
 import {REGIONS, standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
-import {ChampionList, ChampionMasteryInfo, Region, Summoner} from "./types";
+import {ChampionList, ChampionMasteryInfo, IntervalLimitInfo, Region, Summoner} from "./types";
 import RateLimit from "./RateLimit";
 import {RateLimitError} from "./RateLimit";
 import Config from "./Config";
 import http = require("http");
 import https = require("https");
+import VError = require("VError");
 
-/** The default region to use when downloading static data */
-const DEFAULT_STATIC_DATA_REGION_ID: string = "NA";
-/** The region to download static data from if there is an error when using the default region */
-const FALLBACK_STATIC_DATA_REGION_ID: string = "EUW";
-
-const APP_RATE_LIMIT = new RateLimit("application", Config.rateLimits.application);
-const METHOD_RATE_LIMITS = {
-	summoner: new RateLimit("method", Config.rateLimits.method.summoner),
-	championMastery: new RateLimit("method", Config.rateLimits.method.championMastery)
+// Rate limits are initialized without any interval limits. Interval limits will be set once updateRateLimits() is called
+const RATE_LIMITS = {
+	application: new RateLimit("app", []),
+	summonerBySummonerId: new RateLimit("method", []),
+	summonerByName: new RateLimit("method", []),
+	championMasteries: new RateLimit("method", [])
 };
-const cacheHandler = new CacheHandler();
+const cacheHandler: CacheHandler = new CacheHandler();
 
 /**
  * Makes a call to the API (doesn't check cache) and returns the raw body
- * @param rateLimits An array of RateLimits that must each have remaining requests for the API call to be made.
- *  Each rate limit will each have 1 request marked as used before the API request is made.
- * 	May be a falsy value if the endpoint doesn't use any rate limits.
- * 	If any of the rate limits do not have a request available, a RateLimitError will be thrown.
+ * @param rateLimits An array of RateLimits that must each have remaining requests for the API call to be made. If any of the rate limits do not have
+ * a request available, a RateLimitError will be thrown. If there are enough requests remaining for this request to be made, each rate limit will
+ * have 1 request marked as used before the API request is made.
+ *  If this is set to a falsy value, no rate limits will be checked/updated.
+ *  If 'updateRateLimits' is set to true, these rate limits will be updated based on response headers instead of being used to check if there are
+ * enough requests available
  * @param region The region the request should be made to
  * @param path The path of the API request URL, relative to "https://*.api.riotgames.com/"
  * @param query The query of the API request URL, without "?" (e.g. "foo=bar&a=b"). May be a falsy value if no query is needed.
  * 	The "api_key" parameter should not be included (it will be automatically added)
+ * @param updateRateLimits If set to true, the response headers will be used to update rate limit information (rate limits will not be checked before making
+ * the request). The "X-App-Rate-Limit" header will be used to update the first RateLimit in 'rateLimits' where 'type' is "app", and the
+ * "X-Method-Rate-Limit" header will be used to update the first RateLimit in 'rateLimits' where 'type' is "method".
  * @async
- * @returns The raw body of the API response if the response code was 200
- * @throws {RateLimitError} Thrown if the API request is prevented or fails due to an exceeded rate limit
- * @throws {APIError} Thrown if the API response has a non 200 status code (a 429 caused by an exceeded API key rate limit will throw a RateLimitError instead)
- * @throws {Error} Thrown if the API request cannot be completed for some reason
+ * @returns The raw body of the API response
+ * @throws {RateLimitError} Thrown if the API call is prevented because there are not enough requests remaining, or the API call fails due to an exceeded rate limit
+ * @throws {APIError} Thrown if the API response has a non-200 status code (a 429 caused by an exceeded API key rate limit will throw a RateLimitError instead)
+ * @throws {Error} Thrown if the API request cannot be completed for some other reason
  */
-export function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, query?: string): Promise<string> {
+function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, query?: string, updateRateLimits: boolean = false): Promise<string> {
 	return new Promise<string>((resolve: Function, reject: Function) => {
-		if (rateLimits) {
+		if (rateLimits && !updateRateLimits) {
 			for (const rateLimit of rateLimits) {
 				if (!rateLimit.hasRequestAvailable()) {
 					reject(new RateLimitError());
@@ -57,57 +60,67 @@ export function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: st
 			});
 
 			response.on("error", (err: Error) => {
-				console.error(`Error receiving response from URL ${url}: `, err);
-				reject(err);
+				reject(new VError(err, `Error receiving response from ${url}`));
 			});
 
 			response.on("end", () => {
+				if (updateRateLimits) {
+					for (const limitType of ["app", "method"]) {
+						const limitsHeader: string = response.headers[`x-${limitType}-rate-limit`];
+						if (limitsHeader) {
+							const intervalLimits: IntervalLimitInfo[] = parseRateLimitHeader(limitsHeader);
+							const requestsUsed: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`]);
+							for (const rateLimit of rateLimits) {
+								if (rateLimit.type === limitType) {
+									rateLimit.setLimits(intervalLimits, requestsUsed);
+									break;
+								}
+							}
+						}
+					}
+				}
+
 				if (response.statusCode === 200) {
 					resolve(body);
 				} else {
-					if (response.statusCode === 429) {
-						const limitType: string = response.headers["x-rate-limit-type"];
-						// 429 responses that don't include a valid X-Rate-Limit-Type header are considered normal APIError's, not RateLimitError's
-						if (limitType === "application" || limitType === "method") {
-							const retryHeader: string = response.headers["retry-after"];
-							const retryAfter: number = +retryHeader;
-							if (!isNaN(retryAfter)) {
-								// Parse how many requests have been used for each interval
-								/** An array of interval limits in the form "requestsUsed:interval" */
-								const headerLimitsStrings: string[] = response.headers[`x-${limitType === "method" ? "method" : "app"}-rate-limit-count`].split(",");
-								const headerLimits: {usedRequests: number, interval: number}[] = [];
-								for (const intervalLimitString of headerLimitsStrings) {
-									/** The element at index 0 is the number of requests used, the element at index 1 is the interval (in seconds) */
-									const split: string[] = intervalLimitString.split(":");
-									headerLimits.push({
-										usedRequests: +split[0],
-										interval: +split[1]
-									});
-								}
+					// This will actually be "application" instead of "app" here, but that will be changed next line.
+					/** The exceeded rate limit type (if any). This will be "app" or "method" for an exceeded user limit. */
+					let limitType: string = response.headers["x-rate-limit-type"];
+					// The "X-Rate-Limit-Type" header uses "application", everything else uses "app". Converting "application" to "app" makes life easier
+					limitType = limitType === "application" ? "app" : limitType;
 
-								// Find the RateLimit that was exceeded and reset it
-								for (const rateLimit of rateLimits) {
-									if (rateLimit.type === limitType) {
-										for (const headerLimit of headerLimits) {
-											const intervalLimit = rateLimit.intervalLimits.get(headerLimit.interval);
-											if (intervalLimit && intervalLimit.maxRequests < headerLimit.usedRequests) {
-												intervalLimit.remainingRequests = 0;
-												intervalLimit.resetTimer.reschedule(retryAfter);
-												/* Even if multiple IntervalLimit's were exceeded, only 1 needs to be updated
-												(the entire RateLimit is considered exceeded if 1 IntervalLimit is exceeded) */
-												break;
-											}
+					// 429 responses that weren't caused by an exceeded user rate limit are considered APIError's, not RateLimitError's
+					if (response.statusCode === 429 && (limitType === "app" || limitType === "method")) {
+						const retryHeader: string = response.headers["retry-after"];
+						/** How long to wait before making another API call (in seconds) */
+						const retryAfter: number = +retryHeader;
+						if (!isNaN(retryAfter)) {
+							// Parse how many requests have been used for each interval
+							const headerLimits: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`]);
+
+							// Find the RateLimit that was exceeded and reset it
+							for (const rateLimit of rateLimits) {
+								if (rateLimit.type === limitType) {
+									for (const headerLimit of headerLimits) {
+										const intervalLimit = rateLimit.intervalLimits.get(headerLimit.interval);
+										if (intervalLimit && intervalLimit.maxRequests < headerLimit.requests) {
+											intervalLimit.remainingRequests = 0;
+											intervalLimit.resetTimer.reschedule(retryAfter);
+											/* Even if multiple IntervalLimit's were exceeded, only 1 needs to be updated
+											(the entire RateLimit is considered exceeded if 1 IntervalLimit is exceeded) */
+											break;
 										}
 									}
 								}
-
-								reject(new RateLimitError());
-							} else {
-								// All user rate limit errors should contain a Retry-After header
-								console.error("Invalid Retry-After header received: ", retryHeader);
-								reject(new APIError(body, response.statusCode, response.headers, url));
-								return;
 							}
+
+							reject(new RateLimitError());
+						} else {
+							/* All user rate limit errors should contain a valid "Retry-After" header. If this header is missing, it doesn't affect
+							the calling function, so the error is just logged and a more informative APIError is thrown (instead of an Error caused
+							about the missing/invalid header). */
+							console.error(`Invalid Retry-After header received for API call to ${url}: ${retryHeader}`);
+							reject(new APIError(body, response.statusCode, response.headers, url));
 						}
 					} else {
 						reject(new APIError(body, response.statusCode, response.headers, url));
@@ -115,12 +128,10 @@ export function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: st
 				}
 			});
 		}).on("error", (err: Error) => {
-			console.error(`Error making request to URL ${url}: `, err);
-			reject(err);
+			reject(new VError(err, `Error making request to ${url}`));
 		});
 	});
 }
-
 
 /**
  * Tries to retrieve a summoner by name, first checking the cache then the API.
@@ -130,6 +141,7 @@ export function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: st
  * @returns A Summoner object of the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented or fails due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
+ * @throws {Error} Thrown is some other error occurs
  */
 export async function getSummonerByName(region: Region, name: string): Promise<Summoner> {
 	const standardizedName: string = standardizeName(name);
@@ -144,7 +156,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 	}
 	try {
 		// A cache hit (on both summoner ID and summoner info) would have already resulted in this function returning by now
-		const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(standardizedName)}`);
+		const body: string = await makeAPIRequest([RATE_LIMITS.application, RATE_LIMITS.summonerByName], region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(standardizedName)}`);
 		const summoner: Summoner = JSON.parse(body);
 		summoner.standardizedName = standardizedName;
 		cacheHandler.store(cacheHandler.makeSummonerKey(region, summoner.id), summoner, Config.cacheDurations.summoner);
@@ -154,11 +166,14 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 		if (ex instanceof APIError && ex.statusCode !== 404) {
 			logApiError(ex);
 		}
-		throw ex;
+		// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
+		if (ex instanceof APIError || ex instanceof RateLimitError) {
+			throw ex;
+		} else {
+			throw new VError(ex, "Error getting summoner by name");
+		}
 	}
 }
-
-
 
 /**
  * Tries to retrieve a summoner by summoner ID, first checking the cache then the API.
@@ -168,6 +183,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
  * @returns A Summoner object for the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented or fails due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
+ * @throws {Error} Thrown is some other error occurs.
  */
 export async function getSummonerById(region: Region, summonerId: number): Promise<Summoner> {
 	const key: string = cacheHandler.makeSummonerKey(region, summonerId);
@@ -176,7 +192,7 @@ export async function getSummonerById(region: Region, summonerId: number): Promi
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.summoner], region, `lol/summoner/v3/summoners/${summonerId}`);
+			const body: string = await makeAPIRequest([RATE_LIMITS.application, RATE_LIMITS.summonerBySummonerId], region, `lol/summoner/v3/summoners/${summonerId}`);
 			const summoner: Summoner = JSON.parse(body);
 			summoner.standardizedName = standardizeName(summoner.name);
 			cacheHandler.store(key, summoner, Config.cacheDurations.summoner);
@@ -186,7 +202,12 @@ export async function getSummonerById(region: Region, summonerId: number): Promi
 			if (ex instanceof APIError) {
 				logApiError(ex);
 			}
-			throw ex;
+			// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
+			if (ex instanceof APIError || ex instanceof RateLimitError) {
+				throw ex;
+			} else {
+				throw new VError(ex, "Error getting summoner by summoner ID");
+			}
 		}
 	}
 }
@@ -199,6 +220,7 @@ export async function getSummonerById(region: Region, summonerId: number): Promi
  * @returns The champion mastery scores for the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented or fails due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs
+ * @throws {Error} Thrown is some other error occurs
  */
 export async function getChampionMasteries(region: Region, summonerId: number): Promise<ChampionMasteryInfo[]> {
 	const key: string = cacheHandler.makeChampionMasteriesKey(region, summonerId);
@@ -208,7 +230,7 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest([APP_RATE_LIMIT, METHOD_RATE_LIMITS.championMastery], region, `lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`);
+			const body: string = await makeAPIRequest([RATE_LIMITS.application, RATE_LIMITS.championMasteries], region, `lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`);
 			const masteries: ChampionMasteryInfo[] = JSON.parse(body);
 			cacheHandler.store(key, masteries, Config.cacheDurations.championMastery);
 			return masteries;
@@ -216,20 +238,24 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 			if (ex instanceof APIError) {
 				logApiError(ex);
 			}
-			throw ex;
+			// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
+			if (ex instanceof APIError || ex instanceof RateLimitError) {
+				throw ex;
+			} else {
+				throw new VError(ex, "Error getting champion masteries");
+			}
 		}
 	}
 }
 
-
 /**
  * Gets a list of champions and the latest DDragon version from the static data API.
- * @param region (Optional) the region to get static data from. Defaults to DEFAULT_STATIC_DATA_REGION_ID.
+ * @param region (Optional) the region to get static data from. Defaults to 'Config.defaultStaticDataRegionId'.
  * @async
  * @returns A ChampionList containing all champions and the latest DDragon version
  * @throws {Error} Thrown if an error occurs when retrieving or parsing static data from both the default region and the fallback region.
  */
-export async function getChampions(region: Region = REGIONS.get(DEFAULT_STATIC_DATA_REGION_ID)): Promise<ChampionList> {
+export async function getChampions(region: Region = REGIONS.get(Config.defaultStaticDataRegionId)): Promise<ChampionList> {
 	try {
 		const body: string = await makeAPIRequest(null, region, "lol/static-data/v3/champions", "tags=image&dataById=true");
 		const championList: ChampionList = JSON.parse(body);
@@ -238,25 +264,72 @@ export async function getChampions(region: Region = REGIONS.get(DEFAULT_STATIC_D
 		if (ex instanceof APIError) {
 			logApiError(ex);
 		}
-		if (region.id !== FALLBACK_STATIC_DATA_REGION_ID) {
-			console.log(`Could not access static data from ${region.id}, attempting to access static data from ${FALLBACK_STATIC_DATA_REGION_ID}`);
-			return getChampions(REGIONS.get(FALLBACK_STATIC_DATA_REGION_ID));
+		if (region.id !== Config.fallbackStaticDataRegionId) {
+			console.log(`Could not access static data from ${region.id}, attempting to access static data from ${Config.fallbackStaticDataRegionId}`);
+			return getChampions(REGIONS.get(Config.fallbackStaticDataRegionId));
 		} else {
-			throw ex;
+			throw new VError(ex, "Error retrieving/parsing static data from fallback region");
 		}
 	}
 }
 
 /**
+ * Makes some API calls and updates rate limits based on the response headers from the calls. If the first attempt fails, it will automatically try
+ * again by looking up a different summoner.
+ * @param useFallback (Optional) If the backup summoner name/region should be used. Defaults to 'false'.
+ * @async
+ * @throws {Error} Thrown if an error occurs when trying to update rate limits using both the default and fallback summoner/region.
+ */
+export const updateRateLimits = async (useFallback: boolean = false): Promise<void> => {
+	const region: Region = REGIONS.get(useFallback ? Config.fallbackSummonerRegion : Config.summonerRegion);
+	const summoner: string = useFallback ? Config.fallbackSummonerName : Config.summonerName;
+	try {
+		const responseBody: string = await makeAPIRequest([RATE_LIMITS.summonerByName], region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(summoner)}`, null, true);
+		const summonerId: number = JSON.parse(responseBody).id;
+		await Promise.all([
+			makeAPIRequest([RATE_LIMITS.summonerBySummonerId], region, `lol/summoner/v3/summoners/${summonerId}`, null, true),
+			makeAPIRequest([RATE_LIMITS.application, RATE_LIMITS.championMasteries], region, `lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`, null, true)
+		]);
+		console.log("Updated rate limits");
+	} catch (ex) {
+		if (!useFallback) {
+			console.log(`Could not determine rate limits using summoner ${summoner} (${region.id}), using fallback summoner...`);
+			return updateRateLimits(true);
+		} else {
+			throw new VError(ex, "Error determining rate limits");
+		}
+	}
+};
+
+/**
  * Checks if API errors should be logged, and logs the specified error if they should.
  * @param error The error to log
  */
-function logApiError(error: APIError) {
+function logApiError(error: APIError): void {
 	if (Config.logApiErrors) {
 		console.log(`Error from API for ${error.url}: ${error.body} (${error.statusCode})`);
 	}
 }
 
+/**
+ * Parses rate limit info from a string in the form "requests1:interval1,requests2:interval2". This is the format
+ * used by the response headers "X-*-Rate-Limit" and "X-*-Rate-Limit-Count"
+ * @param header The response header to parse in the form "requests1:interval1,requests2:interval2"
+ * @returns The parsed rate limit info
+ */
+const parseRateLimitHeader = (header: string): IntervalLimitInfo[] => {
+	/** An array of interval limits in the form "requests:interval" */
+	const intervalLimits: IntervalLimitInfo[] = [];
+	for (const intervalLimitString of header.split(",")) {
+		/** The element at index 0 is the number of requests, the element at index 1 is the interval (in seconds) */
+		const split: string[] = intervalLimitString.split(":");
+		intervalLimits.push({
+			requests: +split[0],
+			interval: +split[1]
+		});
+	}
+	return intervalLimits;
+};
 
 /**
  * Used for any response from the API with a status code other than 200.

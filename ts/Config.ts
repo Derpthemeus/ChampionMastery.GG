@@ -1,34 +1,17 @@
-import {RateLimitsConfig} from "./types";
 import path = require("path");
 
 export default class Config {
 	/** A Riot Games API key (https://developer.riotgames.com/) */
 	public static readonly riotApiKey: string = process.env.RIOT_API_KEY;
 
-	/** Riot API key rate limits */
-	public static readonly rateLimits: RateLimitsConfig = {
-		/** Application rate limits for the API key. Intervals are in seconds. */
-		application: [
-			// Default development key limits
-			/*
-			{interval: 1, maxRequests: 20},
-			{interval: 120, maxRequests: 100}
-			*/
-
-			// Default production key limits
-			{interval: 10, maxRequests: 3000},
-			{interval: 600, maxRequests: 180000}
-		],
-		/** Method rate limits for the API key. Intervals are in seconds. */
-		method: {
-			summoner: [
-				{interval: 1, maxRequests: 2000}
-			],
-			championMastery: [
-				{interval: 1, maxRequests: 2000}
-			]
-		}
-	};
+	/** The summoner name of a player to look up in order to determine rate limits. */
+	public static readonly summonerName: string = "Derpthemeus";
+	/** The region of the player to look up in order to determine rate limits. */
+	public static readonly summonerRegion: string = "NA";
+	/** The summoner name of a player to look up in order to determine rate limits if there is an error looking up the default summoner. */
+	public static readonly fallbackSummonerName: string = "Derpthemeus";
+	/** The region of the player to look up in order to determine rate limits if there is an error looking up the default summoner. */
+	public static readonly fallbackSummonerRegion: string = "EUW";
 
 	public static readonly announcement: {message: string, link: string} = {
 		/** A message that should be displayed at the top of every page on the site. If set to a falsy value, no message will be displayed */
@@ -53,7 +36,7 @@ export default class Config {
 	public static readonly serverPort: number = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 	/** How long responses from each API should be cached for (in seconds). */
-	public static readonly cacheDurations = {
+	public static readonly cacheDurations: {summoner: number, championMastery: number} = {
 		summoner: 3600,
 		championMastery: 600
 	};
@@ -71,6 +54,11 @@ export default class Config {
 	/** How often to save highscores to a file (in seconds) */
 	public static readonly saveInterval: number = 120;
 
-	/** How often to update list of available champions (in minutes) */
-	public static readonly staticDataUpdateInterval = 60;
+	/** How often to update static data and rate limits (in minutes) */
+	public static readonly staticDataUpdateInterval: number = 60;
+
+	/** The default region to use when downloading static data */
+	public static readonly defaultStaticDataRegionId: string = "NA";
+	/** The region to use when downloading static data if there is an error using the default region */
+	public static readonly fallbackStaticDataRegionId: string = "EUW";
 }

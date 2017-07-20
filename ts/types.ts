@@ -63,17 +63,10 @@ export interface ChampionMasteryInfo extends BasicChampionMasteryInfo {
 	tokensEarned: number;
 }
 
-interface IntervalLimitConfig {
+export interface IntervalLimitInfo {
+	/** The interval of this limit (in seconds) */
 	interval: number;
-	maxRequests: number;
-}
-
-export interface RateLimitsConfig {
-	application: IntervalLimitConfig[];
-	method: {
-		championMastery: IntervalLimitConfig[],
-		summoner: IntervalLimitConfig[]
-	};
+	requests: number;
 }
 
 export interface Champion {
