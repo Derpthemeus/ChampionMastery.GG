@@ -6,7 +6,7 @@ import {RateLimitError} from "./RateLimit";
 import Config from "./Config";
 import http = require("http");
 import https = require("https");
-import VError = require("VError");
+import VError = require("verror");
 
 // Rate limits are initialized without any interval limits. Interval limits will be set once updateRateLimits() is called
 const RATE_LIMITS = {
