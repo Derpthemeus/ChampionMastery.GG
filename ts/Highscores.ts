@@ -76,6 +76,11 @@ export default class Highscores {
 					if (score.id === summoner.id && score.region === region.id) {
 						// Update player info if it has changed
 						if (score.name !== summoner.name || score.points !== championInfo.championPoints) {
+							// https://github.com/Derpthemeus/ChampionMasteryLookup/issues/8
+							if (score.points > championInfo.championPoints) {
+								console.log(`${summoner.name} (${region.id}) has lost points on ${champion.name}. Currently holds highscore at index ${place}`);
+							}
+
 							this.highscores[champion.id][place] = {
 								name: summoner.name,
 								id: summoner.id,
