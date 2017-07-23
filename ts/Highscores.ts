@@ -1,4 +1,4 @@
-import {BasicChampionMasteryInfo, BasicSummonerInfo, Champion, Highscore, Region} from "./types";
+import {BasicChampionMasteryInfo, BasicSummonerInfo, Champion, ChampionMasteryInfo, Highscore, Region} from "./types";
 import Config from "./Config";
 import {CHAMPIONS} from "./server";
 import fs = require("fs");
@@ -114,16 +114,24 @@ export default class Highscores {
 	 * @param summoner
 	 * @param region
 	 */
-	public updateAllHighscores = (masteries: BasicChampionMasteryInfo[], summoner: BasicSummonerInfo, region: Region): void => {
+	public updateAllHighscores = (masteries: ChampionMasteryInfo[], summoner: BasicSummonerInfo, region: Region): void => {
 		let totalPoints: number = 0;
+		let totalLevel: number = 0;
 		for (const championInfo of masteries) {
 			totalPoints += championInfo.championPoints;
+			totalLevel += championInfo.championLevel;
 			this.updateChampionHighscores(championInfo, summoner, region);
 		}
 		// Update total points highscore
 		this.updateChampionHighscores({
 			championId: -1,
 			championPoints: totalPoints
+		}, summoner, region);
+
+		// Update total level highscore
+		this.updateChampionHighscores({
+			championId: -2,
+			championPoints: totalLevel
 		}, summoner, region);
 	}
 

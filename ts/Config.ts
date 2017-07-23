@@ -44,7 +44,7 @@ export default class Config {
 	/** How many highscores to use for each champion */
 	public static readonly highscoreCount: {display: number, track: number} = {
 		/** How many scores should be displayed to users */
-		display: 20,
+		display: 25,
 		/** How many scores should be kept on the list */
 		track: 30
 	};

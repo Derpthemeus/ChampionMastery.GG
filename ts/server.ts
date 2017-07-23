@@ -175,6 +175,13 @@ async function updateStaticData(): Promise<void> {
 					// This is relative to the profileIcons directory
 					icon: "../masteryIcon.png"
 				}],
+				// Set "Total Level" to be the second entry in the new Map
+				[-2, {
+					id: -2,
+					name: "Total Level",
+					// This is relative to the profileIcons directory
+					icon: "../masteryIcon.png"
+				}],
 				// Add all champions to the new Map, in alphabetical order of their name
 				...[...champions.entries()].sort((a: [number, Champion], b: [number, Champion]) => {
 					const nameA: string = a[1].name.toUpperCase();
