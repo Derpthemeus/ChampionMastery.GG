@@ -104,8 +104,6 @@ export async function getSummoner(region: Region, summonerName: string): Promise
 	}
 }
 
-
-
 /**
  * Displays an error message.
  * @param res The Response to send the error to
@@ -125,11 +123,11 @@ export function renderError(res: express.Response, code: number, error: string, 
 
 /**
  * Sets up a page that doesn't use the express.Request object for anything, and only uses data from COMMON_DATA
- * @param path The path of the page
+ * @param pagePath The path of the page
  * @param view The name of the template to use
  */
-function useStaticPage(path: string, view: string): void {
-	app.get(path, (req, res) => {
+function useStaticPage(pagePath: string, view: string): void {
+	app.get(pagePath, (req, res) => {
 		res.status(200).render(view, {
 			...COMMON_DATA
 		});

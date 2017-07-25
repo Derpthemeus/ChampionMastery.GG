@@ -23,13 +23,13 @@ const cacheHandler: CacheHandler = new CacheHandler();
  * a request available, a RateLimitError will be thrown. If there are enough requests remaining for this request to be made, each rate limit will
  * have 1 request marked as used before the API request is made.
  *  If this is set to a falsy value, no rate limits will be checked/updated.
- *  If 'updateRateLimits' is set to true, these rate limits will be updated based on response headers instead of being used to check if there are
+ *  If 'shouldUpdateRateLimits' is set to true, these rate limits will be updated based on response headers instead of being used to check if there are
  * enough requests available
  * @param region The region the request should be made to
  * @param path The path of the API request URL, relative to "https://*.api.riotgames.com/"
  * @param query The query of the API request URL, without "?" (e.g. "foo=bar&a=b"). May be a falsy value if no query is needed.
  * 	The "api_key" parameter should not be included (it will be automatically added)
- * @param updateRateLimits If set to true, the response headers will be used to update rate limit information (rate limits will not be checked before making
+ * @param shouldUpdateRateLimits If set to true, the response headers will be used to update rate limit information (rate limits will not be checked before making
  * the request). The "X-App-Rate-Limit" header will be used to update the first RateLimit in 'rateLimits' where 'type' is "app", and the
  * "X-Method-Rate-Limit" header will be used to update the first RateLimit in 'rateLimits' where 'type' is "method".
  * @async
@@ -38,9 +38,9 @@ const cacheHandler: CacheHandler = new CacheHandler();
  * @throws {APIError} Thrown if the API response has a non-200 status code (a 429 caused by an exceeded API key rate limit will throw a RateLimitError instead)
  * @throws {Error} Thrown if the API request cannot be completed for some other reason
  */
-function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, query?: string, updateRateLimits: boolean = false): Promise<string> {
+function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, query?: string, shouldUpdateRateLimits: boolean = false): Promise<string> {
 	return new Promise<string>((resolve: Function, reject: Function) => {
-		if (rateLimits && !updateRateLimits) {
+		if (rateLimits && !shouldUpdateRateLimits) {
 			for (const rateLimit of rateLimits) {
 				if (!rateLimit.hasRequestAvailable()) {
 					reject(new RateLimitError());
@@ -64,12 +64,12 @@ function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, q
 			});
 
 			response.on("end", () => {
-				if (updateRateLimits) {
+				if (shouldUpdateRateLimits) {
 					for (const limitType of ["app", "method"]) {
-						const limitsHeader: string = response.headers[`x-${limitType}-rate-limit`];
+						const limitsHeader: string = response.headers[`x-${limitType}-rate-limit`] as string;
 						if (limitsHeader) {
 							const intervalLimits: IntervalLimitInfo[] = parseRateLimitHeader(limitsHeader);
-							const requestsUsed: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`]);
+							const requestsUsed: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`] as string);
 							for (const rateLimit of rateLimits) {
 								if (rateLimit.type === limitType) {
 									rateLimit.setLimits(intervalLimits, requestsUsed);
@@ -85,18 +85,18 @@ function makeAPIRequest(rateLimits: RateLimit[], region: Region, path: string, q
 				} else {
 					// This will actually be "application" instead of "app" here, but that will be changed next line.
 					/** The exceeded rate limit type (if any). This will be "app" or "method" for an exceeded user limit. */
-					let limitType: string = response.headers["x-rate-limit-type"];
+					let limitType: string = response.headers["x-rate-limit-type"] as string;
 					// The "X-Rate-Limit-Type" header uses "application", everything else uses "app". Converting "application" to "app" makes life easier
 					limitType = limitType === "application" ? "app" : limitType;
 
 					// 429 responses that weren't caused by an exceeded user rate limit are considered APIError's, not RateLimitError's
 					if (response.statusCode === 429 && (limitType === "app" || limitType === "method")) {
-						const retryHeader: string = response.headers["retry-after"];
+						const retryHeader: string = response.headers["retry-after"] as string;
 						/** How long to wait before making another API call (in seconds) */
 						const retryAfter: number = +retryHeader;
 						if (!isNaN(retryAfter)) {
 							// Parse how many requests have been used for each interval
-							const headerLimits: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`]);
+							const headerLimits: IntervalLimitInfo[] = parseRateLimitHeader(response.headers[`x-${limitType}-rate-limit-count`] as string);
 
 							// Find the RateLimit that was exceeded and reset it
 							for (const rateLimit of rateLimits) {
@@ -351,7 +351,7 @@ export class APIError {
 	 * @param headers The headers of the response
 	 * @param url The API URL that returned this error
 	 */
-	public constructor(body: string, statusCode: number, headers: any, url: string) {
+	public constructor(body: string, statusCode: number, headers: http.IncomingHttpHeaders, url: string) {
 		this.body = body;
 		this.statusCode = statusCode;
 		this.headers = headers;

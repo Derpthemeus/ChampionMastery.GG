@@ -33,7 +33,7 @@ export default class Config {
 	/** The IP address to listen on */
 	public static readonly serverAddress: string = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 	/** The port to listen on */
-	public static readonly serverPort: number = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+	public static readonly serverPort: number = +process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 	/** How long responses from each API should be cached for (in seconds). */
 	public static readonly cacheDurations: {summoner: number, championMastery: number} = {
