@@ -6,6 +6,8 @@ import {RateLimitError} from "./RateLimit";
 import Config from "./Config";
 import http = require("http");
 import https = require("https");
+import fs = require("fs");
+import PATH = require("path");
 import VError = require("verror");
 
 // Rate limits are initialized without any interval limits. Interval limits will be set once updateRateLimits() is called
@@ -256,21 +258,9 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
  * @throws {Error} Thrown if an error occurs when retrieving or parsing static data from both the default region and the fallback region.
  */
 export async function getChampions(region: Region = REGIONS.get(Config.defaultStaticDataRegionId)): Promise<ChampionList> {
-	try {
-		const body: string = await makeAPIRequest(null, region, "lol/static-data/v3/champions", "tags=image&dataById=true");
-		const championList: ChampionList = JSON.parse(body);
-		return championList;
-	} catch (ex) {
-		if (ex instanceof APIError) {
-			logApiError(ex);
-		}
-		if (region.id !== Config.fallbackStaticDataRegionId) {
-			console.log(`Could not access static data from ${region.id}, attempting to access static data from ${Config.fallbackStaticDataRegionId}`);
-			return getChampions(REGIONS.get(Config.fallbackStaticDataRegionId));
-		} else {
-			throw new VError(ex, "Error retrieving/parsing static data from fallback region");
-		}
-	}
+	// Temporary hotfix for https://discussion.developer.riotgames.com/articles/2691/one-week-grace-period-for-method-rate-limiting.html
+	const json: string = fs.readFileSync(PATH.join(__dirname, "..", "champions.json"), "utf8");
+	return JSON.parse(json);
 }
 
 /**
