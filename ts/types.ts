@@ -17,26 +17,6 @@ export interface Summoner extends BasicSummonerInfo {
 }
 
 /**
- * A response from https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList
- */
-export interface ChampionList {
-	data: {
-		[id: string]: ChampionListEntry
-	};
-	version: string;
-}
-
-/**
- * An entry for a single champion from https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList
- */
-export interface ChampionListEntry extends Champion {
-	image: {
-		/** The filename of the icon (e.g. "Annie.png") */
-		full: string
-	};
-}
-
-/**
  * A single highscore entry
  */
 export interface Highscore extends BasicSummonerInfo {
@@ -67,13 +47,6 @@ export interface IntervalLimitInfo {
 	/** The interval of this limit (in seconds) */
 	interval: number;
 	requests: number;
-}
-
-export interface Champion {
-	id: number;
-	name: string;
-	/** The filename of the icon (e.g. "Annie.png") */
-	icon: string;
 }
 
 export interface Region {

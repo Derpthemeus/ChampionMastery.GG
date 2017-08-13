@@ -1,11 +1,11 @@
-import {CHAMPIONS, COMMON_DATA, highscores} from "../server";
-import {Champion, Highscore} from "../types";
+import {COMMON_DATA, highscores} from "../server";
+import {Highscore} from "../types";
+import Champion from "../Champion";
 import express = require("express");
-
 
 export function renderHighscores(req: express.Request, res: express.Response): void {
 	const champions: ChampionInfo[] = [];
-	for (const champion of CHAMPIONS.values()) {
+	for (const champion of Champion.CHAMPIONS.values()) {
 		const championInfo: ChampionInfo = {
 			...champion,
 			scores: new Array(3)

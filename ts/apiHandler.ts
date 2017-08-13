@@ -1,13 +1,11 @@
 import {REGIONS, standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
-import {ChampionList, ChampionMasteryInfo, IntervalLimitInfo, Region, Summoner} from "./types";
+import {ChampionMasteryInfo, IntervalLimitInfo, Region, Summoner} from "./types";
 import RateLimit from "./RateLimit";
 import {RateLimitError} from "./RateLimit";
 import Config from "./Config";
 import http = require("http");
 import https = require("https");
-import fs = require("fs");
-import PATH = require("path");
 import VError = require("verror");
 
 // Rate limits are initialized without any interval limits. Interval limits will be set once updateRateLimits() is called
@@ -248,19 +246,6 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 			}
 		}
 	}
-}
-
-/**
- * Gets a list of champions and the latest DDragon version from the static data API.
- * @param region (Optional) the region to get static data from. Defaults to 'Config.defaultStaticDataRegionId'.
- * @async
- * @returns A ChampionList containing all champions and the latest DDragon version
- * @throws {Error} Thrown if an error occurs when retrieving or parsing static data from both the default region and the fallback region.
- */
-export async function getChampions(region: Region = REGIONS.get(Config.defaultStaticDataRegionId)): Promise<ChampionList> {
-	// Temporary hotfix for https://discussion.developer.riotgames.com/articles/2691/one-week-grace-period-for-method-rate-limiting.html
-	const json: string = fs.readFileSync(PATH.join(__dirname, "..", "champions.json"), "utf8");
-	return JSON.parse(json);
 }
 
 /**

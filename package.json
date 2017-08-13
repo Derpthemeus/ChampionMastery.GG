@@ -16,6 +16,7 @@
 		"@types/node-cache": "4.1.0",
 		"@types/xregexp": "3.0.29",
 		"@types/verror": "1.10.0",
+		"@types/mkdirp": "0.5.0",
 		"express": "4.15.3",
 		"express-handlebars": "3.0.0",
 		"handlebars": "4.0.10",
@@ -27,7 +28,8 @@
 		"xregexp": "3.2.0",
 		"tar-stream": "1.5.4",
 		"gunzip-maybe": "1.4.1",
-		"verror": "1.10.0"
+		"verror": "1.10.0",
+		"mkdirp": "0.5.1"
 	},
 	"devDependencies": {
 		"tslint": "5.5.0"

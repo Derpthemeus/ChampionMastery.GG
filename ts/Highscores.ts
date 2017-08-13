@@ -1,6 +1,6 @@
-import {BasicChampionMasteryInfo, BasicSummonerInfo, Champion, ChampionMasteryInfo, Highscore, Region} from "./types";
+import {BasicChampionMasteryInfo, BasicSummonerInfo, ChampionMasteryInfo, Highscore, Region} from "./types";
 import Config from "./Config";
-import {CHAMPIONS} from "./server";
+import Champion from "./Champion";
 import fs = require("fs");
 
 export default class Highscores {
@@ -65,7 +65,7 @@ export default class Highscores {
 	 * @param region
 	 */
 	public updateChampionHighscores = (championInfo: BasicChampionMasteryInfo, summoner: BasicSummonerInfo, region: Region): void => {
-		const champion: Champion = CHAMPIONS.get(championInfo.championId);
+		const champion: Champion = Champion.getChampionById(championInfo.championId);
 		// Do a quick check to see if the player belongs in the highscores before iterating over everything to see where they belong
 		const lowestScore: Highscore = this.highscores[champion.id][Config.highscoreCount.track - 1];
 		if (!lowestScore || championInfo.championPoints >= lowestScore.points) {

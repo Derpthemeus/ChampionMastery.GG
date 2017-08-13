@@ -57,8 +57,5 @@ export default class Config {
 	/** How often to update static data and rate limits (in minutes) */
 	public static readonly staticDataUpdateInterval: number = 60;
 
-	/** The default region to use when downloading static data */
-	public static readonly defaultStaticDataRegionId: string = "NA";
-	/** The region to use when downloading static data if there is an error using the default region */
-	public static readonly fallbackStaticDataRegionId: string = "EUW";
+	public static readonly staticDataPath: string = path.join(__dirname, "..", "staticData");
 }

@@ -1,12 +1,13 @@
-import {CHAMPIONS, COMMON_DATA, highscores, renderError} from "../server";
-import {Champion, Highscore} from "../types";
+import {COMMON_DATA, highscores, renderError} from "../server";
+import {Highscore} from "../types";
+import Champion from "../Champion";
 import Config from "../Config";
 import express = require("express");
 
 export function renderChampion(req: express.Request, res: express.Response): void {
 	const championId: number = +req.query.champion;
 	if (championId) {
-		const champion: Champion = CHAMPIONS.get(championId);
+		const champion: Champion = Champion.getChampionById(championId);
 		if (champion) {
 			const scores: Highscore[] = new Array(Config.highscoreCount.display);
 			for (let i = 0; i < Config.highscoreCount.display; i++) {

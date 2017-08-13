@@ -1,6 +1,7 @@
-import {Champion, ChampionMasteryInfo, Region, Summoner} from "../types";
+import {ChampionMasteryInfo, Region, Summoner} from "../types";
 import * as apiHandler from "../apiHandler";
-import {CHAMPIONS, COMMON_DATA, getSummoner, highscores, REGIONS, renderError} from "../server";
+import {COMMON_DATA, getSummoner, highscores, REGIONS, renderError} from "../server";
+import Champion from "../Champion";
 import {RateLimitError} from "../RateLimit";
 import express = require("express");
 import XRegExp = require("xregexp");
@@ -58,7 +59,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 									}
 								}
 
-								const champion: Champion = CHAMPIONS.get(masteryChampion.championId);
+								const champion: Champion = Champion.getChampionById(masteryChampion.championId);
 								const info: ChampionInfo = {
 									...masteryChampion,
 									championName: champion.name,
