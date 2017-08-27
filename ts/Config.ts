@@ -31,9 +31,9 @@ export default class Config {
 	public static readonly logApiErrors: boolean = true;
 
 	/** The IP address to listen on */
-	public static readonly serverAddress: string = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+	public static readonly serverAddress: string = "127.0.0.1";
 	/** The port to listen on */
-	public static readonly serverPort: number = +process.env.OPENSHIFT_NODEJS_PORT || 8080;
+	public static readonly serverPort: number = 8080;
 
 	/** How long responses from each API should be cached for (in seconds). */
 	public static readonly cacheDurations: {summoner: number, championMastery: number} = {
@@ -50,7 +50,7 @@ export default class Config {
 	};
 
 	/** Where the highscore data JSON file should be saved */
-	public static readonly highscoreDataPath: string = path.join((process.env.OPENSHIFT_DATA_DIR || path.join(__dirname, "..")), "highscoreData.json");
+	public static readonly highscoreDataPath: string = path.join((process.env.DATA_DIR || path.join(__dirname, "..")), "highscoreData.json");
 	/** How often to save highscores to a file (in seconds) */
 	public static readonly saveInterval: number = 120;
 
