@@ -1,6 +1,7 @@
-import {REGIONS, standardizeName} from "./server";
+import {standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
-import {ChampionMasteryInfo, IntervalLimitInfo, Region, Summoner} from "./types";
+import {ChampionMasteryInfo, IntervalLimitInfo, Summoner} from "./types";
+import Region from "./Region";
 import RateLimit from "./RateLimit";
 import {RateLimitError} from "./RateLimit";
 import Config from "./Config";
@@ -256,7 +257,7 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
  * @throws {Error} Thrown if an error occurs when trying to update rate limits using both the default and fallback summoner/region.
  */
 export const updateRateLimits = async (useFallback: boolean = false): Promise<void> => {
-	const region: Region = REGIONS.get(useFallback ? Config.fallbackSummonerRegion : Config.summonerRegion);
+	const region: Region = Region.REGIONS.get(useFallback ? Config.fallbackSummonerRegion : Config.summonerRegion);
 	const summoner: string = useFallback ? Config.fallbackSummonerName : Config.summonerName;
 	try {
 		const responseBody: string = await makeAPIRequest([RATE_LIMITS.summonerByName], region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(summoner)}`, null, true);

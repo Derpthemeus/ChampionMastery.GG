@@ -48,8 +48,3 @@ export interface IntervalLimitInfo {
 	interval: number;
 	requests: number;
 }
-
-export interface Region {
-	id: string;
-	platformId: string;
-}

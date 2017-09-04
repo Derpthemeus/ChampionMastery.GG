@@ -1,6 +1,7 @@
-import {ChampionMasteryInfo, Region, Summoner} from "../types";
+import {ChampionMasteryInfo, Summoner} from "../types";
+import Region from "../Region";
 import * as apiHandler from "../apiHandler";
-import {COMMON_DATA, getSummoner, highscores, REGIONS, renderError} from "../server";
+import {COMMON_DATA, getSummoner, highscores, renderError} from "../server";
 import Champion from "../Champion";
 import {RateLimitError} from "../RateLimit";
 import express = require("express");
@@ -15,7 +16,7 @@ const TOKENS_NEEDED = new Map([[5, 2], [6, 3]]);
 export async function renderSummoner(req: express.Request, res: express.Response): Promise<void> {
 	if (req.query.summoner && typeof req.query.summoner === "string") {
 		if (req.query.region && typeof req.query.region === "string") {
-			const region: Region = REGIONS.get(req.query.region.toUpperCase());
+			const region: Region = Region.REGIONS.get(req.query.region.toUpperCase());
 			if (region) {
 				if (SUMMONER_NAME_REGEX.test(req.query.summoner)) {
 					try {

@@ -1,5 +1,6 @@
-import {Highscore, Region, Summoner} from "./types";
+import {Highscore, Summoner} from "./types";
 import Champion from "./Champion";
+import Region from "./Region";
 import * as apiHandler from "./apiHandler";
 import {APIError} from "./apiHandler";
 import {renderSummoner} from "./routes/summoner";
@@ -17,23 +18,9 @@ import VError = require("verror");
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
-/** Regions mapped to their ID */
-export const REGIONS: Map<string, Region> = new Map([
-	["NA", {id: "NA", platformId: "NA1"}],
-	["EUW", {id: "EUW", platformId: "EUW1"}],
-	["EUNE", {id: "EUNE", platformId: "EUN1"}],
-	["BR", {id: "BR", platformId: "BR1"}],
-	["OCE", {id: "OCE", platformId: "OC1"}],
-	["KR", {id: "KR", platformId: "KR"}],
-	["TR", {id: "TR", platformId: "TR1"}],
-	["LAS", {id: "LAS", platformId: "LA2"}],
-	["LAN", {id: "LAN", platformId: "LA1"}],
-	["RU", {id: "RU", platformId: "RU"}],
-	["JP", {id: "JP", platformId: "JP1"}]
-]);
 /** Data that is used in every rendered view */
 export const COMMON_DATA: {regions: string[], announcement: {message: string, link: string}} = {
-	regions: [...REGIONS.keys()],
+	regions: [...Region.REGIONS.keys()],
 	announcement: Config.announcement
 };
 

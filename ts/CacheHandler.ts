@@ -1,4 +1,4 @@
-import {Region} from "./types";
+import Region from "./Region";
 import NodeCache = require("node-cache");
 
 

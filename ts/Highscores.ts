@@ -1,4 +1,5 @@
-import {BasicChampionMasteryInfo, BasicSummonerInfo, ChampionMasteryInfo, Highscore, Region} from "./types";
+import {BasicChampionMasteryInfo, BasicSummonerInfo, ChampionMasteryInfo, Highscore} from "./types";
+import Region from "./Region";
 import Config from "./Config";
 import Champion from "./Champion";
 import fs = require("fs");
