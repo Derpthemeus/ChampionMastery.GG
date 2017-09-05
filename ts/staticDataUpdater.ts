@@ -60,8 +60,14 @@ export const updateStaticData = async (): Promise<void> => {
 		try {
 			latestVersion = await getLatestDDragonVersion();
 		} catch (ex) {
-			reject(new VError(ex, "Error getting latest DDragon version"));
-			return;
+			// Continue using the currently downloaded version (if it exists) if there is an error getting the latest version
+			if (currentDDragonVersion) {
+				latestVersion = currentDDragonVersion;
+				console.error(VError.fullStack(new VError(ex, "Error getting latest DDragon version, will continue to user currently downloaded version")));
+			} else {
+				reject(new VError(ex, "Error getting latest DDragon version"));
+				return;
+			}
 		}
 
 		if (!currentDDragonVersion || latestVersion !== currentDDragonVersion) {
@@ -274,8 +280,12 @@ const getLatestDDragonVersion = (): Promise<string> => {
 			});
 
 			response.on("end", () => {
-				const versions: string[] = JSON.parse(body);
-				resolve(versions[0]);
+				if (response.statusCode === 200) {
+					const versions: string[] = JSON.parse(body);
+					resolve(versions[0]);
+				} else {
+					reject(new VError(`Received a ${response.statusCode} status code when accessing DDragon version list`));
+				}
 			});
 		}).on("error", (err: Error) => {
 			reject(new VError(err, `Error getting DDragon version list`));
