@@ -19,3 +19,7 @@
 .championName {
 	font-weight: bold;
 }
+
+#quickJump {
+	margin-bottom: 12px;
+}
