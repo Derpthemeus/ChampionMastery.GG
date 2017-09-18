@@ -42,9 +42,3 @@ export interface ChampionMasteryInfo extends BasicChampionMasteryInfo {
 	lastPlayTime: number;
 	tokensEarned: number;
 }
-
-export interface IntervalLimitInfo {
-	/** The interval of this limit (in seconds) */
-	interval: number;
-	requests: number;
-}

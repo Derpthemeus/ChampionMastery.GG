@@ -1,59 +1,31 @@
-import {IntervalLimitInfo} from "./types";
+import RateLimiter from "./RateLimiter";
+import Region from "./Region";
 
 /**
  * A single RateLimit handles multiple limits with different intervals (e.g. 10 requests every 10 seconds, 500 requests every 10 minutes).
- * If 1 IntervalLimit of the RateLimit is exceeded, the entire RateLimit is considered exceeded.
+ * If 1 IntervalLimit of the RateLimit is exceeded, the RateLimit is considered exceeded.
  */
 export default class RateLimit {
-	/** The type of rate limit (either "app" or "method") */
-	public type: string;
-	/** IntervalLimits mapped to the interval (in seconds) */
+	/** The type of rate limit */
+	public type: LimitType;
+	/** The name of the API method this limit is for ("application" if it is an application rate limit) */
+	private method: string;
+	private region: Region;
+	/** IntervalLimits mapped to their interval (in seconds) */
 	public intervalLimits: Map<number, IntervalLimit> = new Map<number, IntervalLimit>();
+	/** A string in the form of a "X-*-Rate-Limit" header that indicates the limits of this RateLimit, or 'null' if this RateLimit has not yet been initialized */
+	private limitsString: string = null;
 
 	/**
-	 * @param type The type of rate limit (either "app" or "method")
-	 * @param limits an array of data for each interval limit. 'requests' is the maximum number of requests that can be made each interval.
-	 * @param requestsUsed (Optional) how many requests have been used for each interval (used when setting initial number of requests remaining).
-	 * If omitted, it is assumed that no requests have been used.
+	 * Initializes an empty RateLimit. The rate limits should be populated using updateFromHeaders()
+	 * @param type The type of rate limit
+	 * @param method The name of the API method this limit is for ("application" if it is an application rate limit)
+	 * @param region
 	 */
-	public constructor(type: string, limits: IntervalLimitInfo[], requestsUsed?: IntervalLimitInfo[]) {
+	public constructor(type: LimitType, method: string, region: Region) {
 		this.type = type;
-		this.setLimits(limits, requestsUsed);
-	}
-
-	/**
-	 * Sets the limits for each interval in this RateLimit
-	 * @param limits an array of data for each interval limit. requests' is the maximum number of requests that can be made each interval.
-	 * @param requestsUsed (Optional) how many requests have been used for each interval limit (used when setting initial number of requests remaining).
-	 * If omitted, it is assumed that no requests have been used.
-	 */
-	public setLimits(limits: IntervalLimitInfo[], requestsUsed?: IntervalLimitInfo[]): void {
-		const newLimits: Map<number, IntervalLimit> = new Map<number, IntervalLimit>();
-		for (const limitData of limits) {
-			const intervalLimit: IntervalLimit = new IntervalLimit(limitData.interval, limitData.requests);
-			// Copy reset timer and remaining requests from old interval limit (if it exists)
-			if (this.intervalLimits.has(limitData.interval)) {
-				const oldIntervalLimit: IntervalLimit = this.intervalLimits.get(limitData.interval);
-				intervalLimit.remainingRequests = oldIntervalLimit.remainingRequests;
-				intervalLimit.resetTimer.reschedule((oldIntervalLimit.resetTimer.targetTime - Date.now()) / 1000);
-			}
-			// Update requests used based on headers (if specified)
-			if (requestsUsed) {
-				for (const intervalRequestsUsed of requestsUsed) {
-					if (intervalRequestsUsed.interval === limitData.interval) {
-						intervalLimit.remainingRequests = limitData.requests - intervalRequestsUsed.requests;
-						break;
-					}
-				}
-			}
-			newLimits.set(intervalLimit.interval, intervalLimit);
-		}
-		// Cancel the old timers
-		for (const oldIntervalLimit of this.intervalLimits.values()) {
-			clearTimeout(oldIntervalLimit.resetTimer.timeout);
-		}
-
-		this.intervalLimits = newLimits;
+		this.method = method;
+		this.region = region;
 	}
 
 	/**
@@ -61,7 +33,7 @@ export default class RateLimit {
 	 */
 	public useRequest = (): void => {
 		for (const intervalLimit of this.intervalLimits.values()) {
-			intervalLimit.remainingRequests--;
+			intervalLimit.useRequest();
 		}
 	}
 
@@ -70,86 +42,128 @@ export default class RateLimit {
 	 * @returns If enough requests are available.
 	 */
 	public hasRequestAvailable = (): boolean => {
+		// Check if rate limits have been initialized
+		if (!this.limitsString) {
+			/* Always allowing a request to be made before the rate limits have been initialized has a few problems:
+				1. It is possible that enough requests will be made to exceed the rate limits before they can be determined.
+				2. The first window will not properly track the number of requests that have been used.
+			However, these problems are infrequent edge cases (they will only occur if a large burst of requests is made right after the server
+			starts) and it is much simpler to just handle things by always allowing the requests to be made instead of blocking
+			requests until limits can be determined. */
+			// Allow the request to be made so rate limits can be determined from response headers
+			return true;
+		}
+
 		for (const intervalLimit of this.intervalLimits.values()) {
-			if (intervalLimit.remainingRequests < 1) {
+			if (intervalLimit.requestsUsed >= intervalLimit.maxRequests) {
 				return false;
 			}
 		}
 		return true;
 	}
+
+	/**
+	 * Updates the rate limit info (rate limits, requests used, and reset time) using headers from an API response.
+	 * Rate limits will be updated if they have changed.
+	 * Requests used info will be updated if this RateLimit has not yet been initialized, or if 'retryAfter' is a truthy value.
+	 * The reset timer will be updated if 'retryAfter' is a truthy value.
+	 * @param limitsHeader The value of the "X-*-Rate-Limit" header that is relevant to this RateLimit
+	 * @param requestsUsedHeader The value of the "X-*-Rate-Limit-Count" header that is relevant to this RateLimit
+	 * @param retryAfter The value of the "Retry-After" header (or a falsy value if this RateLimit was not exceeded)
+	 */
+	public updateFromHeaders = (limitsHeader: string, requestsUsedHeader: string, retryAfter: number): void => {
+		/** If the number of requests used should be updated from response headers */
+		// Update requests used if 'retryAfter' is truthy, or rate limits have not been initialized
+		const shouldUpdateRequestsUsed: boolean = this.limitsString === null || !!retryAfter;
+
+		// Update rate limits if they have changed or have not been initialized yet
+		if (limitsHeader !== this.limitsString) {
+			this.limitsString = limitsHeader;
+			const newLimitsMap: Map<number, number> = RateLimiter.parseRateLimitHeader(limitsHeader);
+			const newIntervalLimits: Map<number, IntervalLimit> = new Map<number, IntervalLimit>();
+
+			for (const [interval, maxRequests] of newLimitsMap) {
+				const newLimit: IntervalLimit = new IntervalLimit(interval, maxRequests);
+				newLimit.requestsUsed = this.intervalLimits.has(interval) ? this.intervalLimits.get(interval).requestsUsed : 0;
+				newIntervalLimits.set(newLimit.interval, newLimit);
+			}
+			this.intervalLimits = newIntervalLimits;
+		}
+
+		// Update requests used if 'retryAfter' is truthy, or rate limits have not been initialized
+		if (shouldUpdateRequestsUsed) {
+			const requestsUsedMap: Map<number, number> = RateLimiter.parseRateLimitHeader(requestsUsedHeader);
+			for (const intervalLimit of this.intervalLimits.values()) {
+				/* If a rate limit is exceeded, multiple requests that will result in 429 errors may be made before a response is received.
+				Since it is unknown which request will be processed first, use the greater value between the internally tracked number of
+				requests used, and the number of requests used according to the response header. */
+				intervalLimit.requestsUsed = Math.max(intervalLimit.requestsUsed, requestsUsedMap.get(intervalLimit.interval));
+			}
+		}
+
+		// Update reset timer for exceeded IntervalLimit
+		if (retryAfter) {
+			console.warn(`${this.method} rate limit exceeded on ${this.region.id}`);
+			for (const intervalLimit of this.intervalLimits.values()) {
+				if (intervalLimit.requestsUsed > intervalLimit.maxRequests) {
+					intervalLimit.rescheduleReset(retryAfter);
+				}
+			}
+		}
+	}
 }
 
 /**
- * Handles the limiting for a single interval (such as 10 requests per 10 seconds)
+ * Handles the limiting for a single interval (e.g. 10 requests per 10 seconds)
  */
 class IntervalLimit {
-	/** How often to reset the remaining requests (in seconds) */
+	/** How long a window lasts (in seconds) */
 	public interval: number;
-	/** The maximum number of requests that can be made every interval */
+	/** The maximum number of requests that can be made every window */
 	public maxRequests: number;
-	/** How many requests can still be used this interval */
-	public remainingRequests: number;
-	/** The timer that handles resetting remainingRequests every interval */
-	public resetTimer: ResetTimer;
+	/** How many requests have been used this window */
+	public requestsUsed: number = 0;
+	/** The timer that will run when the current window ends ('null' if there is not currently an active window) */
+	public resetTimeout: NodeJS.Timer = null;
 
 	/**
-	 * @param interval How often to reset the remaining requests (in seconds)
-	 * @param maxRequests The maximum number of requests that can be made every interval
+	 * @param interval How long a window lasts (in seconds)
+	 * @param maxRequests The maximum number of requests that can be made every window
 	 */
 	constructor(interval: number, maxRequests: number) {
 		this.interval = interval;
 		this.maxRequests = maxRequests;
-		this.remainingRequests = this.maxRequests;
-		this.resetTimer = new ResetTimer(this);
 	}
-}
-
-class ResetTimer {
-	/** When the next reset should occur (in milliseconds since Unix epoch) */
-	public targetTime: number;
-	/** The timer that resets the interval limit */
-	public timeout: NodeJS.Timer;
-	/** The IntervalLimit this ResetTimer resets */
-	private readonly intervalLimit: IntervalLimit;
 
 	/**
-	 * @param intervalLimit The IntervalLimit this timer is for
+	 * Marks a request as used, starting a new window if needed.
 	 */
-	constructor(intervalLimit: IntervalLimit) {
-		this.intervalLimit = intervalLimit;
-		this.targetTime = Date.now() + intervalLimit.interval * 1000;
-		this.timeout = setTimeout(this.reset, intervalLimit.interval * 1000);
+	public useRequest = (): void => {
+		this.requestsUsed++;
+
+		// Start a new window if one is not already active
+		if (!this.resetTimeout) {
+			this.resetTimeout = setTimeout(this.reset, this.interval * 1000);
+		}
 	}
 
 	/**
-	 * Sets how long until the next reset occurs. Resets will continue occurring each interval after this time.
+	 * Sets how long until the next reset occurs
 	 * This does NOT affect how many requests are remaining until the reset occurs.
 	 * @param delay How long until the next reset should occur (in seconds)
 	 */
-	public reschedule = (delay: number): void => {
-		clearTimeout(this.timeout);
-		this.targetTime = Date.now() + delay * 1000;
-		this.timeout = setTimeout(this.reset, delay * 1000);
+	public rescheduleReset = (delay: number): void => {
+		clearTimeout(this.resetTimeout);
+		this.resetTimeout = setTimeout(this.reset, delay * 1000);
 	}
 
 	/**
-	 * Refills all requests for this interval and schedules the next reset.
-	 * This does NOT clear 'timeout', so it should only be called by the callback of 'timeout' or after clearing 'timeout'
+	 * Refills all requests for this IntervalLimit
+	 * This does NOT clear 'resetTimeout', so it should only be called by the callback of the reset timeout or after clearing 'resetTimeout'
 	 */
 	private reset = (): void => {
-		this.intervalLimit.remainingRequests = this.intervalLimit.maxRequests;
-		/* The target reset time may be less than 'interval' seconds away (since setTimeout may take longer than the specified time to execute its callback)
-		The next reset time is recalculated every interval to prevent the time from drifting too far */
-		const now: number = Date.now();
-		const delay: number = (this.intervalLimit.interval * 1000) - (now - this.targetTime);
-		this.targetTime = now + delay;
-		this.timeout = setTimeout(this.reset, delay);
+		this.requestsUsed = 0;
 	}
 }
 
-/**
- * An error that is thrown if an API request is prevented or fails due to an exceeded rate limit
- */
-export class RateLimitError {
-
-}
+type LimitType = "method" | "app";

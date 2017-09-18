@@ -54,7 +54,7 @@ export function standardizeName(name: string): string {
  * @param summonerName
  * @async
  * @returns An object containing the Summoner and the property "hasNewName". If the summoner was found through the fallback method, "hasNewName" will be set to true.
- * @throws {RateLimitError} Thrown if the API request is prevented or fails due to an exceeded rate limit
+ * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs. If the thrown error has a status code of 404, it means the summoner could not be found by name, and a fallback ID could not be found or didn't work.
  */
 export async function getSummoner(region: Region, summonerName: string): Promise<{summoner: Summoner, hasNewName: boolean}> {
@@ -135,27 +135,16 @@ async function start(): Promise<void> {
 	console.log("Loaded highscore data");
 
 	try {
-		await apiHandler.updateRateLimits();
-	} catch (ex) {
-		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR DETERMINING RATE LIMITS")));
-		process.exit(1);
-	}
-
-	try {
 		await staticDataUpdater.updateStaticData();
 	} catch (ex) {
 		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR UPDATING STATIC DATA")));
 		process.exit(1);
 	}
 
-	// Schedule static data and rate limit updater
+	// Schedule static data updater
 	setInterval(() => {
 		staticDataUpdater.updateStaticData().catch((ex) => {
 			console.error(VError.fullStack(new VError(ex, "Error updating static data (will continue using older version)")));
-		});
-
-		apiHandler.updateRateLimits().catch((ex) => {
-			console.error(VError.fullStack(new VError(ex, "Error updating rate limits (will continue using older limits)")));
 		});
 	}, Config.staticDataUpdateInterval * 1000 * 60);
 

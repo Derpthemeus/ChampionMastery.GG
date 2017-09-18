@@ -4,15 +4,6 @@ export default class Config {
 	/** A Riot Games API key (https://developer.riotgames.com/) */
 	public static readonly riotApiKey: string = process.env.RIOT_API_KEY;
 
-	/** The summoner name of a player to look up in order to determine rate limits. */
-	public static readonly summonerName: string = "Derpthemeus";
-	/** The region of the player to look up in order to determine rate limits. */
-	public static readonly summonerRegion: string = "NA";
-	/** The summoner name of a player to look up in order to determine rate limits if there is an error looking up the default summoner. */
-	public static readonly fallbackSummonerName: string = "Derpthemeus";
-	/** The region of the player to look up in order to determine rate limits if there is an error looking up the default summoner. */
-	public static readonly fallbackSummonerRegion: string = "EUW";
-
 	public static readonly announcement: {message: string, link: string} = {
 		/** A message that should be displayed at the top of every page on the site. If set to a falsy value, no message will be displayed */
 		message: process.env.ANNOUNCEMENT_MESSAGE,
@@ -54,7 +45,7 @@ export default class Config {
 	/** How often to save highscores to a file (in seconds) */
 	public static readonly saveInterval: number = 120;
 
-	/** How often to update static data and rate limits (in minutes) */
+	/** How often to update static data (in minutes) */
 	public static readonly staticDataUpdateInterval: number = 60;
 
 	public static readonly staticDataPath: string = path.join(__dirname, "..", "staticData");

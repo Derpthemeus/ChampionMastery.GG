@@ -3,7 +3,7 @@ import Region from "../Region";
 import * as apiHandler from "../apiHandler";
 import {COMMON_DATA, getSummoner, highscores, renderError} from "../server";
 import Champion from "../Champion";
-import {RateLimitError} from "../RateLimit";
+import {RateLimitError} from "../RateLimiter";
 import express = require("express");
 import XRegExp = require("xregexp");
 import handlebars = require("handlebars");
