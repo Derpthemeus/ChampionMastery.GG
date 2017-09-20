@@ -7,6 +7,7 @@ import {RateLimitError} from "../RateLimiter";
 import express = require("express");
 import XRegExp = require("xregexp");
 import handlebars = require("handlebars");
+import VError = require("verror");
 
 /** A regex to match valid summoner names (from https://developer.riotgames.com/getting-started.html) */
 const SUMMONER_NAME_REGEX = XRegExp("^[0-9\\p{L} _\\.]+$");
@@ -63,7 +64,8 @@ export async function renderSummoner(req: express.Request, res: express.Response
 								const champion: Champion = Champion.getChampionById(masteryChampion.championId);
 								const info: ChampionInfo = {
 									...masteryChampion,
-									championName: champion.name,
+									// Call the champion "New Champion" if static data ha not been updated yet
+									championName: champion ? champion.name : `New Champion`,
 									tooltip: tooltip,
 									sortingValue: sortingValue
 								};
@@ -106,6 +108,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 								renderError(res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in site footer).");
 							}
 						} else {
+							console.error(VError.fullStack(new VError(ex, `Error creating page for summoner "${req.query.summoner}" (${req.query.region})`)));
 							renderError(res, 500, "Unknown error", "Please send me a message (contact info in site footer).");
 						}
 					}

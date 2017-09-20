@@ -67,6 +67,13 @@ export default class Highscores {
 	 */
 	public updateChampionHighscores = (championInfo: BasicChampionMasteryInfo, summoner: BasicSummonerInfo, region: Region): void => {
 		const champion: Champion = Champion.getChampionById(championInfo.championId);
+		if (!champion) {
+			/* This will happen if a player is looked up after playing a new champion before static data is updated. This warning is just logged (instead
+			of forcing static data to be updated) because DDragon sometimes takes a little bit to be updated, so an immediate update will not always
+			solve the problem. Static data will be updated at the next regular check, and the issue will be resolved. */
+			console.warn(`Attempted to update highscores for invalid champion ID: ${championInfo.championId}`);
+			return;
+		}
 		// Do a quick check to see if the player belongs in the highscores before iterating over everything to see where they belong
 		const lowestScore: Highscore = this.highscores[champion.id][Config.highscoreCount.track - 1];
 		if (!lowestScore || championInfo.championPoints >= lowestScore.points) {
