@@ -158,10 +158,11 @@ class IntervalLimit {
 	}
 
 	/**
-	 * Refills all requests for this IntervalLimit
-	 * This does NOT clear 'resetTimeout', so it should only be called by the callback of the reset timeout or after clearing 'resetTimeout'
+	 * Refills all requests for this IntervalLimit and clears 'resetTimeout'
 	 */
 	private reset = (): void => {
+		clearTimeout(this.resetTimeout);
+		this.resetTimeout = null;
 		this.requestsUsed = 0;
 	}
 }
