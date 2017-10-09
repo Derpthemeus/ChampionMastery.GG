@@ -74,44 +74,41 @@ export default class Highscores {
 			console.warn(`Attempted to update highscores for invalid champion ID: ${championInfo.championId}`);
 			return;
 		}
-		// Do a quick check to see if the player belongs in the highscores before iterating over everything to see where they belong
-		const lowestScore: Highscore = this.highscores[champion.id][Config.highscoreCount.track - 1];
-		if (!lowestScore || championInfo.championPoints >= lowestScore.points) {
-			// Find the place this summoner belongs in
-			for (let place = 0; place < Config.highscoreCount.track; place++) {
-				const score = this.highscores[champion.id][place];
-				if (this.highscores[champion.id][place]) {
-					if (score.id === summoner.id && score.region === region.id) {
-						// Update player info if it has changed
-						if (score.name !== summoner.name || score.points !== championInfo.championPoints) {
-							// https://github.com/Derpthemeus/ChampionMasteryLookup/issues/8
-							if (score.points > championInfo.championPoints) {
-								console.log(`${summoner.name} (${region.id}) has lost points on ${champion.name}. Currently holds highscore at index ${place}`);
-							}
 
-							this.highscores[champion.id][place] = {
-								name: summoner.name,
-								id: summoner.id,
-								region: region.id,
-								points: championInfo.championPoints,
-								standardizedName: summoner.standardizedName
-							};
-							if (Config.logHighscoreUpdates) {
-								console.log(`Updated info for ${summoner.name} (${region.id}). Summoner now has ${championInfo.championPoints} points on ${champion.name} (score at index ${place})`);
-							}
+		// Find the place this summoner belongs in
+		for (let place = 0; place < Config.highscoreCount.track; place++) {
+			const score = this.highscores[champion.id][place];
+			if (this.highscores[champion.id][place]) {
+				if (score.id === summoner.id && score.region === region.id) {
+					// Update player info if it has changed
+					if (score.name !== summoner.name || score.points !== championInfo.championPoints) {
+						// https://github.com/Derpthemeus/ChampionMasteryLookup/issues/8
+						if (score.points > championInfo.championPoints) {
+							console.warn(`${summoner.name} (${region.id}) has lost points on ${champion.name}. Currently holds highscore at index ${place}`);
 						}
-						break;
-					} else {
-						if (championInfo.championPoints > score.points) {
-							this.setScore(champion, place, summoner, region, championInfo.championPoints);
-							break;
+
+						this.highscores[champion.id][place] = {
+							name: summoner.name,
+							id: summoner.id,
+							region: region.id,
+							points: championInfo.championPoints,
+							standardizedName: summoner.standardizedName
+						};
+						if (Config.logHighscoreUpdates) {
+							console.log(`Updated info for ${summoner.name} (${region.id}). Summoner now has ${championInfo.championPoints} points on ${champion.name} (score at index ${place})`);
 						}
 					}
-				} else {
-					// Create new score
-					this.setScore(champion, place, summoner, region, championInfo.championPoints);
 					break;
+				} else {
+					if (championInfo.championPoints > score.points) {
+						this.setScore(champion, place, summoner, region, championInfo.championPoints);
+						break;
+					}
 				}
+			} else {
+				// Create new score
+				this.setScore(champion, place, summoner, region, championInfo.championPoints);
+				break;
 			}
 		}
 	}
