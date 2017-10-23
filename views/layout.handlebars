@@ -21,12 +21,12 @@
 	{{{block "scripts"}}}
 </head>
 
-<body class="col-sm-12">
+<body>
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<button type="button" data-toggle="collapse" data-target="#navbar-collapsible" class="navbar-toggle">
 				<span class="glyphicon glyphicon-menu-down"></span>
 		</button>
-		<div class="container">
+		<div class="container-fluid">
 			<div id="navbarLogo" class="navbar-header center-block">
 				<a href="/">
 					<img src="/img/logo-header.png" alt="ChampionMasteryLookup">
@@ -40,13 +40,16 @@
 				</ul>
 				<form action="/summoner" class="navbar-form navbar-right">
 					<div class="form-group">
-						<input type="text" name="summoner" placeholder="Summoner name" class="form-control">
+						<input type="text" name="summoner" placeholder="Summoner Name" class="form-control">
 						<select id="region" class="selectpicker form-control" name="region">
 							{{#each regions}}
 								<option value="{{this}}">{{this}}</option>
 							{{/each}}
 						</select>
-						<button type="submit" class="btn btn-default">Lookup</button>
+						<button type="submit" class="btn btn-default">
+							<span class="hidden-sm">Lookup</span>
+							<span class="visible-sm-block"><span class="glyphicon glyphicon-search"></span></span>
+						</button>
 					</div>
 				</form>
 			</div>
@@ -67,6 +70,7 @@
 
 	<div id="footer" class="col-sm-12 text-center">
 		<span><a href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me on Reddit</a> or <a href="mailto:championmasterylookup@derpthemeus.com">email me</a> (please read <a href="/faq">the FAQ</a> first)</span>
+		|
 		<span><a href="/legal">Legal info</a></span>
 	</div>
 </body>

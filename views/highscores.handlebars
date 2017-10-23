@@ -11,55 +11,63 @@
 	{{/content}}
 
 	{{#content "body"}}
-		<div class="text-center">
-			<h1>Highscores</h1>
-			Players must be looked up on this site to appear on this list
-			<br>
-			Click on a champion to see the top 20 players for that champion
-			<br>
-			<select id="quickJump">
-				<option value="quick_jump">Quick jump</option>
+		<div class="container">
+			<div class="text-center">
+				<h1>Highscores</h1>
+				Players must be looked up on this site to appear on this list
+				<br>
+				Click on a champion to see the top 20 players for that champion
+				<br>
+				<select id="quickJump">
+					<option value="quick_jump">Quick jump</option>
+					{{#each highscores}}
+						<option value="{{this.id}}">{{this.name}}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div class="text-center">
+				<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+				<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-5598552437938145" data-ad-slot="2684408016"></ins>
+				<script>
+					(adsbygoogle = window.adsbygoogle || []).push({});
+				</script>
+			</div>
+			<div class="row pt-1">
 				{{#each highscores}}
-					<option value="{{this.id}}">{{this.name}}</option>
-				{{/each}}
-			</select>
-		</div>
-		<div class="text-center">
-			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-			<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-5598552437938145" data-ad-slot="2684408016"></ins>
-			<script>
-				(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>
-		</div>
-		<div id="content" class="row col-sm-10 col-sm-offset-1">
-			{{#each highscores}}
-				<div class="col-sm-6">
-					<div class="col-sm-12 well well-sm pull-left">
-						<a href="/champion?champion={{this.id}}">
-							<img class="championIcon pull-left" src="/img/championIcons/{{this.icon}}">
-						</a>
-						<div class="championText pull-left">
-							<a class="championName" href="/champion?champion={{this.id}}">
-								{{this.name}}
-							</a>
-							{{#each this.scores}}
-								<div>
-									<span class="place">{{ordinalize (add @index 1)}}</span>
-									{{#if this}}
-										<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
-											{{this.name}} ({{this.region}})
-										</a>
-										:
-										<span data-format-number="{{this.points}}">{{this.points}}</span>
-									{{else}}
-										Nobody
-									{{/if}}
+					<div class="col-md-6">
+						<div class="well well-sm">
+							<div class="row">
+								<div class="col-xs-3 col-sm-2">
+									<a href="/champion?champion={{this.id}}">
+										<img class="championIcon" src="/img/championIcons/{{this.icon}}">
+									</a>
 								</div>
-							{{/each}}
+								<div class="col-xs-9 col-sm-10 text-left">
+									<div>
+										<a href="/champion?champion={{this.id}}">
+											<strong>{{this.name}}</strong>
+										</a>
+										{{#each this.scores}}
+											<div>
+												<strong>{{ordinalize (add @index 1)}}</strong>
+												{{#if this}}
+													<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
+														{{this.name}} ({{this.region}})
+													</a>
+													:
+													<span data-format-number="{{this.points}}">{{this.points}}</span>
+												{{else}}
+													Nobody
+												{{/if}}
+											</div>
+										{{/each}}
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-			{{/each}}
+				{{/each}}
+			</div>
 		</div>
 	{{/content}}
 {{/extend}}

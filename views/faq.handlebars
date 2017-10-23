@@ -7,17 +7,19 @@
 	{{#content "title"}}FAQ - ChampionMasteryLookup{{/content}}
 
 	{{#content "body"}}
-		<h1 class="text-center">Frequently Asked Questions</h1>
-		<div class="col-sm-10 col-sm-offset-1">
+		<div class="container">
+			<h1 class="text-center">Frequently Asked Questions</h1>
 			{{#>question question="This site used to be ad-free, why are there ads now?"}}
-				For a bit over 1.5 years, I was able to run ChampionMasteryLookup ad-free through free hosting. In August 2017, my hosting provider announced some upcoming changes which make it impractical to run a production website on their new free plan. I don't mind spending my free time working on the site (I enjoy programming and it's a great learning experience), but I'd rather not pay out of pocket to run a service that provides little benefit to myself. To avoid shutting down the site, I've switched to paid hosting and placed ads on the site to cover the costs. I plan to continuously adjust advertisements shown to provide the best user experience possible (minimal ads with non-intrusive placement and content) while generating enough revenue to keep the site running.<br>
+				For a bit over 1.5 years, I was able to run ChampionMasteryLookup ad-free through free hosting. In August 2017, my hosting provider announced some upcoming changes which make it impractical to run a production website on their new free plan. I don't mind spending my free time working on the site (I enjoy programming and it's a great learning experience), but I'd rather not pay out of pocket to run a service that provides little benefit to myself. To avoid shutting down the site, I've switched to paid hosting and placed ads on the site to cover the costs. I plan to continuously adjust advertisements shown to provide the best user experience possible (minimal ads with non-intrusive placement and content) while generating enough revenue to keep the site running.
+				<br>
+				<br>
 				I understand if you want to use an ad blocker, but I encourage you to try whitelisting this site - hopefully you'll find that the ads don't negatively impact your experience. If you have any feedback about ad placements or content, please let me know (my contact info is in the site footer) so I can try to improve the site.
 			{{/question}}
-			{{#>question question="Somebody is missing from the highscores list"}}
+			{{#>question question="Somebody is missing from the highscores list!"}}
 				Players must be looked up on the site to appear on the highscores.
 				Look them up (using the search box in the top right) and they will be added to the list.
 			{{/question}}
-			{{#>question question="When I click a player on the highscores list it says they weren't found or it brings me to the wrong player"}}
+			{{#>question question="When I click on a player on the highscores list, it says they weren't found or it brings me to the wrong player!"}}
 				<b>If their mastery data is slightly outdated:</b> champion mastery info is cached for 10 minutes. Try refreshing the page in a few minutes to update it.
 				<br>
 				<b>If a link brought you to a player with a different name, but they have the correct mastery data:</b> the player changed their name and you have been automatically redirected.
@@ -36,17 +38,19 @@
 			{{#>question question="Do you have an API for the highscores list?"}}
 				You can download a copy of the data <a href="/downloadData"> here</a>. Please download and cache your own copy of the data to avoid putting unnecessary strain on the server.
 				<br>
+				<br>
 				The data is a JSON object with <a href="https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList">champion IDs</a> as keys ("-1" for total points, "-2" for total level).
 				Each champion contains the summoner name, <a href="https://developer.riotgames.com/api-methods/#summoner-v3/GET_getBySummonerId">summoner ID</a>, <a href="https://developer.riotgames.com/regional-endpoints.html">region</a>, points on the champion (or total level), and standardized name (all lowercase, spaces removed) for each of the top 30 players.
 				<br>
-				Feel free to <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">message me on Reddit</a> or <a href="https://github.com/Derpthemeus/ChampionMasteryLookup/issues">create an issue on GitHub</a> if you have any questions
+				<br>
+				Feel free to <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">message me on Reddit</a> or <a href="https://github.com/Derpthemeus/ChampionMasteryLookup/issues">create an issue on GitHub</a> if you have any questions.
 			{{/question}}
 		</div>
 	{{/content}}
 {{/extend}}
 
 {{#*inline "question"}}
-	<div class="col-sm-12 well well-sm">
+	<div class="well well-sm">
 		<h3 class="question">{{question}}</h3>
 		{{{@partial-block}}}
 	</div>
