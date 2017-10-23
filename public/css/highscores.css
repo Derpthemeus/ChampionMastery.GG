@@ -1,0 +1,11 @@
+.championIcon {
+	display: block;
+	max-width: 80px;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#quickJump {
+	margin-bottom: 12px;
+}
