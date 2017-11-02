@@ -47,13 +47,18 @@ export async function renderSummoner(req: express.Request, res: express.Response
 								 * Levels 1-4 have a sorting value equal to their percentage progression to next level. Levels 5-6 have a sorting value of "L0T", where "L" is the level and "T" is the tokens earned.
 								 */
 								let sortingValue: number;
+								let pointsToNextLevel: number;
 
 								if (masteryChampion.championLevel < 5) {
 									// The percentage to the next level, rounded to 2 decimal places
 									sortingValue = Math.round(masteryChampion.championPointsSinceLastLevel / (masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel) * 10000) / 100;
 									tooltip = `${masteryChampion.championPointsSinceLastLevel}/${masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel} points (${sortingValue}%)`;
+									pointsToNextLevel = masteryChampion.championPointsUntilNextLevel;
 								} else {
 									sortingValue = (100 * masteryChampion.championLevel) + masteryChampion.tokensEarned;
+									// Using a higher value to keep lvl 5 and above at the end of the ascending sort
+									pointsToNextLevel = 90000 + (100 * masteryChampion.championLevel);
+
 									if (masteryChampion.championLevel === 7) {
 										tooltip = "Max level";
 									} else {
@@ -67,7 +72,8 @@ export async function renderSummoner(req: express.Request, res: express.Response
 									// Call the champion "New Champion" if static data ha not been updated yet
 									championName: champion ? champion.name : `New Champion`,
 									tooltip: tooltip,
-									sortingValue: sortingValue
+									sortingValue: sortingValue,
+									pointsToNextLevel: pointsToNextLevel
 								};
 
 								champions[i] = info;
@@ -94,6 +100,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 								championName: string;
 								tooltip: string;
 								sortingValue: number;
+								pointsToNextLevel: number;
 							}
 						} else {
 							res.redirect(302, `?summoner=${encodeURIComponent(summoner.standardizedName)}&region=${region.id}`);
