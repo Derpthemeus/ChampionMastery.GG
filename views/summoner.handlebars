@@ -35,6 +35,7 @@
 						{{>headerColumn name="Chest Earned"}}
 						{{>headerColumn name="Last Played"}}
 						{{>headerColumn name="Progress"}}
+						{{>headerColumn name="Points To Next Level"}}
 					</tr>
 				</thead>
 				<tbody>
@@ -62,6 +63,13 @@
 										{{/gte}}
 									{{/eq}}
 								</td>
+								<td {{#lt this.championLevel 5}}data-format-number="{{this.championPointsUntilNextLevel}}"{{/lt}} data-value="{{this.pointsToNextLevel}}">
+									{{#gte this.championLevel 5}}
+										N/A
+									{{else}}
+										{{this.championPointsUntilNextLevel}}
+									{{/gte}}
+								</td>
 							</td>
 						</tr>
 					{{/each}}
@@ -72,6 +80,7 @@
 						<td data-format-number="{{totals.level}}">{{totals.level}}</td>
 						<td data-format-number="{{totals.points}}">{{totals.points}}</td>
 						<td>{{totals.chests}}/{{totals.champions}}</td>
+						<td></td>
 						<td></td>
 						<td></td>
 					</tr>

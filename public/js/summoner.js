@@ -20,7 +20,8 @@ $(document).ready(() => {
 			2: {sorter: "data-value"},
 			3: {sorter: "data-value"},
 			4: {sorter: "data-value"},
-			5: {sorter: "data-value"}
+			5: {sorter: "data-value"},
+			6: {sorter: "data-value"}
 		},
 		// Primary sorted by level, secondary sorted by points
 		sortList: [
