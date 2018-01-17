@@ -40,7 +40,7 @@ export default class Highscores {
 			if (testScore.id === summoner.id && testScore.region === region.id) {
 				// Remove the previous score
 				this.highscores[champion.id].splice(testPlace, 1);
-				previousPlace = testPlace;
+				previousPlace = testPlace - 1;
 				break;
 			}
 		}
