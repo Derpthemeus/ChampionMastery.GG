@@ -1,16 +1,12 @@
 {{#extend "layout"}}
 	{{#content "css"}}
-		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/home.css">
 	{{/content}}
 	{{#content "body"}}
-		<div class="container">
-			<p>
-				ChampionMasteryLookup lets you view any player's champion mastery scores, and tracks the looked up players with the most points on each champion.
-				Enter a summoner name and region in the top right to look up their champion mastery scores, or click on the "Highscores" button to view the top players for each champion.
-			</p>
-			<img src="/img/championMasteryPoro.jpg" class="center-block">
-		</div>
+		<p>
+			ChampionMasteryLookup lets you view any player's champion mastery scores, and tracks the looked up players with the most points on each champion.
+			Enter a summoner name and region in the top right to look up their champion mastery scores, or click on the "Highscores" button to view the top players for each champion.
+		</p>
+		<img id="homeImage" src="/img/championMasteryPoro.jpg">
 	{{/content}}
 {{/extend}}

@@ -1,4 +1,4 @@
-$(document).ready(() => {
+document.addEventListener("DOMContentLoaded", () => {
 	formatNumbers();
 
 	// Update selected region
