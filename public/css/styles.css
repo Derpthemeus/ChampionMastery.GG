@@ -1,6 +1,7 @@
 :root {
 	--navbar-height: 52px;
-	--well-color: #f8f8f8;
+	--well-color: #f6f6f6;
+	--well-trim-color: #e7e7e7;
 }
 
 * {
@@ -12,14 +13,13 @@ body {
 }
 
 #navbar {
-	--navbar-trim-color: #e7e7e7;
 	position: fixed;
 	display: flex;
 	z-index: 100;
 	justify-content: flex-start;
 	align-items: center;
 	background-color: var(--well-color);
-	border-bottom: 2px solid var(--navbar-trim-color);
+	border-bottom: 2px solid var(--well-trim-color);
 	width: 100%;
 	height: var(--navbar-height);
 	top: 0;
@@ -76,7 +76,7 @@ body {
 #navbar-form>* {
 	margin: 0 2px;
 	border-radius: 5px;
-	border: 2px solid var(--navbar-trim-color);
+	border: 2px solid var(--well-trim-color);
 	padding: 0 7px;
 }
 
@@ -85,13 +85,14 @@ body {
 	color: #0c5460;
 	background-color: #d1ecf1;
 	border: solid 2px #bee5eb;
-	width: 90%;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 #content {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	align-items: center;
 	margin: 0 auto;
 	width: 90%;
 }
@@ -116,6 +117,12 @@ a {
 a:hover {
 	color: #23527c;
 	text-decoration: underline;
+}
+
+.well {
+	background-color: var(--well-color);
+	border: 2px solid var(--well-trim-color);
+	border-radius: 5px;
 }
 
 /** Wrap lookup form */
