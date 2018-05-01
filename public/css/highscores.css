@@ -1,11 +1,56 @@
-.championIcon {
-	display: block;
+#highscores {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin-top: 10px;
+}
+
+.champion {
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	width: 49%;
+	padding: 5px 1%;
+	margin-bottom: 15px;
+	font-size: 15px;
+}
+
+.champion-info {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding-left: 7px;
+}
+
+.champion-icon img {
 	max-width: 80px;
-	height: auto;
-	margin-left: auto;
-	margin-right: auto;
+	border-radius: 5px;
 }
 
 #quickJump {
 	margin-bottom: 12px;
+}
+
+/** Use a single column for champions */
+@media (max-width:925px) {
+	.champion {
+		width: 100%;
+	}
+}
+
+/** Ultra-compact */
+@media (max-width:400px) {
+	.champion {
+		font-size: 13px;
+	}
+	.champion-icon img {
+		max-width: 70px;
+	}
+}
+
+/** Use a three columns for champions */
+@media (min-width:1375px) {
+	.champion {
+		width: 33%;
+	}
 }
