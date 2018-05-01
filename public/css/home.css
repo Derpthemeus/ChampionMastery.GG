@@ -2,3 +2,10 @@
 	margin: 0 auto;
 	width: auto;
 }
+
+/** Hide the drawing */
+@media (max-width:850px) {
+	#homeImage {
+		display: none;
+	}
+}

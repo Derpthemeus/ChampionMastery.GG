@@ -99,7 +99,9 @@ body {
 
 #footer {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
+	text-align: center;
 	padding-top: 60px;
 	padding-bottom: 15px;
 }
