@@ -11,6 +11,7 @@ h1 {
 #championIcon {
 	width: 50px;
 	margin-right: 8px;
+	border-radius: 5px;
 }
 
 #disclaimer {
