@@ -4,10 +4,12 @@
 	{{/content}}
 	{{#content "title"}}Error - ChampionMasteryLookup{{/content}}
 	{{#content "body"}}
-		<h1>An error has occurred</h1>
-		<h2>{{error.error}}</h3>
-		{{#if error.details}}
-			{{error.details}}
-		{{/if}}
+		<div id="container">
+			<h1>An error has occurred</h1>
+			<h2>{{error.error}}</h3>
+			{{#if error.details}}
+				{{error.details}}
+			{{/if}}
+		</div>
 	{{/content}}
 {{/extend}}
