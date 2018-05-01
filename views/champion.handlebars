@@ -2,22 +2,19 @@
 	{{#content "title"}}{{champion.name}} - ChampionMasteryLookup{{/content}}
 
 	{{#content "css"}}
-		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="/css/champion.css">
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	{{/content}}
 
 	{{#content "body"}}
-		<h1 class="text-center">
+		<h1>
 			<img id="championIcon" src="/img/championIcons/{{champion.icon}}">
 			<span>{{champion.name}}</span>
 		</h1>
-		<div id="disclaimer" class="text-center">
+		<div id="disclaimer">
 			Players must be looked up on this site to appear on this list
 		</div>
-		<div class="container">
-			<table class="table well well-sm">
+		<div id="container">
+			<table class="well">
 				<thead>
 					<tr>
 						<th>Place</th>
@@ -52,7 +49,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="text-center">
+		<div>
 			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 			<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-5598552437938145" data-ad-slot="7949656060"></ins>
 			<script>
