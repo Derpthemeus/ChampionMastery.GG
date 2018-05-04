@@ -4,32 +4,30 @@
 	{{/content}}
 
 	{{#content "css"}}
-		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="/css/summoner.css">
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	{{/content}}
 
 	{{#content "scripts"}}
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.28.12/js/jquery.tablesorter.min.js"></script>
 		<script src="/js/summoner.js"></script>
 	{{/content}}
 
 
 	{{#content "body"}}
-		<div class="container">
-			<div class="text-center">
-				<h1>
-					<img src="/img/profileIcons/{{summoner.icon}}.png" id="summonerIcon">
-					<span id="summonerName">{{summoner.name}} ({{summoner.region}})</span>
-				</h1>
+		<div id="header">
+			<h1>
+				<img src="/img/profileIcons/{{summoner.icon}}.png" id="summonerIcon">
+				<span id="summonerName">{{summoner.name}} ({{summoner.region}})</span>
+			</h1>
+			<div id="profileLinks">
 				<a class="profileLink" href="https://{{summoner.region}}.op.gg/summoner/userName={{encodeURI summoner.name}}">op.gg</a>
 				<a class="profileLink" href="http://lolking.net/summoner/{{lowercase summoner.region}}/{{summoner.id}}">LolKing</a>
 				<a class="profileLink" href="https://legends.ai/{{lowercase summoner.region}}/summoner/{{encodeURI (lowercase summoner.name)}}/">Legends.ai</a>
-				<div>Information will only update once every 10 minutes.</div>
 			</div>
-			<table id="table" class="table well well-sm">
+			<div>Information will only update once every 10 minutes.</div>
+		</div>
+		<div id="container">
+			<table class="well">
 				<thead>
 					<tr>
 						{{>headerColumn name="Champion"}}
@@ -41,7 +39,7 @@
 						{{>headerColumn name="Points To Next Level"}}
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="tbody">
 					{{#each champions}}
 						<tr>
 							<td>
@@ -90,7 +88,7 @@
 				</tfoot>
 			</table>
 		</div>
-		<div class="text-center">
+		<div>
 			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 			<ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px" data-ad-client="ca-pub-5598552437938145" data-ad-slot="7667936107"></ins>
 			<script>
@@ -102,7 +100,7 @@
 
 
 {{#*inline "headerColumn"}}
-	<th>
+	<th data-sorting-order="0">
 		{{name}}
 		<span>{{! the icon used for sorting goes in this column}}</span>
 	</th>
