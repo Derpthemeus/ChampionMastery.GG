@@ -1,7 +1,6 @@
 h1 {
 	display: flex;
 	align-items: center;
-	font-weight: normal;
 }
 
 #container {
@@ -20,18 +19,6 @@ h1 {
 
 table {
 	width: 100%;
-	border-collapse: collapse;
-}
-
-th {
-	padding: 10px;
-	border-bottom: 3px solid var(--well-trim-color);
-	text-align: left;
-}
-
-td {
-	border-bottom: 1px solid var(--well-trim-color);
-	padding: 8px 8px;
 }
 
 /* Make table slightly wider on small screens */

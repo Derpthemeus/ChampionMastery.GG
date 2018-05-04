@@ -124,6 +124,35 @@ a:hover {
 	border-radius: 5px;
 }
 
+table {
+	--table-border-color: var(--well-trim-color);
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th {
+	padding: 10px;
+	border-bottom: 3px solid var(--table-border-color);
+	text-align: left;
+}
+
+td {
+	border-bottom: 1px solid var(--table-border-color);
+	padding: 8px 8px;
+}
+
+tfoot td {
+	font-weight: bold;
+}
+
+h1, h2 {
+	font-weight: normal;
+}
+
+button {
+	cursor: pointer;
+}
+
 /** Wrap lookup form */
 @media (max-width:650px) {
 	:root {
