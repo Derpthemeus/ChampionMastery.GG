@@ -21,30 +21,28 @@ body {
 	background-color: var(--well-color);
 	border-bottom: 2px solid var(--well-trim-color);
 	width: 100%;
+	padding: 0px 1%;
 	height: var(--navbar-height);
 	top: 0;
 	left: 0;
+	box-sizing: border-box;
 }
 
-#navbar-logo-compact {
-	display: none;
+#navbar-logo {
+	display: flex;
 }
 
 #navbar-items {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-}
-
-#navbar-logo {
-	padding-right: 1.5%;
 	padding-left: 1%;
 }
 
 .navbar-item {
 	color: #777;
 	text-decoration: none;
-	padding-right: 20px;
+	padding-right: 15px;
 }
 
 .navbar-item:hover {
@@ -56,7 +54,6 @@ body {
 	margin-left: auto;
 	display: flex;
 	align-items: center;
-	padding-right: 1%;
 }
 
 #navbar-lookup button {
@@ -132,10 +129,12 @@ a:hover {
 	:root {
 		--navbar-height: 95px;
 	}
+
 	#navbar {
 		justify-content: center;
 		flex-wrap: wrap;
 	}
+
 	#navbar-lookup {
 		justify-content: center;
 		margin-left: 0;
@@ -144,12 +143,9 @@ a:hover {
 	}
 }
 
-/** Use compact logo */
-@media (max-width:850px) {
-	#navbar-logo-full {
+/** Remove title from header */
+@media (max-width:875px) {
+	#navbar-logo-title {
 		display: none;
-	}
-	#navbar-logo-compact {
-		display: flex;
 	}
 }
