@@ -153,6 +153,10 @@ button {
 	cursor: pointer;
 }
 
+.ad-header, .ad-footer {
+	width: 90%;
+}
+
 /** Wrap lookup form */
 @media (max-width:650px) {
 	:root {
