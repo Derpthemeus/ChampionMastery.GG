@@ -1,4 +1,29 @@
+const timeUnits = [
+	{value: 1000 * 60, name: "minute", max: 60},
+	{value: 1000 * 60 * 60, name: "hour", max: 23},
+	{value: 1000 * 60 * 60 * 24, name: "day", max: 13},
+	{value: 1000 * 60 * 60 * 24 * 7, name: "week", max: 6},
+	{value: 1000 * 60 * 60 * 24 * 30, name: "month", max: 17},
+	{value: 1000 * 60 * 60 * 24 * 365, name: "year", max: 100}
+];
+
+const dateFormatter = new Intl.DateTimeFormat([], {
+	year: "2-digit",
+	month: "numeric",
+	day: "numeric"
+});
+
+const timeFormatter = new Intl.DateTimeFormat([], {
+	hour: "numeric",
+	minute: "numeric"
+});
+
 document.addEventListener("DOMContentLoaded", () => {
+	// Primary sort by level, secondary sorted by points
+	sortChampions([1, 2]);
+
+	formatTimes();
+
 	const ths = document.getElementsByTagName("th");
 	for (let i = 0; i < ths.length; i++) {
 		ths[i].addEventListener("click", () => {
@@ -6,28 +31,41 @@ document.addEventListener("DOMContentLoaded", () => {
 			sortChampions([i, 2]);
 		});
 	}
-
-	// Primary sort by level, secondary sorted by points
-	sortChampions([1, 2]);
-
-	// Set last played tooltips
-	const elements = document.getElementsByClassName("lastPlayed");
-	const now = new moment();
-	for (const td of elements) {
-		const relative = new moment(td.dataset.formatTime, "x").from(now);
-		td.title = relative;
-	}
-
-	// Format times
-	formatTimes();
 });
 
+/** Formats timestamps and creates tooltips */
 function formatTimes() {
 	const elements = document.querySelectorAll("[data-format-time]");
+	const now = Date.now();
 	for (const element of elements) {
-		const time = new moment(element.dataset.formatTime, "x");
-		element.innerHTML = "";
-		element.appendChild(document.createTextNode(time.format("D MMM YYYY, h:mm a")));
+		const timestamp = +element.dataset.formatTime;
+		const date = new Date(timestamp);
+
+		// Set the tooltip
+		const relative = getTimeDifference(timestamp, now);
+		element.title = relative;
+
+		element.appendChild(document.createTextNode(dateFormatter.format(date)));
+
+		const timeSpan = document.createElement("span");
+		timeSpan.className = "collapsible";
+		timeSpan.appendChild(document.createTextNode(", " + timeFormatter.format(date)));
+		element.appendChild(timeSpan);
+	}
+}
+
+/**
+ * Returns a string indicating how long ago a specified time occurred (e.g. "3 months ago")
+ * @param {number} time The timestamp of the past time
+ * @param {number} now The current timestamp
+ */
+function getTimeDifference(time, now) {
+	const millis = now - time;
+	for (const unit of timeUnits) {
+		const amount = Math.round(millis / unit.value);
+		if (amount <= unit.max) {
+			return `${amount} ${unit.name}${amount === 1 ? "" : "s"} ago`;
+		}
 	}
 }
 

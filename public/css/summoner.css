@@ -78,3 +78,26 @@ th[data-sorting-order="1"]>span {
 	background-color: rgb(160, 180, 230);
 	height: 100%;
 }
+
+/** Make the table wider on small displays */
+@media (max-width:975px) {
+	#container {
+		width: 110%;
+	}
+}
+
+/** Remove some information on very small displays */
+@media (max-width:750px) {
+	.collapsible {
+		display: none;
+	}
+
+	#container {
+		width: 110%;
+	}
+
+	td, th {
+		padding-left: 4px;
+		padding-right: 4px;
+	}
+}

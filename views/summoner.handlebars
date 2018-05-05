@@ -8,7 +8,6 @@
 	{{/content}}
 
 	{{#content "scripts"}}
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 		<script src="/js/summoner.js"></script>
 	{{/content}}
 
@@ -49,8 +48,8 @@
 								<td data-value="{{#if this.chestGranted}}1{{else}}0{{/if}}">
 									<img src="/img/chest.png" class="chest{{#unless this.chestGranted}} notEarned{{/unless}}">
 								</td>
-								<td class="lastPlayed" data-format-time="{{this.lastPlayTime}}" data-value="{{this.lastPlayTime}}" data-toggle="tooltip"></td>
-								<td data-value="{{this.sortingValue}}" data-tooltip="tooltip" title="{{this.tooltip}}">
+								<td data-format-time="{{this.lastPlayTime}}" data-value="{{this.lastPlayTime}}" data-toggle="tooltip"></td>
+								<td class="{{#lt this.championLevel 5}}collapsible{{/lt}}" data-value="{{this.sortingValue}}" data-tooltip="tooltip" title="{{this.tooltip}}">
 									{{#eq this.championLevel 7}}
 										Mastered
 									{{else}}
@@ -64,7 +63,7 @@
 										{{/gte}}
 									{{/eq}}
 								</td>
-								<td {{#lt this.championLevel 5}}data-format-number="{{this.championPointsUntilNextLevel}}"{{/lt}} data-value="{{this.pointsToNextLevel}}">
+								<td class="{{#gte this.championLevel 5}}collapsible{{/gte}}" {{#lt this.championLevel 5}}data-format-number="{{this.championPointsUntilNextLevel}}"{{/lt}} data-value="{{this.pointsToNextLevel}}">
 									{{#gte this.championLevel 5}}
 										N/A
 									{{else}}
@@ -83,7 +82,7 @@
 						<td>{{totals.chests}}/{{totals.champions}}</td>
 						<td></td>
 						<td></td>
-						<td></td>
+						<td class="collapsible"></td>
 					</tr>
 				</tfoot>
 			</table>
@@ -100,8 +99,8 @@
 
 
 {{#*inline "headerColumn"}}
-	<th data-sorting-order="0">
+	<th class="{{#eq name "Progress"}}collapsible{{/eq}}" data-sorting-order="0">
 		{{name}}
-		<span>{{! the icon used for sorting goes in this column}}</span>
+		<span class="collapsible">{{! the icon used for sorting goes in this span}}</span>
 	</th>
 {{/inline}}
