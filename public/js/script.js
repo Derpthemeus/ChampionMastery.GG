@@ -27,3 +27,8 @@ function getURLParameter(name) {
 	}
 	return null;
 }
+
+function toggleNavbarLookupForm() {
+	const navbar = document.getElementById("navbar");
+	navbar.dataset.collapsed = (navbar.dataset.collapsed === "expanded") ? "collapsed" : "expanded";
+}

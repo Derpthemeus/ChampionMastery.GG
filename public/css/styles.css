@@ -50,6 +50,15 @@ body {
 	text-decoration: none;
 }
 
+#toggle-search-button {
+	display: none;
+	width: 30px;
+	height: 30px;
+	background-color: white;
+	border-radius: 5px;
+	border: 2px solid var(--well-trim-color);
+}
+
 #navbar-lookup {
 	margin-left: auto;
 	display: flex;
@@ -157,22 +166,29 @@ button {
 	width: 90%;
 }
 
-/** Wrap lookup form */
+/** Wrap and hide the lookup form */
 @media (max-width:650px) {
-	:root {
-		--navbar-height: 95px;
-	}
-
 	#navbar {
 		justify-content: center;
 		flex-wrap: wrap;
 	}
 
+	#toggle-search-button {
+		display: block;
+	}
+
 	#navbar-lookup {
+		display: none;
 		justify-content: center;
-		margin-left: 0;
 		flex-basis: 100%;
-		padding: 0;
+	}
+
+	#navbar[data-collapsed="expanded"] {
+		height: 92px;
+	}
+
+	#navbar[data-collapsed="expanded"] #navbar-lookup {
+		display: flex;
 	}
 }
 
