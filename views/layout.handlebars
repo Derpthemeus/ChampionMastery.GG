@@ -20,12 +20,21 @@
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
 	{{{block "css"}}}
 	<script src="/js/script.js"></script>
+
 	<script>
 		window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 		ga('create', 'UA-72665536-1', 'auto');
 		ga('send', 'pageview');
 	</script>
 	<script async src="https://www.google-analytics.com/analytics.js"></script>
+
+	<script>
+		(function(){document.write('<div id="vmv3-ad-manager" style="display:none"></div>');
+		document.getElementById("vmv3-ad-manager").innerHTML='<iframe id="vmv3-frm" src="javascript:\'<html><body></body></html>\'" width="0" height="0" data-mode="scan" data-site-id="5b114c8f46e0fb000159d58e"></iframe>';
+		var a=document.getElementById("vmv3-frm");a=a.contentWindow?a.contentWindow:a.contentDocument;a.document.open();
+		a.document.write('<script src="https://hb.vntsm.com/v3/live/ad-manager.min.js" type="text/javascript" async>'+'</scr'+'ipt>');a.document.close()})();
+	</script>
+
 	{{{block "scripts"}}}
 </head>
 

@@ -162,9 +162,8 @@ button {
 	cursor: pointer;
 }
 
-.ad-header, .ad-footer {
-	width: 90%;
-}
+/** TODO center this better on very small displays (<320px) */
+.ad-header, .ad-footer {}
 
 /** Wrap and hide the lookup form */
 @media (max-width:650px) {

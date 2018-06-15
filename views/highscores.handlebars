@@ -24,11 +24,8 @@
 				<option value="{{this.id}}">{{this.name}}</option>
 			{{/each}}
 		</select>
-		<div class="ad-header">
-			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-			<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5598552437938145"	data-ad-slot="2601206940" data-ad-format="horizontal"></ins>
-			<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-		</div>
+		<!-- `data-id` attribute will be set by `setupAds()` in script.js -->
+		<div class="ad-header vm-placement"></div>
 		<div id="highscores">
 			{{#each highscores}}
 				<div class="champion well">

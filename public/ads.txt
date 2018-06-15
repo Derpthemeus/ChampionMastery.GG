@@ -1,0 +1,79 @@
+﻿#v29.05.018
+
+#Display
+adtech.com, 4596, DIRECT # AOL Hbidding
+appnexus.com, 806, DIRECT # Appnexus Hbidding 
+aolcloud.net, 4596, DIRECT # AOL Hbidding
+sonobi.com, 116da9d98c, DIRECT # Sonobi Hbidding
+sovrn.com, 237754, DIRECT, fafdf38b16bf6b2b # Sovrn Hbidding 
+indexexchange.com, 183921, DIRECT # Index Hbidding
+improvedigital.com, 1012, DIRECT # ImproveD Hbidding
+districtm.io, 100749, DIRECT #DM direct Hbidding
+appnexus.com, 1908, RESELLER #DM reseller Hbidding
+appnexus.com, 7944, RESELLER #DM reseller Hbidding
+conversantmedia.com, 41150, DIRECT # Conversant Hbidding
+sovrn.com, 237754, DIRECT, fafdf38b16bf6b2b # Sovrn Hbidding
+1rx.io, 1155926068, DIRECT, a670c89d4a324e47 #Rone Hbidding
+openx.com, 537144009, DIRECT, 6a698e2ec38604c6 #OpneX Hbidding
+pubmatic.com, 155988, DIRECT, 5d62403b186f2ace #Pubmatic Hbidding
+rubiconproject.com, 13762, DIRECT, 0bfd66d529a55807 # Rubicon Hbidding
+rhythmone.com, 1155926068, DIRECT, a670c89d4a324e47 #Rone Hbidding
+rhythmone.com, 608304513, DIRECT, a670c89d4a324e47 #Rone Hbidding
+
+
+#Video
+adtech.com, 2694, DIRECT #video
+aolcloud.net, 2694, DIRECT #video
+advertising.com, 2694, DIRECT #video
+freewheel.tv, 1953, DIRECT #video
+videologygroup.com, 1641, DIRECT #video
+improvedigital.com, 1012, DIRECT #video
+lkqd.net, 304, DIRECT, 59c49fa9598a0117 #video
+lkqd.com, 304, RESELLER, 59c49fa9598a0117 #video
+spotx.tv, 141412, DIRECT, 7842df1d2fe2db34 #video
+tremorhub.com, hpwve, RESELLER, 1a4e959a1b50034a #video
+spotxchange.com, 141412, DIRECT, 7842df1d2fe2db34 #video
+pubmatic.com, 156715, DIRECT, 5d62403b186f2ace #video
+freewheel.tv, 187721, DIRECT #video
+freewheel.tv, 211121, DIRECT #video
+freewheel.tv, 196129, DIRECT #video
+freewheel.tv, 228641, DIRECT #video
+freewheel.tv, 187865, DIRECT #video
+freewheel.tv, 211129, DIRECT #video
+freewheel.tv, 196145, DIRECT #video
+freewheel.tv, 228649, DIRECT #video
+
+
+#Richmedia
+smartadserver.com, 1827, RESELLER #sublime
+improvedigital.com, 335, RESELLER #sublime
+appnexus.com, 3538, RESELLER #sublime
+appnexus.com, 3539, RESELLER #sublime
+appnexus.com, 3540, RESELLER #sublime
+
+
+lkqd.com, 293, RESELLER #33across
+lkqd.net, 293, RESELLER #33across
+33across.com, 33, DIRECT #33across
+amazon.com, 3411, RESELLER #33across
+adtech.com, 9993, RESELLER #33across
+aolcloud.net, 9993, RESELLER #33across
+appnexus.com, 1001, RESELLER #33across
+appnexus.com, 3135, RESELLER #33across
+google.com, pub-9557089510405422, RESELLER, f08c47fec0942fa0 #33across
+spotxchange.com, 139883, RESELLER, 7842df1d2fe2db34 #33across
+spotx.tv, 139883, RESELLER, 7842df1d2fe2db34 #33across
+openx.com, 537120563, RESELLER, 6a698e2ec38604c6 #33across
+rubiconproject.com, 16414, RESELLER #33across
+criteo.com, 3450, RESELLER #33across
+indexexchange.com, 185506, RESELLER #33across
+
+
+improvedigital.com, 185, Reseller # JustP
+spotx.tv, 108933, Reseller, 7842df1d2fe2db34 # JustP
+spotxchange.com, 108933, Reseller, 7842df1d2fe2db34 # JustP
+appnexus.com, 7118, Reseller # JustP
+openx.com, 537118780, Reseller, 6a698e2ec38604c6 # JustP CA
+openx.com, 537116751, Reseller, 6a698e2ec38604c6 # JustP UK
+openx.com, 537117145, Reseller, 6a698e2ec38604c6 # JustP US
+
