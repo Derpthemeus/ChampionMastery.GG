@@ -9,7 +9,6 @@
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
-	width: 49%;
 	padding: 5px 1%;
 	margin-bottom: 15px;
 	font-size: 15px;
@@ -31,25 +30,50 @@
 	margin-bottom: 12px;
 }
 
-/** Use a single column for champions */
-@media (max-width:925px) {
+/* Use 1 compact column. */
+@media (max-width: 400px) {
+	.champion {
+		width: 100%;
+		font-size: 13px;
+	}
+
+	.champion-icon img {
+		max-width: 60px;
+	}
+}
+
+/* Use 1 column. */
+@media (min-width: 400px) and (max-width: 650px) {
 	.champion {
 		width: 100%;
 	}
 }
 
-/** Ultra-compact */
-@media (max-width:400px) {
+/* Use 2 compact columns. */
+@media (min-width: 650px) and (max-width: 850px) {
 	.champion {
+		width: 49%;
 		font-size: 13px;
 	}
+
 	.champion-icon img {
-		max-width: 70px;
+		max-width: 65px;
+	}
+
+	#content {
+		width: 98%;
 	}
 }
 
-/** Use a three columns for champions */
-@media (min-width:1375px) {
+/* Use 2 columns. */
+@media (min-width: 850px) and (max-width: 1375px) {
+	.champion {
+		width: 49%;
+	}
+}
+
+/* Use 3 columns. */
+@media (min-width: 1375px) {
 	.champion {
 		width: 33%;
 	}
