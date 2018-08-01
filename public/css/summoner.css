@@ -27,6 +27,7 @@
 
 #container {
 	width: 100%;
+	padding-bottom: 10px;
 }
 
 th {
@@ -80,15 +81,8 @@ th[data-sorting-order="1"]>span {
 	height: 100%;
 }
 
-/** Make the table wider on small displays */
-@media (max-width:975px) {
-	#container {
-		width: 110%;
-	}
-}
-
-/** Remove some information on very small displays */
-@media (max-width:750px) {
+/* Make the table wider and much more compact. */
+@media (max-width: 410px) {
 	.collapsible {
 		display: none;
 	}
@@ -98,7 +92,32 @@ th[data-sorting-order="1"]>span {
 	}
 
 	td, th {
+		font-size: 12.5px;
+		padding-left: 2px;
+		padding-right: 2px;
+	}
+}
+
+/* Make the table wider and slightly more compact. */
+@media (min-width: 410px) and (max-width: 750px) {
+	.collapsible {
+		display: none;
+	}
+
+	#container {
+		width: 110%;
+	}
+
+	td, th {
+		font-size: 13px;
 		padding-left: 4px;
 		padding-right: 4px;
+	}
+}
+
+/* Make the table wider. */
+@media (min-width: 750px) and (max-width: 975px) {
+	#container {
+		width: 110%;
 	}
 }
