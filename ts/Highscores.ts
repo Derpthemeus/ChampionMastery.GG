@@ -24,6 +24,8 @@ export default class Highscores {
 		const score: Highscore = {
 			name: summoner.name,
 			id: summoner.id,
+			accountId: summoner.accountId,
+			puuid: summoner.puuid,
 			region: region.id,
 			points: points,
 			standardizedName: summoner.standardizedName
@@ -90,6 +92,8 @@ export default class Highscores {
 						this.highscores[champion.id][place] = {
 							name: summoner.name,
 							id: summoner.id,
+							accountId: summoner.accountId,
+							puuid: summoner.puuid,
 							region: region.id,
 							points: championInfo.championPoints,
 							standardizedName: summoner.standardizedName

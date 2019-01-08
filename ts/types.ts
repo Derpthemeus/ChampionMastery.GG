@@ -1,8 +1,12 @@
 // Miscellaneous types that aren't big enough to warrant having their own file
 
 export interface BasicSummonerInfo {
-	/** Summoner ID */
-	id: number;
+	/** Encrypted summoner ID */
+	id: string;
+	/** Encrypted account ID */
+	accountId: string;
+	/** Encrypted PUUID */
+	puuid: string;
 	/** Summoner name */
 	name: string;
 	/** The name of the summoner, all lowercase with spaces removed */
@@ -10,7 +14,7 @@ export interface BasicSummonerInfo {
 }
 
 /**
- * Based on a response from https://developer.riotgames.com/api-methods/#summoner-v3/GET_getBySummonerName
+ * Based on a response from https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
  */
 export interface Summoner extends BasicSummonerInfo {
 	profileIconId: number;
@@ -32,7 +36,7 @@ export interface BasicChampionMasteryInfo {
 }
 
 /**
- * Info for a single champion from a response from https://developer.riotgames.com/api-methods/#champion-mastery-v3/GET_getAllChampionMasteries
+ * Info for a single champion from a response from https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries
  */
 export interface ChampionMasteryInfo extends BasicChampionMasteryInfo {
 	chestGranted: boolean;

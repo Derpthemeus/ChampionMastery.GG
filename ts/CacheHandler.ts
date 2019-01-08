@@ -43,10 +43,10 @@ export default class CacheHandler {
 	/**
 	 * Formats a cache key that is used to store a Summoner object with the summoner's ID and region as the key
 	 * @param region
-	 * @param summonerId
+	 * @param summonerId An encrypted summoner ID.
 	 * @returns A key that can be used to store/retrieve a Summoner object from the cache
 	 */
-	public makeSummonerKey = (region: Region, summonerId: number): string => {
+	public makeSummonerKey = (region: Region, summonerId: string): string => {
 		return `summoner/${region.id}:${summonerId}`;
 	}
 
@@ -63,10 +63,10 @@ export default class CacheHandler {
 	/**
 	 * Formats a cache key that is used to store a ChampionMasteryInfo[] object with the summoner's ID and region as the key
 	 * @param region
-	 * @param summonerId
+	 * @param summonerId An encrypted summoner ID.
 	 * @returns A key that can be used to store/retrieve a ChampionMasteryInfo[] object from the cache
 	 */
-	public makeChampionMasteriesKey = (region: Region, summonerId: number): string => {
+	public makeChampionMasteriesKey = (region: Region, summonerId: string): string => {
 		return `championmasteries/${region.id}:${summonerId}`;
 	}
 }

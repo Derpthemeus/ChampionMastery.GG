@@ -29,15 +29,6 @@ export let highscores: Highscores;
 const app = express();
 
 /**
- * Used to display highscores as raw JSON data
- * @param req
- * @param res
- */
-function renderRawData(req: express.Request, res: express.Response): void {
-	res.status(200).json(highscores.highscores);
-}
-
-/**
  * Returns a standardized name (all lowercase with spaces removed)
  * @param name
  * @returns The standardized name
@@ -176,7 +167,6 @@ async function start(): Promise<void> {
 	app.get("/highscores", renderHighscores);
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);
-	app.get("/downloadData", renderRawData);
 
 	setInterval(highscores.saveHighscores, Config.saveInterval * 1000);
 

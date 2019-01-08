@@ -34,14 +34,7 @@
 			Players with lower scores are less likely to be looked up (top players are often looked up by people who have heard of them due to their dedication to a single champion), so the list would not accurately represent all players.
 		{{/question}}
 		{{#>question question="Do you have an API for the highscores list?"}}
-			You can download a copy of the data <a href="/downloadData"> here</a>. Please download and cache your own copy of the data to avoid putting unnecessary strain on the server.
-			<br>
-			<br>
-			The data is a JSON object with <a href="https://developer.riotgames.com/api-methods/#lol-static-data-v3/GET_getChampionList">champion IDs</a> as keys ("-1" for total points, "-2" for total level).
-			Each champion contains the summoner name, <a href="https://developer.riotgames.com/api-methods/#summoner-v3/GET_getBySummonerId">summoner ID</a>, <a href="https://developer.riotgames.com/regional-endpoints.html">region</a>, points on the champion (or total level), and standardized name (all lowercase, spaces removed) for each of the top 30 players.
-			<br>
-			<br>
-			Feel free to <a href="https://www.reddit.com/message/compose/?to=Derpthemeus">message me on Reddit</a> or <a href="https://github.com/Derpthemeus/ChampionMasteryLookup/issues">create an issue on GitHub</a> if you have any questions.
+			Since player IDs from the Riot Games API are different for each application, there isn't a reliable way to share this data.
 		{{/question}}
 	{{/content}}
 {{/extend}}

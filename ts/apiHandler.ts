@@ -76,7 +76,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 	const standardizedName: string = standardizeName(name);
 	const key: string = cacheHandler.makeSummonerIdKey(region, standardizedName);
 
-	const cachedId: number = await cacheHandler.retrieve(key);
+	const cachedId: string = await cacheHandler.retrieve(key);
 	if (cachedId !== undefined) {
 		const cachedResponse = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
 		if (cachedResponse !== undefined) {
@@ -85,7 +85,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 	}
 	try {
 		// A cache hit (on both summoner ID and summoner info) would have already resulted in this function returning by now
-		const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerName, region, `lol/summoner/v3/summoners/by-name/${encodeURIComponent(standardizedName)}`);
+		const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerName, region, `lol/summoner/v4/summoners/by-name/${encodeURIComponent(standardizedName)}`);
 		const summoner: Summoner = JSON.parse(body);
 		summoner.standardizedName = standardizedName;
 		cacheHandler.store(cacheHandler.makeSummonerKey(region, summoner.id), summoner, Config.cacheDurations.summoner);
@@ -107,21 +107,21 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 /**
  * Tries to retrieve a summoner by summoner ID, first checking the cache then the API.
  * @param region
- * @param summonerId
+ * @param summonerId The player's encrypted summoner ID.
  * @async
  * @returns A Summoner object for the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
  * @throws {Error} Thrown is some other error occurs.
  */
-export async function getSummonerById(region: Region, summonerId: number): Promise<Summoner> {
+export async function getSummonerById(region: Region, summonerId: string): Promise<Summoner> {
 	const key: string = cacheHandler.makeSummonerKey(region, summonerId);
 	const cachedResponse: Summoner = await cacheHandler.retrieve(key);
 	if (cachedResponse !== undefined) {
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerId, region, `lol/summoner/v3/summoners/${summonerId}`);
+			const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerId, region, `lol/summoner/v4/summoners/${summonerId}`);
 			const summoner: Summoner = JSON.parse(body);
 			summoner.standardizedName = standardizeName(summoner.name);
 			cacheHandler.store(key, summoner, Config.cacheDurations.summoner);
@@ -144,14 +144,14 @@ export async function getSummonerById(region: Region, summonerId: number): Promi
 /**
  * Tries to retrieve a summoner's champion mastery scores, first checking the cache then the API.
  * @param region
- * @param summonerId
+ * @param summonerId The player's encrypted summoner ID.
  * @async
  * @returns The champion mastery scores for the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs
  * @throws {Error} Thrown is some other error occurs
  */
-export async function getChampionMasteries(region: Region, summonerId: number): Promise<ChampionMasteryInfo[]> {
+export async function getChampionMasteries(region: Region, summonerId: string): Promise<ChampionMasteryInfo[]> {
 	const key: string = cacheHandler.makeChampionMasteriesKey(region, summonerId);
 
 	const cachedResponse: ChampionMasteryInfo[] = await cacheHandler.retrieve(key);
@@ -159,7 +159,7 @@ export async function getChampionMasteries(region: Region, summonerId: number): 
 		return cachedResponse;
 	} else {
 		try {
-			const body: string = await makeAPIRequest(APIMethod.GET_getAllChampionMasteries, region, `lol/champion-mastery/v3/champion-masteries/by-summoner/${summonerId}`);
+			const body: string = await makeAPIRequest(APIMethod.GET_getAllChampionMasteries, region, `lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}`);
 			const masteries: ChampionMasteryInfo[] = JSON.parse(body);
 			cacheHandler.store(key, masteries, Config.cacheDurations.championMastery);
 			return masteries;
