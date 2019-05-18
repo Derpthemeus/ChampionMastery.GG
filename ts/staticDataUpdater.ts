@@ -8,6 +8,8 @@ import path = require("path");
 import stream = require("stream");
 import VError = require("verror");
 import mkdirp = require("mkdirp");
+import XRegExp = require("xregexp");
+
 const gunzip = require("gunzip-maybe");
 const tar = require("tar-stream");
 
@@ -129,27 +131,32 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 				tarStream.on("error", (err: Error) => {
 					reject(new VError(err, "Error reading tarball stream"));
 				});
+
+				const championJsonRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/data\\/en_US\\/champion\\.json$`);
+				const profileIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/profileicon\\/.+[^\\/]$`);
+				const championIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/champion\\/.+[^\\/]$`);
+
 				let entriesChecked: number = 0;
-				tarStream.on("entry", (header: {name: string}, entryStream: stream.Readable, next: Function) => {
+				tarStream.on("entry", (header: { name: string }, entryStream: stream.Readable, next: Function) => {
 					if (++entriesChecked % 1000 === 0) {
 						console.log(`Checked ${entriesChecked} entries in the tarball...`);
 					}
-					if (header.name.indexOf(`./${ddragonVersion}/img/profileicon/`) === 0 && !header.name.endsWith("/")) {
+					if (profileIconRegex.test(header.name)) {
 						const promise: Promise<void> = saveEntry(entryStream, profileIconsPath, header.name);
 						// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
 						promise.catch(() => {});
 						promises.push(promise);
-					} else if (header.name.indexOf(`./${ddragonVersion}/img/champion/`) === 0 && !header.name.endsWith("/")) {
+					} else if (championIconRegex.test(header.name)) {
 						const promise: Promise<void> = saveEntry(entryStream, championIconsPath, header.name);
 						// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
-						promise.catch(() => {});
+						promise.catch(() => { });
 						promises.push(promise);
-					} else if (header.name === `./${ddragonVersion}/data/en_US/champion.json`) {
+					} else if (championJsonRegex.test(header.name)) {
 						const promise: Promise<void> = saveEntry(entryStream, Config.staticDataPath, header.name);
 						promise.then(() => {
 							updateChampions();
 							// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
-						}, () => {});
+						}, () => { });
 						promises.push(promise);
 					} else {
 						/* "The tar archive is streamed sequentially, meaning you must drain each entry's stream as
@@ -160,7 +167,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 					next();
 				});
 				tarStream.on("finish", () => {
-					console.log("Finished checking tarball, waiting for files to finish saving...");
+					console.log(`Finished checking tarball, waiting for ${promises.length} files to finish saving...`);
 					Promise.all(promises).then(() => {
 						console.log("All files finished saving");
 						resolve();
