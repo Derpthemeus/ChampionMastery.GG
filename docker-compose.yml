@@ -1,0 +1,15 @@
+version: "3.6"
+services:
+  cml:
+    build:
+      context: ./
+    volumes:
+      - "staticData:/cml/staticData/"
+      - "highscoreData:/cml/highscoreData"
+    environment:
+      RIOT_API_KEY:
+      DATA_DIR: "/cml/highscoreData/"
+    restart: unless-stopped
+volumes:
+  staticData:
+  highscoreData:

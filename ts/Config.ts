@@ -22,7 +22,7 @@ export default class Config {
 	public static readonly logApiErrors: boolean = true;
 
 	/** The IP address to listen on */
-	public static readonly serverAddress: string = "127.0.0.1";
+	public static readonly serverAddress: string = "0.0.0.0";
 	/** The port to listen on */
 	public static readonly serverPort: number = 8080;
 

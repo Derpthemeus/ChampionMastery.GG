@@ -1,0 +1,6 @@
+# Overrides for running in development.
+version: "3.6"
+services:
+  cml:
+    ports:
+      - "8080:8080"

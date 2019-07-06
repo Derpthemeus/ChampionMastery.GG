@@ -1,0 +1,7 @@
+node_modules/
+.vscode/
+private/
+js/
+highscoreData.json
+staticData/
+.git/
