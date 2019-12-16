@@ -47,10 +47,35 @@ services:
       traefik.http.routers.traefik_api_redirect.middlewares: "https_redirect@file"
     networks:
       traefik:
+      prometheus:
+    restart: unless-stopped
+  prometheus:
+    build:
+      context: "./prometheus"
+    command: "--storage.tsdb.path=/prometheus/prometheus_data --config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - "prometheusData:/prometheus/prometheus_data/"
+    labels:
+      traefik.enable: true
+      traefik.http.services.prometheus.loadbalancer.server.port: 9090
+      traefik.http.routers.prometheus.rule: &prometheus_api_rule "Host(`prometheus.admin.${SITE_DOMAIN}`, `www.prometheus.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.prometheus.entrypoints: "https"
+      traefik.http.routers.prometheus.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.prometheus.middlewares: "admin_panel_auth"
+      traefik.http.routers.prometheus_redirect.rule: *prometheus_api_rule
+      traefik.http.routers.prometheus_redirect.entrypoints: "http"
+      traefik.http.routers.prometheus_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
+      prometheus:
+    # Necessary to access data directory.
+    user: "root"
     restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
   acmeCerts:
+  prometheusData:
 networks:
   traefik:
+  prometheus:

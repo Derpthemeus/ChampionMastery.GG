@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 1m
+
+# A list of scrape configurations.
+scrape_configs:
+  - job_name: "docker_daemon"
+    static_configs:
+      # TODO determine gateway IP dynamically instead of hardcoding it? (`docker network inspect bridge --format "{{ (index .IPAM.Config 0).Gateway}}"`)
+      - targets: ["172.17.0.1:9323"]
+    metric_relabel_configs:
+      # Prepend job name to metric names.
+      - source_labels: ["job", "__name__"]
+        separator: "_"
+        action: replace
+        target_label: "__name__"
+
+  # TODO dynamically discover targets through labels instead of listing them all here.
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: "traefik"
+    static_configs:
+      - targets: ["traefik:8000"]

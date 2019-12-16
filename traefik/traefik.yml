@@ -11,6 +11,8 @@ entryPoints:
     address: ":80"
   https:
     address: ":443"
+  traefik_metrics:
+    address: ":8000"
 
 certificatesResolvers:
   le_staging:
@@ -28,6 +30,10 @@ certificatesResolvers:
 
 api:
   dashboard: true
+
+metrics:
+  prometheus:
+    entryPoint: "traefik_metrics"
 
 log:
   level: INFO
