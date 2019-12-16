@@ -82,6 +82,11 @@ services:
     networks:
       prometheus:
     restart: unless-stopped
+  node_exporter:
+    image: "prom/node-exporter:latest"
+    networks:
+      prometheus:
+    restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
