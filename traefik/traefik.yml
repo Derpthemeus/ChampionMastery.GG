@@ -1,0 +1,33 @@
+providers:
+  docker:
+    watch: true
+    exposedByDefault: false
+    network: "cmgg_traefik"
+  file:
+    filename: "/etc/traefik/file_provider.yml"
+
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+certificatesResolvers:
+  le_staging:
+    acme:
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      email: "derpthemeus@gmail.com"
+      storage: "/acme/acme-staging.json"
+      tlsChallenge: {}
+  le_production:
+    acme:
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      email: "derpthemeus@gmail.com"
+      storage: "/acme/acme-production.json"
+      tlsChallenge: {}
+
+api:
+  dashboard: true
+
+log:
+  level: INFO

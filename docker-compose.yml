@@ -1,4 +1,7 @@
 version: "3.6"
+x-anchors:
+  # The name of the configured Traefik TLS cert resolver (defaulting to LE staging environment if not set).
+  traefik_cert_resolver: &traefik_cert_resolver "${TRAEFIK_CERT_RESOLVER:-le_staging}"
 services:
   webserver:
     build:
@@ -9,7 +12,45 @@ services:
     environment:
       RIOT_API_KEY:
       DATA_DIR: "/cml/highscoreData/"
+    labels:
+      traefik.enable: true
+      traefik.http.services.webserver.loadbalancer.server.port: 8080
+      traefik.http.routers.webserver.rule: &webserver_rule "Host(`${SITE_DOMAIN}`, `www.${SITE_DOMAIN}`)"
+      traefik.http.routers.webserver.entrypoints: "https"
+      traefik.http.routers.webserver.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.webserver_redirect.rule: *webserver_rule
+      traefik.http.routers.webserver_redirect.entrypoints: "http"
+      traefik.http.routers.webserver_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
+    restart: unless-stopped
+  traefik:
+    build:
+      context: "./traefik"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "acmeCerts:/acme/"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.traefik_api.service: "api@internal"
+      traefik.http.routers.traefik_api.rule: &traefik_api_rule "Host(`traefik.admin.${SITE_DOMAIN}`, `www.traefik.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.traefik_api.entrypoints: "https"
+      traefik.http.routers.traefik_api.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.traefik_api.middlewares: "admin_panel_auth"
+      traefik.http.middlewares.admin_panel_auth.basicauth.removeHeader: true
+      traefik.http.middlewares.admin_panel_auth.basicauth.users: "${ADMIN_HTPASSWD}"
+      traefik.http.routers.traefik_api_redirect.rule: *traefik_api_rule
+      traefik.http.routers.traefik_api_redirect.entrypoints: "http"
+      traefik.http.routers.traefik_api_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
     restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
+  acmeCerts:
+networks:
+  traefik:

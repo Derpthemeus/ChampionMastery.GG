@@ -1,0 +1,6 @@
+http:
+  middlewares:
+    # Redirects HTTP requests to HTTPS.
+    https_redirect:
+      redirectScheme:
+        scheme: "https"
