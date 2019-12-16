@@ -87,6 +87,23 @@ services:
     networks:
       prometheus:
     restart: unless-stopped
+  grafana:
+    build:
+      context: "./grafana"
+    labels:
+      traefik.enable: true
+      traefik.http.services.grafana.loadbalancer.server.port: 3000
+      traefik.http.routers.grafana.rule: &grafana_api_rule "Host(`grafana.admin.${SITE_DOMAIN}`, `www.grafana.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.grafana.entrypoints: "https"
+      traefik.http.routers.grafana.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.grafana.middlewares: "admin_panel_auth"
+      traefik.http.routers.grafana_redirect.rule: *grafana_api_rule
+      traefik.http.routers.grafana_redirect.entrypoints: "http"
+      traefik.http.routers.grafana_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
+      prometheus:
+    restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
