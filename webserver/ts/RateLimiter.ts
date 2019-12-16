@@ -132,8 +132,8 @@ export class RateLimitCombo {
 	 */
 	public hasRequestAvailable = (): boolean => {
 		return (
-			this.applicationRateLimit ? this.applicationRateLimit.hasRequestAvailable() : true &&
-				this.methodRateLimit ? this.methodRateLimit.hasRequestAvailable() : true
+			(this.applicationRateLimit ? this.applicationRateLimit.hasRequestAvailable() : true) &&
+			(this.methodRateLimit ? this.methodRateLimit.hasRequestAvailable() : true)
 		);
 	}
 
