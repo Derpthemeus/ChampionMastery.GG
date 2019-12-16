@@ -25,7 +25,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 		return;
 	}
 
-	const region: Region = Region.REGIONS.get(req.query.region.toUpperCase());
+	const region: Region = Region.getByRegionId(req.query.region.toUpperCase());
 	if (!region) {
 		renderError(res, 400, "Invalid region");
 		return;
@@ -105,8 +105,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 				icon: summoner.profileIconId,
 				name: summoner.name,
 				id: summoner.id,
-				region: region.id,
-				platform: region.platformId
+				region: region.id
 			},
 			champions: champions,
 			totals: {

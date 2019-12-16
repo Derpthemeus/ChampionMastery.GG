@@ -9,7 +9,7 @@ export default class RateLimiter {
 	private regionRateLimiters: Map<Region, RegionRateLimiter> = new Map<Region, RegionRateLimiter>();
 
 	public constructor() {
-		for (const region of Region.REGIONS.values()) {
+		for (const region of Region.REGIONS) {
 			this.regionRateLimiters.set(region, new RegionRateLimiter(region));
 		}
 	}
