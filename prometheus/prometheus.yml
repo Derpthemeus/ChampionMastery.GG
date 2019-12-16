@@ -24,3 +24,7 @@ scrape_configs:
   - job_name: "traefik"
     static_configs:
       - targets: ["traefik:8000"]
+
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]

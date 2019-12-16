@@ -71,6 +71,17 @@ services:
     # Necessary to access data directory.
     user: "root"
     restart: unless-stopped
+  cadvisor:
+    image: "gcr.io/google-containers/cadvisor:latest"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    networks:
+      prometheus:
+    restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
