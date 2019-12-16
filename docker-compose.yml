@@ -58,11 +58,11 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.prometheus.loadbalancer.server.port: 9090
-      traefik.http.routers.prometheus.rule: &prometheus_api_rule "Host(`prometheus.admin.${SITE_DOMAIN}`, `www.prometheus.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.prometheus.rule: &prometheus_rule "Host(`prometheus.admin.${SITE_DOMAIN}`, `www.prometheus.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.prometheus.entrypoints: "https"
       traefik.http.routers.prometheus.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.prometheus.middlewares: "admin_panel_auth"
-      traefik.http.routers.prometheus_redirect.rule: *prometheus_api_rule
+      traefik.http.routers.prometheus_redirect.rule: *prometheus_rule
       traefik.http.routers.prometheus_redirect.entrypoints: "http"
       traefik.http.routers.prometheus_redirect.middlewares: "https_redirect@file"
     networks:
@@ -93,11 +93,11 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.grafana.loadbalancer.server.port: 3000
-      traefik.http.routers.grafana.rule: &grafana_api_rule "Host(`grafana.admin.${SITE_DOMAIN}`, `www.grafana.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.grafana.rule: &grafana_rule "Host(`grafana.admin.${SITE_DOMAIN}`, `www.grafana.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.grafana.entrypoints: "https"
       traefik.http.routers.grafana.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.grafana.middlewares: "admin_panel_auth"
-      traefik.http.routers.grafana_redirect.rule: *grafana_api_rule
+      traefik.http.routers.grafana_redirect.rule: *grafana_rule
       traefik.http.routers.grafana_redirect.entrypoints: "http"
       traefik.http.routers.grafana_redirect.middlewares: "https_redirect@file"
     networks:
