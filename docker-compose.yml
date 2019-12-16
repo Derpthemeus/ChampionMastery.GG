@@ -104,6 +104,21 @@ services:
       traefik:
       prometheus:
     restart: unless-stopped
+  admin_ui:
+    build:
+      context: "./admin_ui"
+    labels:
+      traefik.enable: true
+      traefik.http.services.admin_ui.loadbalancer.server.port: 80
+      traefik.http.routers.admin_ui.rule: &admin_ui_rule "Host(`admin.${SITE_DOMAIN}`, `www.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.admin_ui.entrypoints: "https"
+      traefik.http.routers.admin_ui.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.admin_ui_redirect.rule: *admin_ui_rule
+      traefik.http.routers.admin_ui_redirect.entrypoints: "http"
+      traefik.http.routers.admin_ui_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
+    restart: unless-stopped
 volumes:
   staticData:
   highscoreData:
