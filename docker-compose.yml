@@ -119,11 +119,26 @@ services:
     networks:
       traefik:
     restart: unless-stopped
+  mysql:
+    build:
+      context: "./mysql/"
+      args:
+        MYSQL_ROOT_PASSWORD:
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysqlData:/mysql_data"
+    environment:
+      MYSQL_ROOT_PASSWORD:
+    networks:
+      mysql:
 volumes:
   staticData:
   highscoreData:
   acmeCerts:
   prometheusData:
+  mysqlData:
 networks:
   traefik:
   prometheus:
+  mysql:
