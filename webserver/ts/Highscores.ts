@@ -1,4 +1,4 @@
-import {BasicChampionMasteryInfo, BasicSummonerInfo, ChampionMasteryInfo, Highscore} from "./types";
+import {ChampionMasteryResponse} from "./apiHandler";
 import Region from "./Region";
 import Config from "./Config";
 import Champion from "./Champion";
@@ -123,7 +123,7 @@ export default class Highscores {
 	 * @param summoner
 	 * @param region
 	 */
-	public updateAllHighscores = (masteries: ChampionMasteryInfo[], summoner: BasicSummonerInfo, region: Region): void => {
+	public updateAllHighscores = (masteries: ChampionMasteryResponse[], summoner: BasicSummonerInfo, region: Region): void => {
 		let totalPoints: number = 0;
 		let totalLevel: number = 0;
 		for (const championInfo of masteries) {
@@ -175,4 +175,32 @@ export default class Highscores {
 	public getChampionHighscores = (championId: number | string): Highscore[] => {
 		return this.highscores[championId];
 	}
+}
+
+interface BasicSummonerInfo {
+	/** Encrypted summoner ID */
+	id: string;
+	/** Encrypted account ID */
+	accountId: string;
+	/** Encrypted PUUID */
+	puuid: string;
+	/** Summoner name */
+	name: string;
+	/** The name of the summoner, all lowercase with spaces removed */
+	standardizedName: string;
+}
+
+/**
+ * A single highscore entry
+ */
+export interface Highscore extends BasicSummonerInfo {
+	/** The ID of the region of the player */
+	region: string;
+	/** How many mastery points the player has on the champion */
+	points: number;
+}
+
+interface BasicChampionMasteryInfo {
+	championId: number;
+	championPoints: number;
 }

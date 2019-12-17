@@ -1,4 +1,4 @@
-import {Highscore, Summoner} from "./types";
+import {SummonerResponse} from "./apiHandler";
 import Champion from "./Champion";
 import Region from "./Region";
 import * as apiHandler from "./apiHandler";
@@ -7,6 +7,7 @@ import {renderSummoner} from "./routes/summoner";
 import {renderChampion} from "./routes/champion";
 import {renderHighscores} from "./routes/highscores";
 import Highscores from "./Highscores";
+import {Highscore} from "./Highscores";
 import Config from "./Config";
 import * as staticDataUpdater from "./staticDataUpdater";
 import express = require("express");
@@ -48,9 +49,9 @@ export function standardizeName(name: string): string {
  * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs. If the thrown error has a status code of 404, it means the summoner could not be found by name, and a fallback ID could not be found or didn't work.
  */
-export async function getSummoner(region: Region, summonerName: string): Promise<{summoner: Summoner, hasNewName: boolean}> {
+export async function getSummoner(region: Region, summonerName: string): Promise<{ summoner: SummonerResponse, hasNewName: boolean }> {
 	try {
-		const summoner: Summoner = await apiHandler.getSummonerByName(region, summonerName);
+		const summoner: SummonerResponse = await apiHandler.getSummonerByName(region, summonerName);
 		return {hasNewName: false, summoner: summoner};
 	} catch (ex) {
 		if (ex instanceof apiHandler.APIError && ex.statusCode === 404) {
@@ -61,7 +62,7 @@ export async function getSummoner(region: Region, summonerName: string): Promise
 				for (const score of championScores) {
 					if (standardizedName === score.standardizedName && region.id === score.region) {
 						try {
-							const summoner: Summoner = await apiHandler.getSummonerById(region, score.id);
+							const summoner: SummonerResponse = await apiHandler.getSummonerById(region, score.id);
 							return {hasNewName: true, summoner: summoner};
 						} catch (ex) {
 							if (ex instanceof APIError && ex.statusCode === 404) {

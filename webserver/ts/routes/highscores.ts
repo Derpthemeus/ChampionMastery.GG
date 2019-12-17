@@ -1,5 +1,5 @@
 import {COMMON_DATA, highscores} from "../server";
-import {Highscore} from "../types";
+import {Highscore} from "../Highscores";
 import Champion from "../Champion";
 import express = require("express");
 

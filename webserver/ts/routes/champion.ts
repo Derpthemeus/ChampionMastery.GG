@@ -1,5 +1,5 @@
 import {COMMON_DATA, highscores, renderError} from "../server";
-import {Highscore} from "../types";
+import {Highscore} from "../Highscores";
 import Champion from "../Champion";
 import Config from "../Config";
 import express = require("express");

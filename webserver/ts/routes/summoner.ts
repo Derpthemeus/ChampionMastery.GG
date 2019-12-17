@@ -1,6 +1,6 @@
-import {ChampionMasteryInfo, Summoner} from "../types";
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
+import {ChampionMasteryResponse, SummonerResponse} from "../apiHandler";
 import {COMMON_DATA, getSummoner, highscores, renderError} from "../server";
 import Champion from "../Champion";
 import {RateLimitError} from "../RateLimiter";
@@ -37,14 +37,14 @@ export async function renderSummoner(req: express.Request, res: express.Response
 	}
 
 	try {
-		const summonerInfo: {summoner: Summoner, hasNewName: boolean} = await getSummoner(region, req.query.summoner);
-		const summoner: Summoner = summonerInfo.summoner;
+		const summonerInfo: { summoner: SummonerResponse, hasNewName: boolean } = await getSummoner(region, req.query.summoner);
+		const summoner: SummonerResponse = summonerInfo.summoner;
 		if (summonerInfo.hasNewName) {
 			res.redirect(302, `?summoner=${encodeURIComponent(summoner.standardizedName)}&region=${region.id}`);
 			return;
 		}
 
-		const masteries: ChampionMasteryInfo[] = await apiHandler.getChampionMasteries(region, summoner.id);
+		const masteries: ChampionMasteryResponse[] = await apiHandler.getChampionMasteries(region, summoner.id);
 
 		highscores.updateAllHighscores(masteries, summoner, region);
 
@@ -52,7 +52,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 
 		let totalLevel: number = 0, totalPoints: number = 0, totalChests: number = 0;
 		for (let i = 0; i < masteries.length; i++) {
-			const masteryChampion: ChampionMasteryInfo = masteries[i];
+			const masteryChampion: ChampionMasteryResponse = masteries[i];
 
 			totalLevel += masteryChampion.championLevel;
 			totalPoints += masteryChampion.championPoints;
@@ -116,7 +116,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 			}
 		});
 
-		interface ChampionInfo extends ChampionMasteryInfo {
+		interface ChampionInfo extends ChampionMasteryResponse {
 			championName: string;
 			tooltip: string;
 			sortingValue: number;

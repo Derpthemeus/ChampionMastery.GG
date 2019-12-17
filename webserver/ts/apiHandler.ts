@@ -1,6 +1,5 @@
 import {standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
-import {ChampionMasteryInfo, Summoner} from "./types";
 import Region from "./Region";
 import RateLimiter from "./RateLimiter";
 import {APIMethod, RateLimitCombo, RateLimitError} from "./RateLimiter";
@@ -67,12 +66,12 @@ function makeAPIRequest(apiMethod: APIMethod, region: Region, path: string, quer
  * @param region
  * @param name
  * @async
- * @returns A Summoner object of the specified summoner
+ * @returns A SummonerResponse object of the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
  * @throws {Error} Thrown is some other error occurs
  */
-export async function getSummonerByName(region: Region, name: string): Promise<Summoner> {
+export async function getSummonerByName(region: Region, name: string): Promise<SummonerResponse> {
 	const standardizedName: string = standardizeName(name);
 	const key: string = cacheHandler.makeSummonerIdKey(region, standardizedName);
 
@@ -86,7 +85,7 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 	try {
 		// A cache hit (on both summoner ID and summoner info) would have already resulted in this function returning by now
 		const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerName, region, `lol/summoner/v4/summoners/by-name/${encodeURIComponent(standardizedName)}`);
-		const summoner: Summoner = JSON.parse(body);
+		const summoner: SummonerResponse = JSON.parse(body);
 		summoner.standardizedName = standardizedName;
 		cacheHandler.store(cacheHandler.makeSummonerKey(region, summoner.id), summoner, Config.cacheDurations.summoner);
 		cacheHandler.store(key, summoner.id, Config.cacheDurations.summoner);
@@ -109,20 +108,20 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
  * @param region
  * @param summonerId The player's encrypted summoner ID.
  * @async
- * @returns A Summoner object for the specified summoner
+ * @returns A SummonerResponse object for the specified summoner
  * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
  * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
  * @throws {Error} Thrown is some other error occurs.
  */
-export async function getSummonerById(region: Region, summonerId: string): Promise<Summoner> {
+export async function getSummonerById(region: Region, summonerId: string): Promise<SummonerResponse> {
 	const key: string = cacheHandler.makeSummonerKey(region, summonerId);
-	const cachedResponse: Summoner = await cacheHandler.retrieve(key);
+	const cachedResponse: SummonerResponse = await cacheHandler.retrieve(key);
 	if (cachedResponse !== undefined) {
 		return cachedResponse;
 	} else {
 		try {
 			const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerId, region, `lol/summoner/v4/summoners/${summonerId}`);
-			const summoner: Summoner = JSON.parse(body);
+			const summoner: SummonerResponse = JSON.parse(body);
 			summoner.standardizedName = standardizeName(summoner.name);
 			cacheHandler.store(key, summoner, Config.cacheDurations.summoner);
 			cacheHandler.store(cacheHandler.makeSummonerIdKey(region, summoner.standardizedName), summonerId, Config.cacheDurations.summoner);
@@ -151,16 +150,16 @@ export async function getSummonerById(region: Region, summonerId: string): Promi
  * @throws {APIError} Thrown if an API error occurs
  * @throws {Error} Thrown is some other error occurs
  */
-export async function getChampionMasteries(region: Region, summonerId: string): Promise<ChampionMasteryInfo[]> {
+export async function getChampionMasteries(region: Region, summonerId: string): Promise<ChampionMasteryResponse[]> {
 	const key: string = cacheHandler.makeChampionMasteriesKey(region, summonerId);
 
-	const cachedResponse: ChampionMasteryInfo[] = await cacheHandler.retrieve(key);
+	const cachedResponse: ChampionMasteryResponse[] = await cacheHandler.retrieve(key);
 	if (cachedResponse !== undefined) {
 		return cachedResponse;
 	} else {
 		try {
 			const body: string = await makeAPIRequest(APIMethod.GET_getAllChampionMasteries, region, `lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}`);
-			const masteries: ChampionMasteryInfo[] = JSON.parse(body);
+			const masteries: ChampionMasteryResponse[] = JSON.parse(body);
 			cacheHandler.store(key, masteries, Config.cacheDurations.championMastery);
 			return masteries;
 		} catch (ex) {
@@ -213,4 +212,38 @@ export class APIError {
 		this.headers = headers;
 		this.url = url;
 	}
+}
+
+/**
+ * Based on a response from https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
+ */
+export interface SummonerResponse {
+	/** Encrypted summoner ID */
+	id: string;
+	/** Encrypted account ID */
+	accountId: string;
+	/** Encrypted PUUID */
+	puuid: string;
+	/** Summoner name */
+	name: string;
+	/** The name of the summoner, all lowercase with spaces removed */
+	standardizedName: string;
+	profileIconId: number;
+	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
+	summonerLevel: number;
+}
+
+
+/**
+ * Info for a single champion from a response from https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries
+ */
+export interface ChampionMasteryResponse {
+	championId: number;
+	championPoints: number;
+	chestGranted: boolean;
+	championLevel: number;
+	championPointsUntilNextLevel: number;
+	championPointsSinceLastLevel: number;
+	lastPlayTime: number;
+	tokensEarned: number;
 }
