@@ -12,6 +12,8 @@ services:
     environment:
       RIOT_API_KEY:
       DATA_DIR: "/cml/highscoreData/"
+      ANNOUNCEMENT_MESSAGE:
+      ANNOUNCEMENT_LINK:
     labels:
       traefik.enable: true
       traefik.http.services.webserver.loadbalancer.server.port: 8080
