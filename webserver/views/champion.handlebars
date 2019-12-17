@@ -1,7 +1,16 @@
 {{#extend "layout"}}
 	{{#content "title"}}{{champion.name}} - ChampionMasteryLookup{{/content}}
-	
-	{{#content "meta-description"}}Highscores for players with the {{#eq champion.id -1}}most total champion mastery points{{else eq champion.id -2}}highest combined champion mastery level{{else}}most champion mastery points on {{champion.name}}{{/eq}}{{/content}}
+
+	{{#content "meta-description" ~}}
+		Highscores for players with the {{#noop}}<!--This block is used for spacing. -->{{/noop}}
+		{{~#eq champion.id -1 ~}}
+			most total champion mastery points
+		{{~else eq champion.id -2 ~}}
+			highest combined champion mastery level
+		{{~else ~}}
+			most champion mastery points on {{champion.name}}
+		{{~/eq ~}}
+	{{/content}}
 
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/champion.css">

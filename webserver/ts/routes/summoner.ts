@@ -139,7 +139,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 }
 
 // A helper to generate the correct number of token icons
-handlebars.registerHelper("getTokens", function() {
+handlebars.registerHelper("getTokens", function () {
 	let content: string = "";
 	for (let i = 0; i < TOKENS_NEEDED.get(this.championLevel); i++) {
 		content += `<img class="token${i >= this.tokensEarned ? " notEarned" : ""}" src="/img/token.png">`;

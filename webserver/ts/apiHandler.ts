@@ -19,7 +19,7 @@ const rateLimiter: RateLimiter = new RateLimiter();
  * @param region The region the request should be made to
  * @param path The path of the API request URL, relative to "https://*.api.riotgames.com/"
  * @param query The query of the API request URL, without "?" (e.g. "foo=bar&a=b"). May be a falsy value if no query is needed.
- * 	The "api_key" parameter should not be included (it will be automatically added)
+ *  The "api_key" parameter should not be included (it will be automatically added)
  * @async
  * @returns The raw body of the API response
  * @throws {RateLimitError} Thrown if the API call is prevented because there are not enough requests remaining
