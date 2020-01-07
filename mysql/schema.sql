@@ -31,6 +31,8 @@ CREATE TABLE summoners (
 	summoner_name          VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
 	masteries_last_updated TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
 	name_last_updated      TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
+    /** The value of the `revisionDate` field from the Summoner-v4 API. */
+	revision_date          TIMESTAMP                                                     NOT NULL,
 	summoner_status        TINYINT UNSIGNED DEFAULT 0                                    NOT NULL,
 
 	CONSTRAINT UX_player_id UNIQUE (player_id),
@@ -125,22 +127,21 @@ BEGIN
 	UPDATE SKIP LOCKED;
 END $$
 
-# TODO find most recent summoner using total mastery points instead of last_match_timestamp and update this.
-# CREATE PROCEDURE mark_transferred_summoners()
-# BEGIN
-# 	UPDATE summoners
-# 		JOIN (SELECT player_id,
-# 				  RANK() OVER (PARTITION BY encrypted_puuid
-# 					  ORDER BY last_match_timestamp DESC) AS recency_rank
-# 			  FROM summoners
-# 			  WHERE encrypted_puuid IS NOT NULL) AS ranked ON (ranked.player_id = summoners.player_id)
-# 	SET summoners.summoner_status =
-# 		CASE WHEN recency_rank = 1
-# 				 THEN CASE WHEN summoners.summoner_status = 1
-# 							   THEN 0
-# 						   ELSE summoners.summoner_status END
-# 			 ELSE 1 END;
-# END $$
+CREATE PROCEDURE mark_transferred_summoners()
+BEGIN
+	UPDATE summoners
+		JOIN (SELECT player_id,
+				  RANK() OVER (PARTITION BY encrypted_puuid
+					  ORDER BY revision_date DESC) AS recency_rank
+			  FROM summoners
+			  WHERE encrypted_puuid IS NOT NULL) AS ranked ON (ranked.player_id = summoners.player_id)
+	SET summoners.summoner_status =
+		CASE WHEN recency_rank = 1
+				 THEN CASE WHEN summoners.summoner_status = 1
+							   THEN 0
+						   ELSE summoners.summoner_status END
+			 ELSE 1 END;
+END $$
 
 CREATE PROCEDURE get_highscores_summary()
 BEGIN
@@ -214,25 +215,11 @@ BEGIN
 	LIMIT 50;
 END $$
 
-CREATE PROCEDURE mark_summoner_for_update(summoner_id VARCHAR(63),
-										  account_id  VARCHAR(56),
-										  name        VARCHAR(100),
-										  platformId  VARCHAR(6))
-BEGIN
-	INSERT INTO summoners
-	(encrypted_summoner_id, encrypted_account_id, summoner_name, platform, name_last_updated, masteries_last_updated)
-	VALUES (summoner_id, account_id, name, platformId, NOW(), '1970-01-01 00:00:01')
-	ON DUPLICATE KEY UPDATE summoner_name = name,
-		name_last_updated                 = NOW(),
-		masteries_last_updated            = '1970-01-01 00:00:01';
-END $$
-
 DELIMITER ;
 
 
-# TODO reenable this once `mark_transferred_summoners()` has been updated.
-# /* Mark transferred summoners at regular intervals. */
-# CREATE EVENT find_transferred_accounts
-# 	ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 6 HOUR
-# 	DO
-# 	CALL mark_transferred_summoners();
+/* Mark transferred summoners at regular intervals. */
+CREATE EVENT find_transferred_accounts
+	ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 6 HOUR
+	DO
+	CALL mark_transferred_summoners();
