@@ -39,7 +39,7 @@ public class HighscoresService {
 		Orianna.setRiotAPIKey(System.getenv("RIOT_API_KEY"));
 
 		highscoresApi = new HighscoresApi();
-		HttpApi httpApi = new HttpApi(8080);
+		HttpApi httpApi = new HttpApi(8181);
 
 		logger.info("Initializing Prometheus metrics exporter...");
 		DefaultExports.initialize();
