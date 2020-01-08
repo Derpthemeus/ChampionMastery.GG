@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD//EN"
+		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+		<property name="hibernate.default_schema">cmgg</property>
+		<property name="hibernate.connection.requireSSL">true</property>
+		<property name="hibernate.connection.verifyServerCertificate">false</property>
+
+		<property name="c3p0.min_size">2</property>
+		<property name="c3p0.max_size">8</property>
+		<property name="c3p0.timeout">0</property>
+		<property name="c3p0.maxStatements">20</property>
+
+		<mapping class="gg.championmastery.highscoresService.persistence.MasteryScoreEntity"/>
+		<mapping class="gg.championmastery.highscoresService.persistence.PlatformEntity"/>
+		<mapping class="gg.championmastery.highscoresService.persistence.SummonerEntity"/>
+	</session-factory>
+</hibernate-configuration>

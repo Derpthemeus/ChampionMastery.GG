@@ -24,6 +24,18 @@ services:
     networks:
       traefik:
     restart: unless-stopped
+  highscores_service:
+    build:
+      context: "./highscores-service"
+    environment:
+      MYSQL_CONNECTION_URL: "jdbc:${MYSQL_CONNECTION_URL}"
+      RIOT_API_KEY:
+    networks:
+      mysql:
+      prometheus:
+    depends_on:
+      - "mysql"
+    restart: unless-stopped
   traefik:
     build:
       context: "./traefik"

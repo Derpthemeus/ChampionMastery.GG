@@ -1,0 +1,53 @@
+group "gg.championmastery"
+version "1.0.0"
+def mainClass = "gg.championmastery.highscoresService.HighscoresService"
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath "com.github.jengelman.gradle.plugins:shadow:4.0.2"
+	}
+}
+
+apply plugin: "java"
+apply plugin: "com.github.johnrengelman.shadow"
+
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+}
+
+dependencies {
+	implementation "com.merakianalytics.orianna:orianna:4.0.0-rc5"
+	implementation "org.eclipse.jetty:jetty-server:9.4.25.v20191220"
+	implementation "org.hibernate:hibernate-c3p0:5.3.2.Final"
+	implementation "org.hibernate:hibernate-core:5.3.3.Final"
+	implementation "io.prometheus:simpleclient:0.6.0"
+	implementation "io.prometheus:simpleclient_hibernate:0.6.0"
+	implementation "io.prometheus:simpleclient_hotspot:0.6.0"
+	implementation "io.prometheus:simpleclient_httpserver:0.6.0"
+	implementation "mysql:mysql-connector-java:8.0.11"
+	compileOnly "javax.persistence:javax.persistence-api:2.2"
+	runtimeOnly "org.apache.logging.log4j:log4j-core:2.11.0"
+	runtimeOnly "org.apache.logging.log4j:log4j-slf4j-impl:2.11.0"
+}
+
+task run(type: JavaExec) {
+	dependsOn "build"
+	classpath = sourceSets.main.runtimeClasspath
+	main = mainClass
+}
+
+shadowJar {
+	archiveName = "shadowed.jar"
+	manifest {
+		attributes(
+				"Main-Class": mainClass,
+				"version": project.version
+		)
+	}
+}
