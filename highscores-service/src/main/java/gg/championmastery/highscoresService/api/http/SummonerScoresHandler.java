@@ -1,4 +1,4 @@
-package gg.championmastery.highscoresService.http;
+package gg.championmastery.highscoresService.api.http;
 
 import com.google.common.collect.ImmutableMap;
 import com.merakianalytics.orianna.types.common.Platform;

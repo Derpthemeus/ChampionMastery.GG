@@ -1,10 +1,11 @@
-package gg.championmastery.highscoresService;
+package gg.championmastery.highscoresService.api;
 
 import com.google.common.collect.ImmutableMap;
 import com.merakianalytics.orianna.types.common.Platform;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMasteries;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMastery;
 import com.merakianalytics.orianna.types.dto.summoner.Summoner;
+import gg.championmastery.highscoresService.HighscoresService;
 import gg.championmastery.highscoresService.persistence.MasteryScoreEntity;
 import gg.championmastery.highscoresService.persistence.SummonerEntity;
 import org.hibernate.LockMode;

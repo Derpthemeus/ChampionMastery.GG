@@ -2,7 +2,8 @@ package gg.championmastery.highscoresService;
 
 import com.merakianalytics.datapipelines.DataPipeline;
 import com.merakianalytics.orianna.Orianna;
-import gg.championmastery.highscoresService.http.HttpApi;
+import gg.championmastery.highscoresService.api.HighscoresApi;
+import gg.championmastery.highscoresService.api.http.HttpApi;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hibernate.HibernateStatisticsCollector;
 import io.prometheus.client.hotspot.DefaultExports;
