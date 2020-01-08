@@ -1,5 +1,6 @@
 package gg.championmastery.highscoresService.api.http;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.merakianalytics.orianna.types.common.Platform;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMasteries;
@@ -11,6 +12,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 public class SummonerScoresHandler extends AbstractHandler {
 
@@ -44,8 +46,14 @@ public class SummonerScoresHandler extends AbstractHandler {
 
 		ChampionMasteries summonerScores = HighscoresService.getApi().getSummonerScores(summoner);
 
-		String json = summonerScores.toJSON();
+		Map<String, Object> map = ImmutableMap.of(
+				"summoner", summoner,
+				"scores", summonerScores
+		);
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(response.getWriter(), map);
+
 		response.setStatus(200);
-		response.getWriter().write(json);
 	}
 }
