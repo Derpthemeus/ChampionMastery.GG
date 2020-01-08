@@ -1,9 +1,7 @@
 package gg.championmastery.highscoresService.persistence;
 
-import com.merakianalytics.orianna.types.common.Platform;
 import gg.championmastery.highscoresService.EntityInstantiator;
 import gg.championmastery.highscoresService.HibernateEntity;
-import gg.championmastery.highscoresService.HighscoresService;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 
@@ -28,7 +26,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "summoners")
 @IdClass(SummonerEntity.Key.class)
-public class SummonerEntity implements HibernateEntity<SummonerEntity.Key> {
+public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Serializable {
 
 	/** The smallest possible value of a DATETIME in MySQL. */
 	private static final Instant DEFAULT_INSTANT = Instant.ofEpochSecond(1);

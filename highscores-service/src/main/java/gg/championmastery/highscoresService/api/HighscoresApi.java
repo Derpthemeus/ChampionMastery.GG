@@ -16,10 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.LockModeType;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class HighscoresApi {
 
@@ -65,15 +66,13 @@ public class HighscoresApi {
 				session.saveOrUpdate(summonerEntity);
 
 				// Update the summoner's mastery scores.
-				List<Map<Short, MasteryScoreEntity>> results = session
-						.createQuery("SELECT NEW MAP(championId) FROM MasteryScoreEntity WHERE platform=:platform AND summoner=:id")
+				List<MasteryScoreEntity> results = session
+						.createQuery("FROM MasteryScoreEntity WHERE platform=:platform AND summoner=:id")
 						.setParameter("platform", summonerEntity.getPlatform())
 						.setParameter("id", summonerEntity)
 						.setLockMode(LockModeType.PESSIMISTIC_WRITE)
-						/* getResultList() is used because getSingleResult() would throw an exception if there are no
-						results (i.e. the summoner's mastery scores have not already been added to the database). */
 						.getResultList();
-				Map<Short, MasteryScoreEntity> scores = results.size() > 0 ? results.get(0) : new HashMap<>();
+				Map<Short, MasteryScoreEntity> scores = results.stream().collect(Collectors.toMap(MasteryScoreEntity::getChampionId, Function.identity()));
 
 				// Consider saving each score and calculate total level/points.
 				int totalPoints = 0;
