@@ -143,56 +143,6 @@ BEGIN
 			 ELSE 1 END;
 END $$
 
-CREATE PROCEDURE get_highscores_summary()
-BEGIN
-	DECLARE done TINYINT DEFAULT FALSE;
-	DECLARE champ_id SMALLINT;
-	DECLARE cur CURSOR FOR SELECT DISTINCT mastery_scores.champion_id FROM mastery_scores;
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-	DROP TEMPORARY TABLE IF EXISTS highscores_summary;
-	CREATE TEMPORARY TABLE highscores_summary (
-		region     VARCHAR(6)   NOT NULL,
-		name       VARCHAR(100) NULL,
-		championId SMALLINT     NOT NULL,
-		points     INT UNSIGNED NOT NULL
-	) ENGINE = InnoDB;
-
-	OPEN cur;
-	cur_loop:
-	LOOP
-		FETCH cur INTO champ_id;
-		IF done
-		THEN
-			LEAVE cur_loop;
-		END IF;
-
-		INSERT INTO highscores_summary
-		SELECT get_region_by_platform(ordered.platform),
-			get_summoner_name(summoner_name, summoner_status),
-			champion_id,
-			mastery_points
-		FROM (
-			SELECT player_id,
-				platform,
-				champion_id,
-				mastery_points
-			FROM mastery_scores
-			WHERE mastery_scores.champion_id = champ_id
-				-- Limit to top 10 so the entire table doesn't need to be joined.
-			ORDER BY mastery_points DESC
-			LIMIT 10
-		) ordered
-				 INNER JOIN summoners ON ordered.player_id = summoners.player_id
-		WHERE summoner_status != 1
-		LIMIT 3;
-	END LOOP;
-	CLOSE cur;
-
-	SELECT * FROM highscores_summary;
-	DROP TEMPORARY TABLE highscores_summary;
-END $$
-
 CREATE PROCEDURE get_champion_highscores(champion_id SMALLINT)
 BEGIN
 	SELECT summoner_status AS summonerStatus,

@@ -11,11 +11,13 @@ import gg.championmastery.highscoresService.persistence.SummonerEntity;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.LockModeType;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -100,6 +102,28 @@ public class HighscoresApi {
 		});
 
 		return masteries;
+	}
+
+	// TODO redact the names of players who have exercised RTBF or requested removal.
+	/**
+	 * Retrieves a list of the top 3 players for each champion (including total level/points).
+	 *
+	 * @return Lists of the top 3 players for each champion in descending order, mapped by champion ID.
+	 */
+	public Map<Short, List<MasteryScoreEntity>> getHighscoresSummary() {
+		try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
+			List<Short> championIds = session.createQuery("SELECT DISTINCT(championId) FROM MasteryScoreEntity", Short.class).getResultList();
+
+			HashMap<Short, List<MasteryScoreEntity>> highscoresSummary = new HashMap<>();
+			for (short championId : championIds) {
+				Query<MasteryScoreEntity> query = session.createQuery("FROM MasteryScoreEntity WHERE championId=:championId AND summoner.status != 1 ORDER BY masteryPoints DESC", MasteryScoreEntity.class)
+						.setParameter("championId", championId)
+						.setMaxResults(3);
+				highscoresSummary.put(championId, query.getResultList());
+			}
+
+			return highscoresSummary;
+		}
 	}
 
 	/**
