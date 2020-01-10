@@ -86,47 +86,6 @@ VALUES ('BR', 'BR1', 3),
 
 DELIMITER $$
 
-/** Takes a platform ID and returns a region ID. */
-CREATE FUNCTION get_region_by_platform(platform_id VARCHAR(6)) RETURNS VARCHAR(6) DETERMINISTIC
-BEGIN
-	DECLARE region VARCHAR(6);
-	SELECT region_id INTO region FROM platforms WHERE platforms.platform_id = platform_id;
-	RETURN region;
-END $$
-
-/** Returns the name of the summoner if they haven't been hidden, or `NULL` if they have been. */
-CREATE FUNCTION get_summoner_name(summoner_name   VARCHAR(100),
-								  summoner_status TINYINT UNSIGNED) RETURNS VARCHAR(100) DETERMINISTIC
-BEGIN
-	RETURN IF(summoner_status = 2 OR summoner_status = 3, NULL, summoner_name);
-END $$
-
-CREATE PROCEDURE select_summoner_to_update_name(platform VARCHAR(6))
-BEGIN
-	SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-	-- TODO adjust cutoff date
-	SELECT *
-	FROM summoners
-	WHERE summoners.platform = platform AND name_last_updated < DATE_SUB(NOW(), INTERVAL 7 DAY)
-	ORDER BY name_last_updated ASC
-	LIMIT 1
-	FOR
-	UPDATE SKIP LOCKED;
-END $$
-
-CREATE PROCEDURE select_summoner_to_update_masteries(platform VARCHAR(6))
-BEGIN
-	SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
-	-- TODO adjust cutoff date
-	SELECT *
-	FROM summoners
-	WHERE summoners.platform = platform AND masteries_last_updated < DATE_SUB(NOW(), INTERVAL 4 DAY)
-	ORDER BY masteries_last_updated ASC
-	LIMIT 1
-	FOR
-	UPDATE SKIP LOCKED;
-END $$
-
 CREATE PROCEDURE mark_transferred_summoners()
 BEGIN
 	UPDATE summoners
@@ -141,28 +100,6 @@ BEGIN
 							   THEN 0
 						   ELSE summoners.summoner_status END
 			 ELSE 1 END;
-END $$
-
-CREATE PROCEDURE get_champion_highscores(champion_id SMALLINT)
-BEGIN
-	SELECT summoner_status AS summonerStatus,
-		get_region_by_platform(ordered.platform) AS region,
-		get_summoner_name(summoner_name, summoner_status) AS name,
-		mastery_points AS points
-	FROM (
-		SELECT player_id,
-			platform,
-			champion_id,
-			mastery_points
-		FROM mastery_scores
-		WHERE mastery_scores.champion_id = champion_id
-			-- Limit to top 75 so the entire table doesn't need to be joined.
-		ORDER BY mastery_points DESC
-		LIMIT 75
-	) ordered
-			 INNER JOIN summoners ON ordered.player_id = summoners.player_id
-	WHERE summoner_status != 1
-	LIMIT 50;
 END $$
 
 DELIMITER ;
