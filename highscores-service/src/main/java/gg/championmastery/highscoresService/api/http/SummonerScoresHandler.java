@@ -16,6 +16,12 @@ import java.util.Map;
 
 public class SummonerScoresHandler extends AbstractHandler {
 
+	private final ObjectMapper mapper;
+
+	public SummonerScoresHandler() {
+		mapper = new ObjectMapper();
+	}
+
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		baseRequest.setHandled(true);
@@ -51,7 +57,6 @@ public class SummonerScoresHandler extends AbstractHandler {
 				"scores", summonerScores
 		);
 
-		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(response.getWriter(), map);
 
 		response.setStatus(200);
