@@ -17,8 +17,7 @@ public class MasteryScoreEntitySerializer extends StdSerializer<MasteryScoreEnti
 	@Override
 	public void serialize(MasteryScoreEntity entity, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
-		// TODO redact this if necessary.
-		gen.writeStringField("name", entity.getSummoner().getSummonerName());
+		gen.writeStringField("name", entity.getSummoner().getDisplayName());
 		gen.writeStringField("region", Platform.withTag(entity.getPlatform()).getRegion().getTag());
 		gen.writeNumberField("points", entity.getMasteryPoints());
 		gen.writeEndObject();

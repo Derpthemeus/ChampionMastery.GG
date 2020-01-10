@@ -104,7 +104,6 @@ public class HighscoresApi {
 		return masteries;
 	}
 
-	// TODO redact the names of players who have exercised RTBF or requested removal.
 	/**
 	 * Retrieves a list of the top 3 players for each champion (including total level/points).
 	 *

@@ -149,6 +149,22 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 		this.masteryScores = masteryScores;
 	}
 
+	/**
+	 * Returns the player's summoner name, or {@code null} if they have requested not to have their name shown on the
+	 * site.
+	 *
+	 * @return The player's summoner name, or {@code null} if they have requested not to have their name shown on the
+	 * 		site.
+	 */
+	@Transient
+	public String getDisplayName() {
+		if (getStatus() == Status.FORGOTTEN || getStatus() == Status.REQUESTED_REMOVAL) {
+			return null;
+		} else {
+			return getSummonerName();
+		}
+	}
+
 	@Override
 	@Transient
 	public Key getIdentifier() {
