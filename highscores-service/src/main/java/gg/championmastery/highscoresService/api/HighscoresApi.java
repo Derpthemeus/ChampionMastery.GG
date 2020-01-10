@@ -126,6 +126,22 @@ public class HighscoresApi {
 	}
 
 	/**
+	 * Retrieves a list of the top 50 players for the specified champion. This method does not attempt to verify that a
+	 * champion with the specified ID actually exists, and will return an empty list if an invalid ID is specified.
+	 *
+	 * @return A list of the top 50 players for the specified champion.
+	 */
+	public List<MasteryScoreEntity> getChampionHighscores(short championId) {
+		try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
+			Query<MasteryScoreEntity> query = session.createQuery("FROM MasteryScoreEntity WHERE championId=:championId AND summoner.status != 1 ORDER BY masteryPoints DESC", MasteryScoreEntity.class)
+					.setParameter("championId", championId)
+					.setMaxResults(50);
+
+			return query.getResultList();
+		}
+	}
+
+	/**
 	 * Retrieves the {@link MasteryScoreEntity} for the specified summoner and champion from {@code scores} if it already
 	 * contains it, or creates a new one if it does not.
 	 *
