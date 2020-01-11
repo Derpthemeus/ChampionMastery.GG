@@ -32,14 +32,16 @@ public class ChampionHighscoresHandler extends AbstractHandler {
 			championId = Short.parseShort(request.getParameter("championId"));
 		} catch (NumberFormatException ex) {
 			response.setStatus(400);
+			response.setContentType("text/plain");
 			response.getWriter().write("Invalid champion ID");
 			return;
 		}
 
 		List<MasteryScoreEntity> championHighscores = HighscoresService.getApi().getChampionHighscores(championId);
 
-		mapper.writeValue(response.getWriter(), championHighscores);
 
 		response.setStatus(200);
+		response.setContentType("text/json");
+		mapper.writeValue(response.getWriter(), championHighscores);
 	}
 }

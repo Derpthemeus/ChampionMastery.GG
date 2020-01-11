@@ -30,8 +30,8 @@ public class HighscoresSummaryHandler extends AbstractHandler {
 
 		Map<Short, List<MasteryScoreEntity>> highscoresSummary = HighscoresService.getApi().getHighscoresSummary();
 
-		mapper.writeValue(response.getWriter(), highscoresSummary);
-
 		response.setStatus(200);
+		response.setContentType("text/json");
+		mapper.writeValue(response.getWriter(), highscoresSummary);
 	}
 }

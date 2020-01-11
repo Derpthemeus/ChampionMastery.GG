@@ -28,6 +28,7 @@ public class SummonerScoresHandler extends AbstractHandler {
 		String summonerName = request.getParameter("summonerName");
 		if (summonerName == null) {
 			response.setStatus(400);
+			response.setContentType("text/plain");
 			response.getWriter().write("summonerName parameter not specified");
 			return;
 		}
@@ -35,6 +36,7 @@ public class SummonerScoresHandler extends AbstractHandler {
 		Platform platform = Platform.withTag(request.getParameter("platform"));
 		if (platform == null) {
 			response.setStatus(400);
+			response.setContentType("text/plain");
 			response.getWriter().write("Invalid platform");
 			return;
 		}
@@ -46,6 +48,7 @@ public class SummonerScoresHandler extends AbstractHandler {
 
 		if (summoner == null) {
 			response.setStatus(404);
+			response.setContentType("text/plain");
 			response.getWriter().write("Summoner does not exist");
 			return;
 		}
@@ -57,8 +60,9 @@ public class SummonerScoresHandler extends AbstractHandler {
 				"scores", summonerScores
 		);
 
-		mapper.writeValue(response.getWriter(), map);
 
 		response.setStatus(200);
+		response.setContentType("text/json");
+		mapper.writeValue(response.getWriter(), map);
 	}
 }
