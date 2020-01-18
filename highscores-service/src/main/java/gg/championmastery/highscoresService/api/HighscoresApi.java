@@ -1,6 +1,7 @@
 package gg.championmastery.highscoresService.api;
 
 import com.google.common.collect.ImmutableMap;
+import com.merakianalytics.orianna.types.common.OriannaException;
 import com.merakianalytics.orianna.types.common.Platform;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMasteries;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMastery;
@@ -35,8 +36,9 @@ public class HighscoresApi {
 	 *
 	 * @param summoner The summoner whose scores should be retrieved.
 	 * @return The summoner's mastery scores for every champion.
+	 * @throws OriannaException thrown if the Riot Games API returns an error.
 	 */
-	public ChampionMasteries getSummonerScores(Summoner summoner) {
+	public ChampionMasteries getSummonerScores(Summoner summoner) throws OriannaException {
 		ChampionMasteries masteries = HighscoresService.getOriannaPipeline().get(ChampionMasteries.class, ImmutableMap.of(
 				"platform", Platform.withTag(summoner.getPlatform()),
 				"summonerId", summoner.getId()
