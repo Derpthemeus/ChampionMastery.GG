@@ -45,6 +45,7 @@
 							</td>
 							<td>
 								{{#if this}}
+									<!-- FIXME handle hidden summoners -->
 									<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
 										{{this.name}} ({{this.region}})
 									</a>

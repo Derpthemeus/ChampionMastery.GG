@@ -8,10 +8,8 @@ services:
       context: ./webserver
     volumes:
       - "staticData:/cml/staticData/"
-      - "highscoreData:/cml/highscoreData"
     environment:
-      RIOT_API_KEY:
-      DATA_DIR: "/cml/highscoreData/"
+      HIGHSCORES_SERVICE_URL: "http://highscores_service"
     labels:
       traefik.enable: true
       traefik.http.services.webserver.loadbalancer.server.port: 8080
@@ -23,6 +21,7 @@ services:
       traefik.http.routers.webserver_redirect.middlewares: "https_redirect@file"
     networks:
       traefik:
+      highscoresService:
     restart: unless-stopped
   highscores_service:
     build:
@@ -33,6 +32,7 @@ services:
     networks:
       mysql:
       prometheus:
+      highscoresService:
     depends_on:
       - "mysql"
     restart: unless-stopped
@@ -146,7 +146,6 @@ services:
       mysql:
 volumes:
   staticData:
-  highscoreData:
   acmeCerts:
   prometheusData:
   mysqlData:
@@ -154,3 +153,4 @@ networks:
   traefik:
   prometheus:
   mysql:
+  highscoresService:

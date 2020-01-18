@@ -1,13 +1,8 @@
-import {SummonerResponse} from "./apiHandler";
-import Champion from "./Champion";
 import Region from "./Region";
-import * as apiHandler from "./apiHandler";
-import {APIError} from "./apiHandler";
 import {renderSummoner} from "./routes/summoner";
 import {renderChampion} from "./routes/champion";
 import {renderHighscores} from "./routes/highscores";
 import Highscores from "./Highscores";
-import {Highscore} from "./Highscores";
 import Config from "./Config";
 import * as staticDataUpdater from "./staticDataUpdater";
 import express = require("express");
@@ -36,46 +31,6 @@ const app = express();
  */
 export function standardizeName(name: string): string {
 	return name.replace(/ /g, "").toLowerCase();
-}
-
-/**
- * Tries to find the summoner with a given name, first checking the cache then the API.
- * If the API returns a 404 for the name, this will check if a summoner with the specified name is in the highscores list.
- * If the summoner is found in the highscores, they will be looked up by their stored ID.
- * @param region
- * @param summonerName
- * @async
- * @returns An object containing the Summoner and the property "hasNewName". If the summoner was found through the fallback method, "hasNewName" will be set to true.
- * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
- * @throws {APIError} Thrown if an API error occurs. If the thrown error has a status code of 404, it means the summoner could not be found by name, and a fallback ID could not be found or didn't work.
- */
-export async function getSummoner(region: Region, summonerName: string): Promise<{ summoner: SummonerResponse, hasNewName: boolean }> {
-	try {
-		const summoner: SummonerResponse = await apiHandler.getSummonerByName(region, summonerName);
-		return {hasNewName: false, summoner: summoner};
-	} catch (ex) {
-		if (ex instanceof apiHandler.APIError && ex.statusCode === 404) {
-			// Check if this player is on the highscores with their old name
-			const standardizedName: string = standardizeName(summonerName);
-			for (const champion of Champion.CHAMPIONS.values()) {
-				const championScores: Highscore[] = highscores.getChampionHighscores(champion.id);
-				for (const score of championScores) {
-					if (standardizedName === score.standardizedName && region.id === score.region) {
-						try {
-							const summoner: SummonerResponse = await apiHandler.getSummonerById(region, score.id);
-							return {hasNewName: true, summoner: summoner};
-						} catch (ex) {
-							if (ex instanceof APIError && ex.statusCode === 404) {
-								// This error can potentially be caused by the player transferring regions. It will need to be fixed manually.
-								console.error(`Unable to find summoner "${score.name}" on ${score.region} (ID: ${score.id})`);
-							}
-						}
-					}
-				}
-			}
-		}
-		throw ex;
-	}
 }
 
 /**
@@ -112,21 +67,6 @@ async function start(): Promise<void> {
 	console.log("Starting server...");
 
 	try {
-		if (fs.existsSync(Config.highscoreDataPath)) {
-			// Load existing highscores
-			const json: string = fs.readFileSync(Config.highscoreDataPath, "utf8");
-			highscores = new Highscores(JSON.parse(json));
-		} else {
-			// Create a new highscores list
-			highscores = new Highscores({});
-		}
-	} catch (ex) {
-		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR LOADING HIGHSCORE DATA")));
-		process.exit(1);
-	}
-	console.log("Loaded highscore data");
-
-	try {
 		await staticDataUpdater.updateStaticData();
 	} catch (ex) {
 		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR UPDATING STATIC DATA")));
@@ -139,6 +79,8 @@ async function start(): Promise<void> {
 			console.error(VError.fullStack(new VError(ex, "Error updating static data (will continue using older version)")));
 		});
 	}, Config.staticDataUpdateInterval * 1000 * 60);
+
+	highscores = new Highscores();
 
 	layouts.register(handlebars);
 
@@ -170,8 +112,6 @@ async function start(): Promise<void> {
 	app.get("/highscores", renderHighscores);
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);
-
-	setInterval(highscores.saveHighscores, Config.saveInterval * 1000);
 
 	app.listen(Config.serverPort, Config.serverAddress);
 	console.log("Server started");

@@ -45,6 +45,7 @@
 							<div>
 								<strong>{{ordinalize (add @index 1)}}</strong>
 								{{#if this}}
+									<!-- FIXME handle hidden summoners -->
 									<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
 										{{this.name}} ({{this.region}})
 									</a>

@@ -1,5 +1,4 @@
 import Champion from "./Champion";
-import {highscores} from "./server";
 import Config from "./Config";
 import fs = require("fs");
 import http = require("http");
@@ -263,13 +262,6 @@ const updateChampions = () => {
 			return (nameA < nameB) ? -1 : 1;
 		})
 	]);
-
-	// Add new champions to highscores
-	for (const champion of Champion.CHAMPIONS.values()) {
-		if (!highscores.getChampionHighscores(champion.id)) {
-			highscores.highscores[champion.id] = [];
-		}
-	}
 
 	console.log("Updated champion list");
 };

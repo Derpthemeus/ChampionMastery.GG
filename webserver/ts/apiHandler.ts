@@ -1,42 +1,29 @@
 import {standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
 import Region from "./Region";
-import RateLimiter from "./RateLimiter";
-import {APIMethod, RateLimitCombo, RateLimitError} from "./RateLimiter";
 import Config from "./Config";
 import http = require("http");
 import https = require("https");
 import VError = require("verror");
+import {Highscore} from "./Highscores";
 
 const cacheHandler: CacheHandler = new CacheHandler();
-const rateLimiter: RateLimiter = new RateLimiter();
+const httpModule = Config.highscoresServiceUrl.startsWith("https://") ? https : http;
 
 /**
- * Makes a call to the API (doesn't check the cache) and returns the raw body
- * @param apiMethod The API method this request is for. In order for this call to be made, the rate limit for this method must have a request available.
- * If there is not a request available for this method, a RateLimitError will be thrown. If there are enough requests remaining for this request to be made,
- * the rate limit will have 1 request marked as used before the API request is made.
- * @param region The region the request should be made to
- * @param path The path of the API request URL, relative to "https://*.api.riotgames.com/"
- * @param query The query of the API request URL, without "?" (e.g. "foo=bar&a=b"). May be a falsy value if no query is needed.
- *  The "api_key" parameter should not be included (it will be automatically added)
- * @async
- * @returns The raw body of the API response
- * @throws {RateLimitError} Thrown if the API call is prevented because there are not enough requests remaining
- * @throws {APIError} Thrown if the API response has a non-200 status code
- * @throws {Error} Thrown if the API request cannot be completed for some other reason
+ * Makes an API request to the highscores service.
+ * @param path The path of the request (e.g. "highscoresSummary")
+ * @param query key/value pairs to encode in the query string.
+ * @return A Promise that will be resolved with the body of the response, or rejected with an Error.
  */
-function makeAPIRequest(apiMethod: APIMethod, region: Region, path: string, query?: string): Promise<string> {
+function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: string | number} = {}): Promise<string> {
 	return new Promise<string>((resolve: Function, reject: Function) => {
-		const rateLimitCombo: RateLimitCombo = rateLimiter.getRateLimitCombo(region, apiMethod, true);
-		if (!(rateLimitCombo.hasRequestAvailable())) {
-			reject(new RateLimitError());
-			return;
-		}
-		rateLimitCombo.useRequest();
+		const queryString: string = Object.keys(query).map((key) =>
+			`${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`
+		).join("&");
+		const url: string = `${Config.highscoresServiceUrl}/${path}/${queryString ? ("?" + queryString) : ""}`;
 
-		const url: string = `https://${region.platformId}.api.riotgames.com/${path}?${query ? (query + "&") : ""}api_key=${Config.riotApiKey}`;
-		https.get(url, (response: http.IncomingMessage) => {
+		httpModule.get(url, (response: http.IncomingMessage) => {
 			let body: string = "";
 			response.on("data", (segment) => {
 				body += segment;
@@ -47,8 +34,6 @@ function makeAPIRequest(apiMethod: APIMethod, region: Region, path: string, quer
 			});
 
 			response.on("end", () => {
-				rateLimitCombo.updateFromHeaders(response.headers);
-
 				if (response.statusCode === 200) {
 					resolve(body);
 				} else {
@@ -62,40 +47,42 @@ function makeAPIRequest(apiMethod: APIMethod, region: Region, path: string, quer
 }
 
 /**
- * Tries to retrieve a summoner by name, first checking the cache then the API.
- * @param region
- * @param name
- * @async
- * @returns A SummonerResponse object of the specified summoner
- * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
- * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
- * @throws {Error} Thrown is some other error occurs
+ * Retrieves summoner info and champion mastery scores for the specified summoner, first checking the cache then the
+ * highscores service.
+ * @param region The summoner's region.
+ * @param summonerName The summoner's summoner name.
+ * @return A Promise that will be resolved with information about this summoner and their mastery scores, or rejected
+ * with an error.
  */
-export async function getSummonerByName(region: Region, name: string): Promise<SummonerResponse> {
-	const standardizedName: string = standardizeName(name);
-	const key: string = cacheHandler.makeSummonerIdKey(region, standardizedName);
+export async function getSummonerInfo(region: Region, summonerName: string): Promise<SummonerScoresResponse> {
+	// Check the cache.
+	const standardizedName: string = standardizeName(summonerName);
+	const key: string = cacheHandler.makeSummonerKey(region, standardizedName);
 
 	const cachedId: string = await cacheHandler.retrieve(key);
 	if (cachedId !== undefined) {
-		const cachedResponse = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
+		const cachedResponse: SummonerScoresResponse = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
 		if (cachedResponse !== undefined) {
 			return cachedResponse;
 		}
 	}
+
+	// Make a request to the highscore service if the data wasn't in the cache.
 	try {
-		// A cache hit (on both summoner ID and summoner info) would have already resulted in this function returning by now
-		const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerName, region, `lol/summoner/v4/summoners/by-name/${encodeURIComponent(standardizedName)}`);
-		const summoner: SummonerResponse = JSON.parse(body);
-		summoner.standardizedName = standardizedName;
-		cacheHandler.store(cacheHandler.makeSummonerKey(region, summoner.id), summoner, Config.cacheDurations.summoner);
-		cacheHandler.store(key, summoner.id, Config.cacheDurations.summoner);
-		return summoner;
+		const body: string = await makeHighscoresServiceAPIRequest("summonerScores", {
+			summonerName: standardizedName,
+			platform: region.platformId
+		});
+		const response: SummonerScoresResponse = JSON.parse(body);
+		response.summoner.standardizedName = standardizedName;
+		cacheHandler.store(cacheHandler.makeSummonerKey(region, response.summoner.id), response, Config.cacheDurations.summoner);
+		return response;
 	} catch (ex) {
 		if (ex instanceof APIError && ex.statusCode !== 404) {
 			logApiError(ex);
 		}
-		// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
-		if (ex instanceof APIError || ex instanceof RateLimitError) {
+		// APIErrors are not caused by the code, so they don't need stack traces.
+		if (ex instanceof APIError) {
 			throw ex;
 		} else {
 			throw new VError(ex, "Error getting summoner by name");
@@ -104,75 +91,30 @@ export async function getSummonerByName(region: Region, name: string): Promise<S
 }
 
 /**
- * Tries to retrieve a summoner by summoner ID, first checking the cache then the API.
- * @param region
- * @param summonerId The player's encrypted summoner ID.
- * @async
- * @returns A SummonerResponse object for the specified summoner
- * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
- * @throws {APIError} Thrown if an API error occurs (including if the summoner is not found)
- * @throws {Error} Thrown is some other error occurs.
+ * Retrieves the top players for each champion.
+ * @return A Promise that will be resolved with the top 3 scores for each champion (mapped by champion ID), or rejected
+ * with an error.
  */
-export async function getSummonerById(region: Region, summonerId: string): Promise<SummonerResponse> {
-	const key: string = cacheHandler.makeSummonerKey(region, summonerId);
-	const cachedResponse: SummonerResponse = await cacheHandler.retrieve(key);
-	if (cachedResponse !== undefined) {
-		return cachedResponse;
-	} else {
-		try {
-			const body: string = await makeAPIRequest(APIMethod.GET_getBySummonerId, region, `lol/summoner/v4/summoners/${summonerId}`);
-			const summoner: SummonerResponse = JSON.parse(body);
-			summoner.standardizedName = standardizeName(summoner.name);
-			cacheHandler.store(key, summoner, Config.cacheDurations.summoner);
-			cacheHandler.store(cacheHandler.makeSummonerIdKey(region, summoner.standardizedName), summonerId, Config.cacheDurations.summoner);
-			return summoner;
-		} catch (ex) {
-			if (ex instanceof APIError) {
-				logApiError(ex);
-			}
-			// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
-			if (ex instanceof APIError || ex instanceof RateLimitError) {
-				throw ex;
-			} else {
-				throw new VError(ex, "Error getting summoner by summoner ID");
-			}
-		}
+export async function getHighscoresSummary(): Promise<{[championId: string]: Highscore[]}> {
+	try {
+		const body: string = await makeHighscoresServiceAPIRequest("highscoresSummary");
+		return JSON.parse(body);
+	} catch (ex) {
+		throw new VError(ex, "Error retrieving highscores summary from highscores service");
 	}
 }
 
 /**
- * Tries to retrieve a summoner's champion mastery scores, first checking the cache then the API.
- * @param region
- * @param summonerId The player's encrypted summoner ID.
- * @async
- * @returns The champion mastery scores for the specified summoner
- * @throws {RateLimitError} Thrown if the API request is prevented due to an exceeded rate limit
- * @throws {APIError} Thrown if an API error occurs
- * @throws {Error} Thrown is some other error occurs
+ * Retrieves the top scores for the specified champion.
+ * @param championId The ID of the champion to retrieve scores for.
+ * @return A Promise that will be resolved with the top scores for the specified champion, or rejected with an error.
  */
-export async function getChampionMasteries(region: Region, summonerId: string): Promise<ChampionMasteryResponse[]> {
-	const key: string = cacheHandler.makeChampionMasteriesKey(region, summonerId);
-
-	const cachedResponse: ChampionMasteryResponse[] = await cacheHandler.retrieve(key);
-	if (cachedResponse !== undefined) {
-		return cachedResponse;
-	} else {
-		try {
-			const body: string = await makeAPIRequest(APIMethod.GET_getAllChampionMasteries, region, `lol/champion-mastery/v4/champion-masteries/by-summoner/${summonerId}`);
-			const masteries: ChampionMasteryResponse[] = JSON.parse(body);
-			cacheHandler.store(key, masteries, Config.cacheDurations.championMastery);
-			return masteries;
-		} catch (ex) {
-			if (ex instanceof APIError) {
-				logApiError(ex);
-			}
-			// APIError's and RateLimitError's are not caused by the code, so they don't need stack traces.
-			if (ex instanceof APIError || ex instanceof RateLimitError) {
-				throw ex;
-			} else {
-				throw new VError(ex, "Error getting champion masteries");
-			}
-		}
+export async function getChampionHighscores(championId: number): Promise<Highscore[]> {
+	try {
+		const body: string = await makeHighscoresServiceAPIRequest("championHighscores", {championId: championId});
+		return JSON.parse(body);
+	} catch (ex) {
+		throw new VError(ex, `Error retrieving champion highscores from highscores service for champion ${championId}`);
 	}
 }
 
@@ -233,7 +175,6 @@ export interface SummonerResponse {
 	summonerLevel: number;
 }
 
-
 /**
  * Info for a single champion from a response from https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries
  */
@@ -246,4 +187,10 @@ export interface ChampionMasteryResponse {
 	championPointsSinceLastLevel: number;
 	lastPlayTime: number;
 	tokensEarned: number;
+}
+
+// FIXME rename?
+export interface SummonerScoresResponse {
+	summoner: SummonerResponse;
+	scores: ChampionMasteryResponse[];
 }
