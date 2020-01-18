@@ -109,6 +109,7 @@ async function start(): Promise<void> {
 	useStaticPage("/", "home");
 	useStaticPage("/faq", "faq");
 	useStaticPage("/legal", "legal");
+	useStaticPage("/privacy", "privacy");
 	app.get("/highscores", renderHighscores);
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);

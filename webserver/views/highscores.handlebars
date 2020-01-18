@@ -45,10 +45,15 @@
 							<div>
 								<strong>{{ordinalize (add @index 1)}}</strong>
 								{{#if this}}
-									<!-- FIXME handle hidden summoners -->
-									<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
-										{{this.name}} ({{this.region}})
-									</a>
+									{{#if this.name}}
+										<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
+											{{this.name}} ({{this.region}})
+										</a>
+									{{else}}
+										<a href="/privacy">
+											[HIDDEN] ({{this.region}})
+										</a>
+									{{/if}}
 									:
 									<span data-format-number="{{this.points}}">{{this.points}}</span>
 								{{else}}
