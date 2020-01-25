@@ -1,4 +1,3 @@
-import {standardizeName} from "./server";
 import CacheHandler from "./CacheHandler";
 import Region from "./Region";
 import Config from "./Config";
@@ -56,8 +55,7 @@ function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: st
  */
 export async function getSummonerInfo(region: Region, summonerName: string): Promise<SummonerScoresResponse> {
 	// Check the cache.
-	const standardizedName: string = standardizeName(summonerName);
-	const key: string = cacheHandler.makeSummonerKey(region, standardizedName);
+	const key: string = cacheHandler.makeSummonerKey(region, summonerName);
 
 	const cachedId: string = await cacheHandler.retrieve(key);
 	if (cachedId !== undefined) {
@@ -70,11 +68,10 @@ export async function getSummonerInfo(region: Region, summonerName: string): Pro
 	// Make a request to the highscore service if the data wasn't in the cache.
 	try {
 		const body: string = await makeHighscoresServiceAPIRequest("summonerScores", {
-			summonerName: standardizedName,
+			summonerName: summonerName,
 			platform: region.platformId
 		});
 		const response: SummonerScoresResponse = JSON.parse(body);
-		response.summoner.standardizedName = standardizedName;
 		cacheHandler.store(cacheHandler.makeSummonerKey(region, response.summoner.id), response, Config.cacheDurations.summoner);
 		return response;
 	} catch (ex) {
@@ -168,8 +165,6 @@ export interface SummonerResponse {
 	puuid: string;
 	/** Summoner name */
 	name: string;
-	/** The name of the summoner, all lowercase with spaces removed */
-	standardizedName: string;
 	profileIconId: number;
 	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
 	summonerLevel: number;
@@ -193,4 +188,9 @@ export interface ChampionMasteryResponse {
 export interface SummonerScoresResponse {
 	summoner: SummonerResponse;
 	scores: ChampionMasteryResponse[];
+	/**
+	 * Indicates if the summoner has changed their name. If set to true, the `summonerName` field will contain a different
+	 * value than the one specified by the user when they looked up the player.
+	 */
+	hasNewName: boolean;
 }

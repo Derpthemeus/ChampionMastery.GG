@@ -1,7 +1,7 @@
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
 import {ChampionMasteryResponse, SummonerResponse, SummonerScoresResponse} from "../apiHandler";
-import {COMMON_DATA, renderError, standardizeName} from "../server";
+import {COMMON_DATA, renderError} from "../server";
 import Champion from "../Champion";
 import express = require("express");
 import XRegExp = require("xregexp");
@@ -42,8 +42,8 @@ export async function renderSummoner(req: express.Request, res: express.Response
 		const masteries: ChampionMasteryResponse[] = response.scores;
 
 		// Redirect the user if the summoner has changed their name.
-		if (summoner.standardizedName !== standardizeName(req.query.summoner)) {
-			res.redirect(302, `?summoner=${encodeURIComponent(summoner.standardizedName)}&region=${region.id}`);
+		if (response.hasNewName) {
+			res.redirect(302, `?summoner=${encodeURIComponent(summoner.name)}&region=${region.id}`);
 			return;
 		}
 

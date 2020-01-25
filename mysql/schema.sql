@@ -29,6 +29,8 @@ CREATE TABLE summoners (
 	encrypted_account_id   VARCHAR(56)                                                   NOT NULL,
 	/** The last known name of the summoner. */
 	summoner_name          VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+	/** The last known name of the summoner, converted to lowercase with all spaces removed. */
+	standardized_name      VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin        NOT NULL,
 	masteries_last_updated TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
 	name_last_updated      TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
     /** The value of the `revisionDate` field from the Summoner-v4 API. */
@@ -47,7 +49,10 @@ CREATE TABLE summoners (
 	/** Used for selecting summoners to automatically update their mastery scores. */
 	INDEX IX_masteries_last_updated (platform, masteries_last_updated),
 	/** Used for selecting summoners to automatically update their names. */
-	INDEX IX_name_last_updated (platform, name_last_updated)
+	INDEX IX_name_last_updated (platform, name_last_updated),
+	/** Used for finding summoners after they change their name. This index is not unique because 2 rows may have the
+	same standardized name if a player hasn't had their name updated in the database after changing it. */
+	INDEX IX_standardized_name (platform, standardized_name)
 ) ENGINE = InnoDB;
 
 CREATE TABLE platforms (

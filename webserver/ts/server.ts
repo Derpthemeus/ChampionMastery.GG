@@ -25,15 +25,6 @@ export let highscores: Highscores;
 const app = express();
 
 /**
- * Returns a standardized name (all lowercase with spaces removed)
- * @param name
- * @returns The standardized name
- */
-export function standardizeName(name: string): string {
-	return name.replace(/ /g, "").toLowerCase();
-}
-
-/**
  * Displays an error message.
  * @param res The Response to send the error to
  * @param code The HTTP status code to use
