@@ -145,6 +145,7 @@ services:
     networks:
       mysql:
       prometheus:
+    restart: unless-stopped
   prom_mysql_exporter:
     image: "prom/mysqld-exporter:v0.11.0"
     environment:
