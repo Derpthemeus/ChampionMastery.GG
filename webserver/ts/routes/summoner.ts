@@ -1,9 +1,8 @@
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
-import {ChampionMasteryResponse, SummonerResponse} from "../apiHandler";
-import {COMMON_DATA, getSummoner, highscores, renderError} from "../server";
+import {ChampionMasteryResponse, SummonerInfo} from "../apiHandler";
+import {COMMON_DATA, renderError} from "../server";
 import Champion from "../Champion";
-import {RateLimitError} from "../RateLimiter";
 import express = require("express");
 import XRegExp = require("xregexp");
 import handlebars = require("handlebars");
@@ -37,16 +36,15 @@ export async function renderSummoner(req: express.Request, res: express.Response
 	}
 
 	try {
-		const summonerInfo: { summoner: SummonerResponse, hasNewName: boolean } = await getSummoner(region, req.query.summoner);
-		const summoner: SummonerResponse = summonerInfo.summoner;
-		if (summonerInfo.hasNewName) {
-			res.redirect(302, `?summoner=${encodeURIComponent(summoner.standardizedName)}&region=${region.id}`);
+		const summoner: SummonerInfo = await apiHandler.getSummonerInfo(region, req.query.summoner);
+
+		const masteries: ChampionMasteryResponse[] = summoner.scores;
+
+		// Redirect the user if the summoner has changed their name.
+		if (summoner.hasNewName) {
+			res.redirect(302, `?summoner=${encodeURIComponent(summoner.name)}&region=${region.id}`);
 			return;
 		}
-
-		const masteries: ChampionMasteryResponse[] = await apiHandler.getChampionMasteries(region, summoner.id);
-
-		highscores.updateAllHighscores(masteries, summoner, region);
 
 		const champions: ChampionInfo[] = new Array(masteries.length);
 
@@ -123,10 +121,10 @@ export async function renderSummoner(req: express.Request, res: express.Response
 			pointsToNextLevel: number;
 		}
 	} catch (ex) {
-		if (ex instanceof RateLimitError) {
-			renderError(res, 503, "Server overloaded", "Try again later. Retrying immediately will only make the problem worse.");
-		} else if (ex instanceof apiHandler.APIError) {
-			if (ex.statusCode === 404) {
+		if (ex instanceof apiHandler.APIError) {
+			if (ex.statusCode === 429) {
+				renderError(res, 503, "Server overloaded", "Try again later. Retrying immediately will only make the problem worse.");
+			} else if (ex.statusCode === 404) {
 				renderError(res, 404, "Player not found", "Make sure the summoner name and region are correct.");
 			} else {
 				renderError(res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in site footer).");

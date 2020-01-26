@@ -1,7 +1,6 @@
 import {COMMON_DATA, highscores, renderError} from "../server";
 import {Highscore} from "../Highscores";
 import Champion from "../Champion";
-import Config from "../Config";
 import express = require("express");
 
 export function renderChampion(req: express.Request, res: express.Response): void {
@@ -17,10 +16,7 @@ export function renderChampion(req: express.Request, res: express.Response): voi
 		return;
 	}
 
-	const scores: Highscore[] = new Array(Config.highscoreCount.display);
-	for (let i = 0; i < Config.highscoreCount.display; i++) {
-		scores[i] = highscores.getHighscore(champion.id, i);
-	}
+	const scores: Highscore[] = highscores.championHighscores.get(championId);
 
 	res.status(200).render("champion", {
 		...COMMON_DATA,

@@ -8,10 +8,8 @@ services:
       context: ./webserver
     volumes:
       - "staticData:/cml/staticData/"
-      - "highscoreData:/cml/highscoreData"
     environment:
-      RIOT_API_KEY:
-      DATA_DIR: "/cml/highscoreData/"
+      HIGHSCORES_SERVICE_URL: "http://highscores_service:8181"
       ANNOUNCEMENT_MESSAGE:
       ANNOUNCEMENT_LINK:
     labels:
@@ -25,6 +23,20 @@ services:
       traefik.http.routers.webserver_redirect.middlewares: "https_redirect@file"
     networks:
       traefik:
+      highscoresService:
+    restart: unless-stopped
+  highscores_service:
+    build:
+      context: "./highscores-service"
+    environment:
+      MYSQL_CONNECTION_URL: "jdbc:${MYSQL_CONNECTION_URL}"
+      RIOT_API_KEY:
+    networks:
+      mysql:
+      prometheus:
+      highscoresService:
+    depends_on:
+      - "mysql"
     restart: unless-stopped
   traefik:
     build:
@@ -121,11 +133,35 @@ services:
     networks:
       traefik:
     restart: unless-stopped
+  mysql:
+    build:
+      context: "./mysql/"
+      args:
+        MYSQL_ROOT_PASSWORD:
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysqlData:/mysql_data"
+    environment:
+      MYSQL_ROOT_PASSWORD:
+    networks:
+      mysql:
+      prometheus:
+    restart: unless-stopped
+  prom_mysql_exporter:
+    image: "prom/mysqld-exporter:v0.11.0"
+    environment:
+      DATA_SOURCE_NAME: "root:${MYSQL_ROOT_PASSWORD}@(mysql)/"
+    networks:
+      prometheus:
+    restart: unless-stopped
 volumes:
   staticData:
-  highscoreData:
   acmeCerts:
   prometheusData:
+  mysqlData:
 networks:
   traefik:
   prometheus:
+  mysql:
+  highscoresService:

@@ -1,0 +1,103 @@
+{
+	"currentVersionExpiration": {
+		"period": 6,
+		"unit": "HOURS"
+	},
+	"pipeline": {
+		"elements": [
+			{
+				"className": "com.merakianalytics.orianna.datapipeline.GhostObjectSource"
+			},
+			{
+				"className": "com.merakianalytics.orianna.datapipeline.DataDragon",
+				"config": {
+					"cacheDuration": {
+						"period": 6,
+						"unit": "HOURS"
+					},
+					"requests": {
+						"connectTimeout": 3,
+						"connectTimeoutUnit": "SECONDS",
+						"rateLimiterTimeout": 0,
+						"rateLimiterTimeoutUnit": "SECONDS",
+						"readTimeout": 3,
+						"readTimeoutUnit": "SECONDS"
+					}
+				},
+				"configClassName": "com.merakianalytics.orianna.datapipeline.DataDragon$Configuration"
+			},
+			{
+				"className": "com.merakianalytics.orianna.datapipeline.riotapi.RiotAPI",
+				"config": {
+					"http404Strategy": {
+						"type": "RETURN_NULL"
+					},
+					"http429Strategy": {
+						"backupStrategy": {
+							"backoff": 1,
+							"backoffUnit": "SECONDS",
+							"backupStrategy": {
+								"type": "THROW_EXCEPTION"
+							},
+							"maxAttempts": 4,
+							"backoffFactor": 2,
+							"type": "EXPONENTIAL_BACKOFF"
+						},
+						"type": "RETRY_FROM_HEADERS"
+					},
+					"http500Strategy": {
+						"backoff": 1,
+						"backoffUnit": "SECONDS",
+						"backupStrategy": {
+							"type": "THROW_EXCEPTION"
+						},
+						"maxAttempts": 4,
+						"backoffFactor": 2,
+						"type": "EXPONENTIAL_BACKOFF"
+					},
+					"http503Strategy": {
+						"backoff": 1,
+						"backoffUnit": "SECONDS",
+						"backupStrategy": {
+							"type": "THROW_EXCEPTION"
+						},
+						"maxAttempts": 4,
+						"backoffFactor": 2,
+						"type": "EXPONENTIAL_BACKOFF"
+					},
+					"httpTimeoutStrategy": {
+						"backoff": 1,
+						"backoffUnit": "SECONDS",
+						"backupStrategy": {
+							"type": "THROW_EXCEPTION"
+						},
+						"maxAttempts": 4,
+						"backoffFactor": 2,
+						"type": "EXPONENTIAL_BACKOFF"
+					},
+					"limitingShare": 0.4,
+					"limitingType": "BURST",
+					"rateLimiterTimeoutStrategy": {
+						"type": "THROW_EXCEPTION"
+					},
+					"requests": {
+						"connectTimeout": 3,
+						"connectTimeoutUnit": "SECONDS",
+						"rateLimiterTimeout": 1,
+						"rateLimiterTimeoutUnit": "MILLISECONDS",
+						"readTimeout": 3,
+						"readTimeoutUnit": "SECONDS"
+					},
+					"services": [
+						"com.merakianalytics.orianna.datapipeline.riotapi.ChampionMasteryAPI",
+						"com.merakianalytics.orianna.datapipeline.riotapi.MatchAPI",
+						"com.merakianalytics.orianna.datapipeline.riotapi.SummonerAPI",
+						"com.merakianalytics.orianna.datapipeline.riotapi.ThirdPartyCodeAPI"
+					]
+				},
+				"configClassName": "com.merakianalytics.orianna.datapipeline.riotapi.RiotAPI$Configuration"
+			}
+		],
+		"transformers": []
+	}
+}
