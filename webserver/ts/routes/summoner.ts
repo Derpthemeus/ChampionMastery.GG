@@ -103,7 +103,8 @@ export async function renderSummoner(req: express.Request, res: express.Response
 				icon: summoner.profileIconId,
 				name: summoner.name,
 				id: summoner.id,
-				region: region.id
+				region: region.id,
+				platform: region.platformId
 			},
 			champions: champions,
 			totals: {
