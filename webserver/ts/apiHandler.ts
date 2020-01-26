@@ -29,7 +29,7 @@ function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: st
 			});
 
 			response.on("error", (err: Error) => {
-				reject(new VError(err, `Error receiving response from ${url}`));
+				reject(new VError(err, "%s", `Error receiving response from ${url}`));
 			});
 
 			response.on("end", () => {
@@ -40,7 +40,7 @@ function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: st
 				}
 			});
 		}).on("error", (err: Error) => {
-			reject(new VError(err, `Error making request to ${url}`));
+			reject(new VError(err, "%s", `Error making request to ${url}`));
 		});
 	});
 }
@@ -82,7 +82,7 @@ export async function getSummonerInfo(region: Region, summonerName: string): Pro
 		if (ex instanceof APIError) {
 			throw ex;
 		} else {
-			throw new VError(ex, "Error getting summoner by name");
+			throw new VError(ex, "%s", "Error getting summoner by name");
 		}
 	}
 }
@@ -97,7 +97,7 @@ export async function getHighscoresSummary(): Promise<{[championId: string]: Hig
 		const body: string = await makeHighscoresServiceAPIRequest("highscoresSummary");
 		return JSON.parse(body);
 	} catch (ex) {
-		throw new VError(ex, "Error retrieving highscores summary from highscores service");
+		throw new VError(ex, "%s", "Error retrieving highscores summary from highscores service");
 	}
 }
 
@@ -111,7 +111,7 @@ export async function getChampionHighscores(championId: number): Promise<Highsco
 		const body: string = await makeHighscoresServiceAPIRequest("championHighscores", {championId: championId});
 		return JSON.parse(body);
 	} catch (ex) {
-		throw new VError(ex, `Error retrieving champion highscores from highscores service for champion ${championId}`);
+		throw new VError(ex, "%s", `Error retrieving champion highscores from highscores service for champion ${championId}`);
 	}
 }
 

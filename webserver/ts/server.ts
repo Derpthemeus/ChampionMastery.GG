@@ -61,14 +61,14 @@ async function start(): Promise<void> {
 	try {
 		await staticDataUpdater.updateStaticData();
 	} catch (ex) {
-		console.error(VError.fullStack(new VError(ex, "CRITICAL ERROR UPDATING STATIC DATA")));
+		console.error(VError.fullStack(new VError(ex, "%s", "CRITICAL ERROR UPDATING STATIC DATA")));
 		process.exit(1);
 	}
 
 	// Schedule static data updater
 	setInterval(() => {
 		staticDataUpdater.updateStaticData().catch((ex) => {
-			console.error(VError.fullStack(new VError(ex, "Error updating static data (will continue using older version)")));
+			console.error(VError.fullStack(new VError(ex, "%s", "Error updating static data (will continue using older version)")));
 		});
 	}, Config.staticDataUpdateInterval * 1000 * 60);
 

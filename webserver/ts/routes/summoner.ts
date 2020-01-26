@@ -130,7 +130,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 				renderError(res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in site footer).");
 			}
 		} else {
-			console.error(VError.fullStack(new VError(ex, `Error creating page for summoner "${req.query.summoner}" (${req.query.region})`)));
+			console.error(VError.fullStack(new VError(ex, "%s", `Error creating page for summoner "${req.query.summoner}" (${req.query.region})`)));
 			renderError(res, 500, "Unknown error", "Please send me a message (contact info in site footer).");
 		}
 	}

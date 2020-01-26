@@ -42,7 +42,7 @@ export const updateStaticData = async (): Promise<void> => {
 				console.log("Created static data directory");
 			}
 		} catch (ex) {
-			reject(new VError(ex, `Unable to create static data directory ${Config.staticDataPath}`));
+			reject(new VError(ex, "%s", `Unable to create static data directory ${Config.staticDataPath}`));
 			return;
 		}
 		// Determine the DDragon version of the currently downloaded static data (if it hasn't already been determined)
@@ -53,7 +53,7 @@ export const updateStaticData = async (): Promise<void> => {
 				}
 			} catch (ex) {
 				// This error isn't critical (static data will just be redownloaded, even if it isn't necessary), so it's just logged instead of thrown
-				console.error(VError.fullStack(new VError(ex, `Error loading DDragon version from ${ddragonVersionPath}`)));
+				console.error(VError.fullStack(new VError(ex, "%s", `Error loading DDragon version from ${ddragonVersionPath}`)));
 			}
 		}
 		/** The latest published DDragon version */
@@ -64,9 +64,9 @@ export const updateStaticData = async (): Promise<void> => {
 			// Continue using the currently downloaded version (if it exists) if there is an error getting the latest version
 			if (currentDDragonVersion) {
 				latestVersion = currentDDragonVersion;
-				console.error(VError.fullStack(new VError(ex, "Error getting latest DDragon version, will continue to user currently downloaded version")));
+				console.error(VError.fullStack(new VError(ex, "%s", "Error getting latest DDragon version, will continue to user currently downloaded version")));
 			} else {
-				reject(new VError(ex, "Error getting latest DDragon version"));
+				reject(new VError(ex, "%s", "Error getting latest DDragon version"));
 				return;
 			}
 		}
@@ -80,13 +80,13 @@ export const updateStaticData = async (): Promise<void> => {
 					fs.writeFileSync(ddragonVersionPath, latestVersion, "utf8");
 				} catch (ex) {
 					// This error isn't critical, so it's just logged instead of thrown
-					console.error(VError.fullStack(new VError(ex, "Error saving latest DDragon version")));
+					console.error(VError.fullStack(new VError(ex, "%s", "Error saving latest DDragon version")));
 				}
 
 				console.log("Updated static data. Latest version: " + currentDDragonVersion);
 				resolve();
 			} catch (ex) {
-				reject(new VError(ex, "Error updating static data"));
+				reject(new VError(ex, "%s", "Error updating static data"));
 			}
 		} else {
 			// Champions still need to be loaded when the server starts
@@ -116,7 +116,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 				mkdirp.sync(profileIconsPath);
 			}
 		} catch (ex) {
-			reject(new VError(ex, "Unable to create icon directories"));
+			reject(new VError(ex, "%s", "Unable to create icon directories"));
 			return;
 		}
 
@@ -128,7 +128,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 
 				const tarStream = tar.extract();
 				tarStream.on("error", (err: Error) => {
-					reject(new VError(err, "Error reading tarball stream"));
+					reject(new VError(err, "%s", "Error reading tarball stream"));
 				});
 
 				const championJsonRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/data\\/en_US\\/champion\\.json$`);
@@ -171,13 +171,13 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 						console.log("All files finished saving");
 						resolve();
 					}, (err) => {
-						reject(new VError(err, "Error updating static data"));
+						reject(new VError(err, "%s", "Error updating static data"));
 					});
 				});
 
 				const gunzipStream = gunzip();
 				gunzipStream.on("error", (err: Error) => {
-					reject(new VError(err, "Error gunzipping stream"));
+					reject(new VError(err, "%s", "Error gunzipping stream"));
 				});
 
 				response.pipe(gunzipStream).pipe(tarStream);
@@ -200,7 +200,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 							// The stream needs to be drained to prevent the main TAR stream from receiving backpressure
 							entryStream.resume();
 							writeStream.close();
-							reject_entry(new VError(err, `Error saving file to ${savePath}`));
+							reject_entry(new VError(err, "%s", `Error saving file to ${savePath}`));
 						});
 						writeStream.on("finish", () => {
 							resolve_entry();
@@ -209,10 +209,10 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 					});
 				}
 			} else {
-				reject(new VError(`Received ${response.statusCode} code for ${url}`));
+				reject(new VError("%s", `Received ${response.statusCode} code for ${url}`));
 			}
 		}).on("error", (err: Error) => {
-			reject(new VError(err, `Error accessing ${url}`));
+			reject(new VError(err, "%s", `Error accessing ${url}`));
 		});
 	});
 };
@@ -226,7 +226,7 @@ const updateChampions = () => {
 		const championListString: string = fs.readFileSync(championListPath, "utf8");
 		championList = JSON.parse(championListString);
 	} catch (ex) {
-		throw new VError(ex, "Error loading champion list");
+		throw new VError(ex, "%s", "Error loading champion list");
 	}
 
 	/** Champions mapped to their ID (unsorted) */
@@ -275,7 +275,7 @@ const getLatestDDragonVersion = (): Promise<string> => {
 			});
 
 			response.on("error", (err: Error) => {
-				reject(new VError(err, `Error getting DDragon version list`));
+				reject(new VError(err, "%s", `Error getting DDragon version list`));
 			});
 
 			response.on("end", () => {
@@ -283,11 +283,11 @@ const getLatestDDragonVersion = (): Promise<string> => {
 					const versions: string[] = JSON.parse(body);
 					resolve(versions[0]);
 				} else {
-					reject(new VError(`Received a ${response.statusCode} status code when accessing DDragon version list`));
+					reject(new VError("%s", `Received a ${response.statusCode} status code when accessing DDragon version list`));
 				}
 			});
 		}).on("error", (err: Error) => {
-			reject(new VError(err, `Error getting DDragon version list`));
+			reject(new VError(err, "%s", `Error getting DDragon version list`));
 		});
 	});
 };
