@@ -53,13 +53,13 @@ function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: st
  * @return A Promise that will be resolved with information about this summoner and their mastery scores, or rejected
  * with an error.
  */
-export async function getSummonerInfo(region: Region, summonerName: string): Promise<SummonerScoresResponse> {
+export async function getSummonerInfo(region: Region, summonerName: string): Promise<SummonerInfo> {
 	// Check the cache.
 	const key: string = cacheHandler.makeSummonerKey(region, summonerName);
 
 	const cachedId: string = await cacheHandler.retrieve(key);
 	if (cachedId !== undefined) {
-		const cachedResponse: SummonerScoresResponse = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
+		const cachedResponse: SummonerInfo = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
 		if (cachedResponse !== undefined) {
 			return cachedResponse;
 		}
@@ -67,12 +67,12 @@ export async function getSummonerInfo(region: Region, summonerName: string): Pro
 
 	// Make a request to the highscore service if the data wasn't in the cache.
 	try {
-		const body: string = await makeHighscoresServiceAPIRequest("summonerScores", {
+		const body: string = await makeHighscoresServiceAPIRequest("summonerInfo", {
 			summonerName: summonerName,
 			platform: region.platformId
 		});
-		const response: SummonerScoresResponse = JSON.parse(body);
-		cacheHandler.store(cacheHandler.makeSummonerKey(region, response.summoner.id), response, Config.cacheDurations.summoner);
+		const response: SummonerInfo = JSON.parse(body);
+		cacheHandler.store(cacheHandler.makeSummonerKey(region, response.id), response, Config.cacheDurations.summoner);
 		return response;
 	} catch (ex) {
 		if (ex instanceof APIError && ex.statusCode !== 404) {
@@ -154,23 +154,6 @@ export class APIError {
 }
 
 /**
- * Based on a response from https://developer.riotgames.com/api-methods/#summoner-v4/GET_getBySummonerName
- */
-export interface SummonerResponse {
-	/** Encrypted summoner ID */
-	id: string;
-	/** Encrypted account ID */
-	accountId: string;
-	/** Encrypted PUUID */
-	puuid: string;
-	/** Summoner name */
-	name: string;
-	profileIconId: number;
-	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
-	summonerLevel: number;
-}
-
-/**
  * Info for a single champion from a response from https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries
  */
 export interface ChampionMasteryResponse {
@@ -184,9 +167,18 @@ export interface ChampionMasteryResponse {
 	tokensEarned: number;
 }
 
-// FIXME rename?
-export interface SummonerScoresResponse {
-	summoner: SummonerResponse;
+export interface SummonerInfo {
+	/** Encrypted summoner ID */
+	id: string;
+	/** Encrypted account ID */
+	accountId: string;
+	/** Encrypted PUUID */
+	puuid: string;
+	/** Summoner name */
+	name: string;
+	profileIconId: number;
+	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
+	summonerLevel: number;
 	scores: ChampionMasteryResponse[];
 	/**
 	 * Indicates if the summoner has changed their name. If set to true, the `summonerName` field will contain a different

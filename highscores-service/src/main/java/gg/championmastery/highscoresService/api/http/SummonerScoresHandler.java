@@ -1,6 +1,8 @@
 package gg.championmastery.highscoresService.api.http;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
 import com.merakianalytics.orianna.datapipeline.riotapi.exceptions.BadRequestException;
 import com.merakianalytics.orianna.datapipeline.riotapi.exceptions.ForbiddenException;
@@ -116,15 +118,14 @@ public class SummonerScoresHandler extends AbstractHandler {
 			return;
 		}
 
-		Map<String, Object> map = ImmutableMap.of(
-				"summoner", summoner,
-				"scores", summonerScores,
-				"hasNewName", hasNewName
-		);
+		ObjectNode node = mapper.createObjectNode();
+		node.setAll(mapper.convertValue(summoner, ObjectNode.class));
+		node.set("scores", mapper.convertValue(summonerScores, JsonNode.class));
+		node.set("hasNewName", mapper.convertValue(hasNewName, JsonNode.class));
 
 		response.setStatus(200);
 		response.setContentType("text/json");
-		mapper.writeValue(response.getWriter(), map);
+		mapper.writeValue(response.getWriter(), node);
 	}
 
 	/**

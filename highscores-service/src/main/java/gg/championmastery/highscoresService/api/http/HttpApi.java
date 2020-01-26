@@ -13,7 +13,7 @@ public class HttpApi {
 	public HttpApi(int port) throws Exception {
 		jettyServer = new Server(port);
 
-		ContextHandler summonerScoresHandler = new ContextHandler("/summonerScores");
+		ContextHandler summonerScoresHandler = new ContextHandler("/summonerInfo");
 		summonerScoresHandler.setHandler(new SummonerScoresHandler());
 
 		ContextHandler highscoresSummaryHandler = new ContextHandler("/highscoresSummary");

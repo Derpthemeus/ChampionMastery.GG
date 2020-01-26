@@ -1,6 +1,6 @@
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
-import {ChampionMasteryResponse, SummonerResponse, SummonerScoresResponse} from "../apiHandler";
+import {ChampionMasteryResponse, SummonerInfo} from "../apiHandler";
 import {COMMON_DATA, renderError} from "../server";
 import Champion from "../Champion";
 import express = require("express");
@@ -36,13 +36,12 @@ export async function renderSummoner(req: express.Request, res: express.Response
 	}
 
 	try {
-		const response: SummonerScoresResponse = await apiHandler.getSummonerInfo(region, req.query.summoner);
+		const summoner: SummonerInfo = await apiHandler.getSummonerInfo(region, req.query.summoner);
 
-		const summoner: SummonerResponse = response.summoner;
-		const masteries: ChampionMasteryResponse[] = response.scores;
+		const masteries: ChampionMasteryResponse[] = summoner.scores;
 
 		// Redirect the user if the summoner has changed their name.
-		if (response.hasNewName) {
+		if (summoner.hasNewName) {
 			res.redirect(302, `?summoner=${encodeURIComponent(summoner.name)}&region=${region.id}`);
 			return;
 		}
