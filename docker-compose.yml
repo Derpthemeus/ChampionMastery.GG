@@ -9,7 +9,7 @@ services:
     volumes:
       - "staticData:/cml/staticData/"
     environment:
-      HIGHSCORES_SERVICE_URL: "http://highscores_service"
+      HIGHSCORES_SERVICE_URL: "http://highscores_service:8181"
     labels:
       traefik.enable: true
       traefik.http.services.webserver.loadbalancer.server.port: 8080
