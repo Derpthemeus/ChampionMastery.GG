@@ -33,4 +33,7 @@ export default class Config {
 
 	/** The base URL of the highscores service (e.g. http://localhost:8181). */
 	public static readonly highscoresServiceUrl = process.env.HIGHSCORES_SERVICE_URL;
+
+	/** The base URL of the site (e.g. "http://localhost:8080"). */
+	public static readonly siteUrl = process.env.SITE_URL;
 }

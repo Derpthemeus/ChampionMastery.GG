@@ -15,9 +15,10 @@ const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
 /** Data that is used in every rendered view */
-export const COMMON_DATA: { regions: string[], announcement: { message: string, link: string } } = {
+export const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string } = {
 	regions: Region.REGIONS.map((region) => region.id),
-	announcement: Config.announcement
+	announcement: Config.announcement,
+	siteUrl: Config.siteUrl
 };
 
 export let highscores: Highscores;

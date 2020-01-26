@@ -12,6 +12,7 @@ services:
       HIGHSCORES_SERVICE_URL: "http://highscores_service:8181"
       ANNOUNCEMENT_MESSAGE:
       ANNOUNCEMENT_LINK:
+      SITE_URL: "https://${SITE_DOMAIN}"
     labels:
       traefik.enable: true
       traefik.http.services.webserver.loadbalancer.server.port: 8080
