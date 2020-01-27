@@ -1,5 +1,5 @@
 FROM node:carbon AS build
-WORKDIR /cml
+WORKDIR /cmgg
 COPY tsconfig.json ./
 COPY package.json ./
 COPY package-lock.json ./
@@ -9,8 +9,8 @@ COPY ts/ ts/
 RUN npm run compile
 
 FROM node:carbon AS run
-WORKDIR /cml
-COPY --from=build cml/js/ js/
+WORKDIR /cmgg
+COPY --from=build cmgg/js/ js/
 COPY package.json ./
 COPY package-lock.json ./
 # Install only runtime dependencies.
