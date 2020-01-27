@@ -100,9 +100,10 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setSummonerName(String summonerName) {
 		this.summonerName = summonerName;
-		this.standardizedName = standardizeName(summonerName);
 	}
 
+	@Column
+	@Generated(value = GenerationTime.ALWAYS)
 	public String getStandardizedName() {
 		return standardizedName;
 	}

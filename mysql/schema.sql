@@ -30,7 +30,8 @@ CREATE TABLE summoners (
 	/** The last known name of the summoner. */
 	summoner_name          VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
 	/** The last known name of the summoner, converted to lowercase with all spaces removed. */
-	standardized_name      VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin        NOT NULL,
+	standardized_name      VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
+        GENERATED ALWAYS AS (LOWER(REPLACE(summoner_name, ' ', ''))) STORED              NOT NULL,
 	masteries_last_updated TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
 	name_last_updated      TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
     /** The value of the `revisionDate` field from the Summoner-v4 API. */
