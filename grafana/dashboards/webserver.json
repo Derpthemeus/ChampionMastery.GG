@@ -15,7 +15,7 @@
 	"editable": true,
 	"gnetId": null,
 	"graphTooltip": 0,
-	"iteration": 1576470174812,
+	"iteration": 1580700548820,
 	"links": [],
 	"panels": [
 		{
@@ -27,8 +27,8 @@
 			"fill": 1,
 			"fillGradient": 0,
 			"gridPos": {
-				"h": 7,
-				"w": 13,
+				"h": 8,
+				"w": 12,
 				"x": 0,
 				"y": 0
 			},
@@ -108,6 +108,104 @@
 				"align": false,
 				"alignLevel": null
 			}
+		},
+		{
+			"aliasColors": {},
+			"bars": false,
+			"dashLength": 10,
+			"dashes": false,
+			"datasource": null,
+			"fill": 1,
+			"fillGradient": 0,
+			"gridPos": {
+				"h": 8,
+				"w": 12,
+				"x": 12,
+				"y": 0
+			},
+			"hiddenSeries": false,
+			"id": 4,
+			"legend": {
+				"avg": false,
+				"current": false,
+				"max": false,
+				"min": false,
+				"show": true,
+				"total": false,
+				"values": false
+			},
+			"lines": true,
+			"linewidth": 1,
+			"nullPointMode": "null as zero",
+			"options": {
+				"dataLinks": []
+			},
+			"percentage": false,
+			"pointradius": 2,
+			"points": false,
+			"renderer": "flot",
+			"seriesOverrides": [],
+			"spaceLength": 10,
+			"stack": false,
+			"steppedLine": false,
+			"targets": [
+				{
+					"expr": "histogram_quantile(0.95, sum(rate(traefik_service_request_duration_seconds_bucket{code=\"200\",method=\"GET\",service=\"$service\"}[5m])) by (le))",
+					"legendFormat": "95th percentile",
+					"refId": "A"
+				},
+				{
+					"expr": "histogram_quantile(0.99, sum(rate(traefik_service_request_duration_seconds_bucket{code=\"200\",method=\"GET\",service=\"$service\"}[5m])) by (le))",
+					"legendFormat": "99th percentile",
+					"refId": "B"
+				},
+				{
+					"expr": "histogram_quantile(0.5, sum(rate(traefik_service_request_duration_seconds_bucket{code=\"200\",method=\"GET\",service=\"$service\"}[5m])) by (le))",
+					"instant": false,
+					"legendFormat": "50th percentile",
+					"refId": "C"
+				}
+			],
+			"thresholds": [],
+			"timeFrom": null,
+			"timeRegions": [],
+			"timeShift": null,
+			"title": "Request Latency (5m)",
+			"tooltip": {
+				"shared": true,
+				"sort": 0,
+				"value_type": "individual"
+			},
+			"type": "graph",
+			"xaxis": {
+				"buckets": null,
+				"mode": "time",
+				"name": null,
+				"show": true,
+				"values": []
+			},
+			"yaxes": [
+				{
+					"format": "short",
+					"label": "Seconds",
+					"logBase": 1,
+					"max": null,
+					"min": null,
+					"show": true
+				},
+				{
+					"format": "short",
+					"label": null,
+					"logBase": 1,
+					"max": null,
+					"min": null,
+					"show": true
+				}
+			],
+			"yaxis": {
+				"align": false,
+				"alignLevel": null
+			}
 		}
 	],
 	"refresh": false,
@@ -117,25 +215,46 @@
 	"templating": {
 		"list": [
 			{
+				"allValue": null,
 				"current": {
-					"selected": false,
 					"tags": [],
 					"text": "webserver@docker",
 					"value": "webserver@docker"
 				},
+				"datasource": "Prometheus",
+				"definition": "label_values(traefik_service_request_duration_seconds_bucket, service)",
 				"hide": 0,
-				"label": "Service",
+				"includeAll": false,
+				"label": null,
+				"multi": false,
 				"name": "service",
 				"options": [
+					{
+						"selected": false,
+						"text": "grafana@docker",
+						"value": "grafana@docker"
+					},
+					{
+						"selected": false,
+						"text": "prometheus@docker",
+						"value": "prometheus@docker"
+					},
 					{
 						"selected": true,
 						"text": "webserver@docker",
 						"value": "webserver@docker"
 					}
 				],
-				"query": "webserver@docker",
+				"query": "label_values(traefik_service_request_duration_seconds_bucket, service)",
+				"refresh": 0,
+				"regex": "",
 				"skipUrlSync": false,
-				"type": "constant"
+				"sort": 0,
+				"tagValuesQuery": "",
+				"tags": [],
+				"tagsQuery": "",
+				"type": "query",
+				"useTags": false
 			}
 		]
 	},
