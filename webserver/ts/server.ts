@@ -8,6 +8,8 @@ import * as staticDataUpdater from "./staticDataUpdater";
 import express = require("express");
 import fs = require("fs");
 import path = require("path");
+import http = require("http");
+import https = require("https");
 import handlebars = require("handlebars");
 import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
@@ -105,6 +107,11 @@ async function start(): Promise<void> {
 	app.get("/highscores", renderHighscores);
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);
+	app.get("/ads.txt", (req, res) => {
+		https.get("https://adstxt.venatusmedia.com/master_ads.txt", (upstreamRes: http.IncomingMessage) => {
+			upstreamRes.pipe(res, {end: true});
+		});
+	});
 
 	app.listen(Config.serverPort, Config.serverAddress);
 	console.log("Server started");
