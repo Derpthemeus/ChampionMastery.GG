@@ -1,0 +1,30 @@
+options:
+  printStats: 180
+  # Don't write parsed logs to stdout
+  suppress: true
+  # Enable/disable GeoIP lookups. Startup of logagent might be slower when downloading the GeoIP database
+  geoipEnabled: false
+  diskBufferDir: /tmp/sematext-logagent
+
+# Docker input will be automatically detected - specifying it here will duplicate input.
+#input:
+#  docker:
+#    module: docker-logs
+#    socket: /var/run/docker.sock
+
+inputFilter:
+  # Drop HTTP request logs from highscores_service.
+  - module: grep
+    config:
+      matchSource: !!js/regexp /cmgg_highscores_service_.*/
+      exclude: !!js/regexp /^\[INFO \] \d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}\.\d{3} \[.+?\] HTTPClient - Making GET request to /
+
+output:
+  elasticsearch:
+    module: elasticsearch
+    url: https://logsene-receiver.sematext.com
+    # Token will be specified through environment variable.
+
+parser:
+  patternFiles:
+    - /etc/logagent/patterns.yml

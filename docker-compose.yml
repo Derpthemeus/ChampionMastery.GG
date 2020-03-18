@@ -156,6 +156,16 @@ services:
     networks:
       prometheus:
     restart: unless-stopped
+  sematext_logs:
+    build:
+      context: "./sematext_logs"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      LOGS_RECEIVER_URL: "https://logsene-receiver.sematext.com"
+      LOGAGENT_ARGS: "--config /config.yml"
+      LOGS_TOKEN:
+    restart: unless-stopped
 volumes:
   staticData:
   acmeCerts:
