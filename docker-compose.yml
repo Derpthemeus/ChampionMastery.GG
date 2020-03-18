@@ -149,6 +149,8 @@ services:
       mysql:
       prometheus:
     restart: unless-stopped
+    cap_add:
+      - SYS_NICE
   prom_mysql_exporter:
     image: "prom/mysqld-exporter:v0.11.0"
     environment:
