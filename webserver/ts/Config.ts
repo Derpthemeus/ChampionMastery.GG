@@ -26,6 +26,12 @@ export default class Config {
 		summoner: 3600
 	};
 
+	/** How often highscores should be fetched from the highscores service (in seconds), */
+	public static readonly highscoresRefreshIntervals: {summary: number, champion: number} = {
+		summary: 60,
+		champion: 60
+	};
+
 	/** How often to update static data (in minutes) */
 	public static readonly staticDataUpdateInterval: number = 60;
 
