@@ -23,7 +23,7 @@ export default class Config {
 	/** How long responses from each API should be cached for (in seconds). */
 	public static readonly cacheDurations: {summoner: number} = {
 		/** Applies to /summonerScores. */
-		summoner: 3600
+		summoner: 600
 	};
 
 	/** How often highscores should be fetched from the highscores service (in seconds), */
