@@ -8,8 +8,9 @@ import stream = require("stream");
 import VError = require("verror");
 import mkdirp = require("mkdirp");
 import XRegExp = require("xregexp");
-import unzipper = require("unzipper");
-import {Entry} from "unzipper";
+
+const gunzip = require("gunzip-maybe");
+const tar = require("tar-stream");
 
 /** The directory where public images are stored */
 export const imagesPath: string = path.join(Config.staticDataPath, "icons");
@@ -119,46 +120,53 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 			return;
 		}
 
-		const url: string = `https://ddragon.leagueoflegends.com/cdn/dragontail-${ddragonVersion}.zip`;
+		const url: string = `https://ddragon.leagueoflegends.com/cdn/dragontail-${ddragonVersion}.tgz`;
 		https.get(url, (response: http.IncomingMessage) => {
 			if (response.statusCode === 200) {
 				/** A promise for each file that needs to be saved. Each promise will be resolved when the file has been saved, or rejected if an error occurs */
 				const promises: Promise<void>[] = [];
 
-				const championJsonRegex = XRegExp(`^${XRegExp.escape(ddragonVersion)}\\/data\\/en_US\\/champion\\.json$`);
-				const profileIconRegex = XRegExp(`^${XRegExp.escape(ddragonVersion)}\\/img\\/profileicon\\/\\d+\.png$`);
-				const championIconRegex = XRegExp(`^${XRegExp.escape(ddragonVersion)}\\/img\\/champion\\/[^\\/]+\.png$`);
+				const tarStream = tar.extract();
+				tarStream.on("error", (err: Error) => {
+					reject(new VError(err, "%s", "Error reading tarball stream"));
+				});
+
+				const championJsonRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/data\\/en_US\\/champion\\.json$`);
+				const profileIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/profileicon\\/.+[^\\/]$`);
+				const championIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/champion\\/.+[^\\/]$`);
 
 				let entriesChecked: number = 0;
-
-				response.pipe(unzipper.Parse()).on("entry", (entry: Entry) => {
+				tarStream.on("entry", (header: { name: string }, entryStream: stream.Readable, next: Function) => {
 					if (++entriesChecked % 1000 === 0) {
-						console.log(`Checked ${entriesChecked} entries in the archive...`);
+						console.log(`Checked ${entriesChecked} entries in the tarball...`);
 					}
-					if (profileIconRegex.test(entry.path)) {
-						const promise: Promise<void> = saveEntry(entry, profileIconsPath, entry.path);
+					if (profileIconRegex.test(header.name)) {
+						const promise: Promise<void> = saveEntry(entryStream, profileIconsPath, header.name);
 						// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
 						promise.catch(() => {});
 						promises.push(promise);
-					} else if (championIconRegex.test(entry.path)) {
-						const promise: Promise<void> = saveEntry(entry, championIconsPath, entry.path);
+					} else if (championIconRegex.test(header.name)) {
+						const promise: Promise<void> = saveEntry(entryStream, championIconsPath, header.name);
 						// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
 						promise.catch(() => { });
 						promises.push(promise);
-					} else if (championJsonRegex.test(entry.path)) {
-						const promise: Promise<void> = saveEntry(entry, Config.staticDataPath, entry.path);
+					} else if (championJsonRegex.test(header.name)) {
+						const promise: Promise<void> = saveEntry(entryStream, Config.staticDataPath, header.name);
 						promise.then(() => {
 							updateChampions();
 							// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
 						}, () => { });
 						promises.push(promise);
 					} else {
-						entry.autodrain();
+						/* "The tar archive is streamed sequentially, meaning you must drain each entry's stream as
+						you get them or else the main extract stream will receive backpressure and stop reading."
+						- https://github.com/mafintosh/tar-stream/blob/master/README.md */
+						entryStream.resume();
 					}
-				}).on("error", (err: Error) => {
-					reject(new VError(err, "%s", "Error reading archive stream"));
-				}).on("finish", () => {
-					console.log(`Finished checking archive, waiting for ${promises.length} files to finish saving...`);
+					next();
+				});
+				tarStream.on("finish", () => {
+					console.log(`Finished checking tarball, waiting for ${promises.length} files to finish saving...`);
 					Promise.all(promises).then(() => {
 						console.log("All files finished saving");
 						resolve();
@@ -167,8 +175,15 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 					});
 				});
 
+				const gunzipStream = gunzip();
+				gunzipStream.on("error", (err: Error) => {
+					reject(new VError(err, "%s", "Error gunzipping stream"));
+				});
+
+				response.pipe(gunzipStream).pipe(tarStream);
+
 				/**
-				 * Saves an entry from the ZIP archive to a file. The filename is the same as the name of entry in the archive.
+				 * Saves an entry from the .tar.gz archive to a file. The filename is the same as the name of entry in the archive.
 				 * @param entryStream A stream of the entry to save
 				 * @param saveDirectory The directory to save the file in
 				 * @param originalPath The path of the entry inside the archive. The filename of the saved file is the same as in this.
@@ -182,7 +197,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 						const savePath: string = path.join(saveDirectory, filename);
 						const writeStream: fs.WriteStream = fs.createWriteStream(savePath);
 						writeStream.on("error", (err: Error) => {
-							// The stream needs to be drained to prevent the main stream from receiving backpressure.
+							// The stream needs to be drained to prevent the main TAR stream from receiving backpressure
 							entryStream.resume();
 							writeStream.close();
 							reject_entry(new VError(err, "%s", `Error saving file to ${savePath}`));
