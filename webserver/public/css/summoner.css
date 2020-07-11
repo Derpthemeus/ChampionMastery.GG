@@ -67,7 +67,7 @@ th[data-sorting-order="1"]>span {
 
 .notEarned {
 	filter: brightness(0%) opacity(15%);
-	/* https://github.com/Derpthemeus/ChampionMasteryLookup/issues/17 */
+	/* https://github.com/Derpthemeus/ChampionMastery.GG/issues/17 */
 	-webkit-filter: brightness(1%) opacity(15%);
 }
 
