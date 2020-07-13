@@ -8,6 +8,8 @@ import stream = require("stream");
 import VError = require("verror");
 import mkdirp = require("mkdirp");
 import XRegExp = require("xregexp");
+import sharp = require("sharp");
+import {OverlayOptions} from "sharp";
 
 const gunzip = require("gunzip-maybe");
 const tar = require("tar-stream");
@@ -74,6 +76,7 @@ export const updateStaticData = async (): Promise<void> => {
 		if (!currentDDragonVersion || latestVersion !== currentDDragonVersion) {
 			try {
 				await downloadData(latestVersion);
+
 				currentDDragonVersion = latestVersion;
 				// Save the latest DDragon version to ddragonVersion.txt
 				try {
@@ -84,9 +87,9 @@ export const updateStaticData = async (): Promise<void> => {
 				}
 
 				console.log("Updated static data. Latest version: " + currentDDragonVersion);
-				resolve();
 			} catch (ex) {
 				reject(new VError(ex, "%s", "Error updating static data"));
+				return;
 			}
 		} else {
 			// Champions still need to be loaded when the server starts
@@ -94,8 +97,11 @@ export const updateStaticData = async (): Promise<void> => {
 				updateChampions();
 			}
 			console.log("Static data is already up to date");
-			resolve();
 		}
+
+		await createChampionSpriteSheet();
+
+		resolve();
 	});
 };
 
@@ -290,6 +296,46 @@ const getLatestDDragonVersion = (): Promise<string> => {
 			reject(new VError(err, "%s", `Error getting DDragon version list`));
 		});
 	});
+};
+
+const createChampionSpriteSheet = async () => {
+	console.log("Creating champion icon spritesheet...");
+	const tileSize: number = 80;
+	const champions = Array.from(Champion.CHAMPIONS.values());
+	const spritesheet: sharp.Sharp = sharp({
+		create: {
+			width: tileSize,
+			height: tileSize * champions.length,
+			channels: 4,
+			background: {r: 0, g: 0, b: 0, alpha: 0}
+		}
+	}).png();
+
+	const images: OverlayOptions[] = new Array(champions.length);
+	for (let i = 0; i < champions.length; i++) {
+		const champion = champions[i];
+
+		let imagePath: string;
+		if (champion.id <= 0) {
+			imagePath = path.join(__dirname, "..", "public", "img", "masteryIcon.png");
+		} else {
+			imagePath = path.join(championIconsPath, champion.icon);
+		}
+		const buffer: Buffer = await sharp(imagePath).resize(tileSize).toBuffer();
+
+
+		champion.spritesheetY = i * tileSize;
+
+		images[i] = {
+			input: buffer,
+			top: champion.spritesheetY,
+			left: 0
+		};
+	}
+
+	spritesheet.composite(images);
+	await spritesheet.toFile(path.join(imagesPath, "championSpritesheet.png"));
+	console.log("Saved champion icon spritesheet");
 };
 
 /**

@@ -21,9 +21,11 @@
 	padding-left: 7px;
 }
 
-.champion-icon img {
-	max-width: 80px;
+.champion-icon span {
+	width: 80px;
+	height: 80px;
 	border-radius: 5px;
+	display: inline-block;
 }
 
 #quickJump {
