@@ -1,4 +1,4 @@
-FROM node:carbon AS build
+FROM node:gallium AS build
 WORKDIR /cmgg
 COPY tsconfig.json ./
 COPY package.json ./
@@ -8,10 +8,10 @@ RUN npm install
 COPY ts/ ts/
 RUN npm run compile
 
-FROM node:carbon AS run
+FROM node:gallium AS run
 WORKDIR /cmgg
-RUN apt-get update && apt-get install -y libjemalloc1
-ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+#RUN apt-get update && apt-get install -y libjemalloc1
+#ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 COPY --from=build cmgg/js/ js/
 COPY package.json ./
 COPY package-lock.json ./

@@ -90,9 +90,9 @@ async function start(): Promise<void> {
 	helpers.url();
 
 	const viewsPath: string = path.join(__dirname, "..", "views");
-	app.engine("handlebars", expressHandlebars({
+	app.engine("handlebars", expressHandlebars.create({
 		defaultLayout: null
-	}));
+	}).engine);
 	app.set("view engine", "handlebars");
 	app.set("views", viewsPath);
 
