@@ -6,10 +6,10 @@ services:
   webserver:
     build:
       context: ./webserver
-    volumes:
-      - "staticData:/cmgg/staticData/"
     environment:
       HIGHSCORES_SERVICE_URL: "http://highscores_service:8181"
+      INTERNAL_DRAGON_URL: "http://static-data-service:8080"
+      PUBLIC_DRAGON_URL: "https://dragon.${SITE_DOMAIN}"
       ANNOUNCEMENT_MESSAGE:
       ANNOUNCEMENT_LINK:
       SITE_URL: "https://${SITE_DOMAIN}"
@@ -25,6 +25,8 @@ services:
     networks:
       traefik:
       highscoresService:
+    depends_on:
+      - "static-data-service"
     restart: unless-stopped
   highscores_service:
     build:
@@ -167,6 +169,24 @@ services:
       LOGS_RECEIVER_URL: "https://logsene-receiver.sematext.com"
       LOGAGENT_ARGS: "--config /config.yml"
       LOGS_TOKEN:
+    restart: unless-stopped
+  static-data-service:
+    build:
+      context: ./static-data-service
+    volumes:
+      - "staticData:/cmgg/staticData/"
+    labels:
+      traefik.enable: true
+      traefik.http.services.dragon.loadbalancer.server.port: 8080
+      traefik.http.routers.dragon.rule: &webserver_rule "Host(`dragon.${SITE_DOMAIN}`, `www.dragon.${SITE_DOMAIN}`)"
+      traefik.http.routers.dragon.entrypoints: "https"
+      traefik.http.routers.dragon.tls.certResolver: *traefik_cert_resolver
+      traefik.http.routers.dragon_redirect.rule: *webserver_rule
+      traefik.http.routers.dragon_redirect.entrypoints: "http"
+      traefik.http.routers.dragon_redirect.middlewares: "https_redirect@file"
+    networks:
+      traefik:
+      highscoresService:
     restart: unless-stopped
 volumes:
   staticData:

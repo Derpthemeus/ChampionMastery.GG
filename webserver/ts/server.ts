@@ -17,10 +17,11 @@ const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
 /** Data that is used in every rendered view */
-export const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string } = {
+export const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string, dragonUrl: string } = {
 	regions: Region.REGIONS.map((region) => region.id),
 	announcement: Config.announcement,
-	siteUrl: Config.siteUrl
+	siteUrl: Config.siteUrl,
+	dragonUrl: Config.publicDragonUrl
 };
 
 export let highscores: Highscores;
@@ -99,7 +100,6 @@ async function start(): Promise<void> {
 	handlebars.registerPartial("layout", fs.readFileSync(path.join(viewsPath, "layout.handlebars"), "utf8"));
 
 	app.use(express.static(path.join(__dirname, "..", "public")));
-	app.use("/img", express.static(staticDataUpdater.imagesPath));
 	useStaticPage("/", "home");
 	useStaticPage("/faq", "faq");
 	useStaticPage("/legal", "legal");

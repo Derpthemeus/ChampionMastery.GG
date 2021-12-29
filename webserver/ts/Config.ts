@@ -1,5 +1,3 @@
-import path = require("path");
-
 export default class Config {
 
 	public static readonly announcement: {message: string, link: string} = {
@@ -32,13 +30,16 @@ export default class Config {
 		champion: 60
 	};
 
-	/** How often to update static data (in minutes) */
-	public static readonly staticDataUpdateInterval: number = 60;
-
-	public static readonly staticDataPath: string = path.join(__dirname, "..", "staticData");
+	/** How often to fetch champion list from static-data-service (in minutes). */
+	public static readonly staticDataUpdateInterval: number = 5;
 
 	/** The base URL of the highscores service (e.g. http://localhost:8181). */
 	public static readonly highscoresServiceUrl = process.env.HIGHSCORES_SERVICE_URL;
+
+	/** The base URL of the static data service (e.g. http://localhost:8080). */
+	public static readonly publicDragonUrl = process.env.PUBLIC_DRAGON_URL;
+	/** The base URL of the static data service (e.g. http://localhost:8080). */
+	public static readonly internalDragonUrl = process.env.INTERNAL_DRAGON_URL;
 
 	/** The base URL of the site (e.g. "http://localhost:8080"). */
 	public static readonly siteUrl = process.env.SITE_URL;
