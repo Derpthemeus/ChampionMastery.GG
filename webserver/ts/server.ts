@@ -109,7 +109,11 @@ async function start(): Promise<void> {
 	app.get("/summoner", renderSummoner);
 	app.get("/ads.txt", (req, res) => {
 		https.get("https://adstxt.venatusmedia.com/master_ads.txt", (upstreamRes: http.IncomingMessage) => {
-			upstreamRes.pipe(res, {end: true});
+			upstreamRes.pipe(res, {end: false});
+			upstreamRes.on("end", () => {
+				res.write("\ngoogle.com, pub-5598552437938145, DIRECT, f08c47fec0942fa0");
+				res.end();
+			});
 		});
 	});
 
