@@ -27,8 +27,20 @@
 				<option value="{{this.id}}">{{this.name}}</option>
 			{{/each}}
 		</select>
-		<!-- `data-id` attribute will be set by `setupAds()` in script.js -->
-		<div class="ad-header vm-placement"></div>
+		<div class="responsiveAd">
+			<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598552437938145"
+					crossorigin="anonymous"></script>
+			<!-- CMGG/highscores-header-responsive -->
+			<ins class="adsbygoogle"
+				 style="display:block"
+				 data-ad-client="ca-pub-5598552437938145"
+				 data-ad-slot="8138804348"
+				 data-ad-format="auto"
+				 data-full-width-responsive="true"></ins>
+			<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+		</div>
 		<div id="highscores">
 			{{#each highscores}}
 				<div class="champion well">

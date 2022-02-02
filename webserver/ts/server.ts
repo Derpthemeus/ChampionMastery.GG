@@ -107,6 +107,7 @@ async function start(): Promise<void> {
 	app.get("/highscores", renderHighscores);
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);
+	// TODO remove Venatus from ads.txt
 	app.get("/ads.txt", (req, res) => {
 		https.get("https://adstxt.venatusmedia.com/master_ads.txt", (upstreamRes: http.IncomingMessage) => {
 			upstreamRes.pipe(res, {end: false});

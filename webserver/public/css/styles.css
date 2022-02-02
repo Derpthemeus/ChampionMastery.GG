@@ -162,9 +162,6 @@ button {
 	cursor: pointer;
 }
 
-/** TODO center this better on very small displays (<320px) */
-.ad-header, .ad-footer {}
-
 /** Wrap and hide the lookup form */
 @media (max-width:650px) {
 	#navbar {
@@ -196,4 +193,10 @@ button {
 	#navbar-logo-title {
 		display: none;
 	}
+}
+
+.responsiveAd {
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 20px;
 }
