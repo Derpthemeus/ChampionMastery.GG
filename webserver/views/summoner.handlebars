@@ -3,7 +3,23 @@
 		{{summoner.name}} ({{summoner.region}}) - ChampionMastery.GG
 	{{/content}}
 
-	{{#content "meta-description"}}Champion mastery scores for {{summoner.name}} ({{summoner.region}}){{/content}}
+	{{#content "meta-description"}}Champion mastery scores for {{summoner.name}} ({{summoner.region}}){{/content}}	
+	
+	{{#content "schema.org"}}
+		<script type=application/ld+json>
+			{
+				"@context": "http://schema.org",
+				"@type": "Person",
+				"name": "{{summoner.name}}",
+				"image": "/img/profileIcons/{{summoner.icon}}.png",
+				"sameAs": [
+					"https://{{summoner.region}}.op.gg/summoner/userName={{encodeURI summoner.name}}",
+					"https://www.leagueofgraphs.com/summoner/{{lowercase summoner.region}}/{{encodeURI summoner.name}}",
+					"https://u.gg/lol/profile/{{lowercase summoner.platform}}/{{encodeURI (lowercase summoner.name)}}/overview"
+				]
+			}
+		</script>
+	{{/content}}
 
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/summoner.css">
