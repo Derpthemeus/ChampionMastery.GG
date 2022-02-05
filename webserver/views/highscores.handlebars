@@ -31,7 +31,7 @@
 		<div class="ad-header vm-placement"></div>
 		<div id="highscores">
 			{{#each highscores}}
-				<div class="champion well">
+				<div class="champion well" itemscope itemtype="https://schema.org/Person">
 					<div class="champion-icon">
 						<a href="/champion?champion={{this.id}}">
 							<span class="championSpritesheet" style='background: url("/img/championSpritesheet.png") 0 -{{this.spritesheetY}}px'></span>
@@ -39,7 +39,7 @@
 					</div>
 					<div class="champion-info">
 						<a href="/champion?champion={{this.id}}">
-							<strong>{{this.name}}</strong>
+							<strong itemprop="name">{{this.name}}</strong>
 						</a>
 						{{#each this.scores}}
 							<div>
