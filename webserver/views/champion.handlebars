@@ -11,6 +11,24 @@
 			most champion mastery points on {{champion.name}}
 		{{~/eq ~}}
 	{{/content}}
+	
+	{{#content "schema.org"}}
+		<script type=application/ld+json>
+			{
+				"@context": "http://schema.org",
+				"@type": "Person",
+				"name": "{{champion.name}}",
+				"image": "/img/championIcons/{{champion.icon}}",
+				"sameAs": [
+					"https://www.leagueoflegends.com/en-us/champions/{{#replace (lowercare champion.name) " " "-"}}/",
+					"https://leagueoflegends.fandom.com/wiki/{{#replace champion.name " " "_"}}",
+					"https://www.mobafire.com/league-of-legends/champion/{{#replace (lowercare champion.name) " " "-"}}-{{champion.id}}",
+					"https://u.gg/lol/champions/{{#replace (lowercare champion.name) " " ""}}",
+					"https://www.op.gg/champion/{{#replace (lowercare champion.name) " " ""}}"
+				]
+			}
+		</script>
+	{{/content}}
 
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/champion.css">
