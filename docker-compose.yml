@@ -188,6 +188,16 @@ services:
       traefik:
       highscoresService:
     restart: unless-stopped
+  healthcheck:
+    build:
+      context: ./healthcheck
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      highscoresService:
+    depends_on:
+      - "highscores_service"
+    restart: unless-stopped
 volumes:
   staticData:
   acmeCerts:
