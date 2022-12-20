@@ -7,13 +7,13 @@ const timeUnits = [
 	{value: 1000 * 60 * 60 * 24 * 365, name: "year", max: 100}
 ];
 
-const dateFormatter = new Intl.DateTimeFormat([], {
+const dateFormatter = new Intl.DateTimeFormat(navigator.languages || [], {
 	year: "2-digit",
 	month: "numeric",
 	day: "numeric"
 });
 
-const timeFormatter = new Intl.DateTimeFormat([], {
+const timeFormatter = new Intl.DateTimeFormat(navigator.languages || [], {
 	hour: "numeric",
 	minute: "numeric"
 });
