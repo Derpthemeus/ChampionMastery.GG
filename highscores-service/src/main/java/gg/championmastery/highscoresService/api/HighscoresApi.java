@@ -175,8 +175,8 @@ public class HighscoresApi {
 	 */
 	private static void considerSaveOrUpdate(MasteryScoreEntity scoreEntity, Session session) {
 		if (scoreEntity.getChampionId() == -1) {
-			// Only save total mastery points if it's at least 1m.
-			if (scoreEntity.getMasteryPoints() < 1000000) {
+			// Only save total mastery points if it's at least 2m.
+			if (scoreEntity.getMasteryPoints() < 2000000) {
 				return;
 			}
 		} else if (scoreEntity.getChampionId() == -2) {
