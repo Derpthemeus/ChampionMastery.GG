@@ -26,7 +26,6 @@ CREATE TABLE summoners (
 	/** Lengths are from https://discordapp.com/channels/187652476080488449/379429593829867521/529295034973945906 */
 	encrypted_puuid        CHAR(78)                                                      NULL,
 	encrypted_summoner_id  VARCHAR(63)                                                   NOT NULL,
-	encrypted_account_id   VARCHAR(56)                                                   NOT NULL,
 	/** The last known name of the summoner. */
 	summoner_name          VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
 	/** The last known name of the summoner, converted to lowercase with all spaces removed. */
@@ -39,7 +38,6 @@ CREATE TABLE summoners (
 	summoner_status        TINYINT UNSIGNED DEFAULT 0                                    NOT NULL,
 
 	CONSTRAINT UX_player_id UNIQUE (player_id),
-	CONSTRAINT UX_account_id UNIQUE (platform, encrypted_account_id),
 	/** The platform is used as the secondary index because the same PUUID may exist across multiple regions (if the
 	player transferred regions), and finding transferred accounts requires finding accounts across all regions that share
 	a PUUID */

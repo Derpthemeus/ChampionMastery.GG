@@ -34,7 +34,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	private long playerId;
 	private String platform;
 	private String encryptedPuuid;
-	private String encryptedAccountId;
 	private String encryptedSummonerId;
 	private String summonerName;
 	private String standardizedName;
@@ -82,15 +81,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setEncryptedSummonerId(String summonerId) {
 		this.encryptedSummonerId = summonerId;
-	}
-
-	@Column(nullable = false)
-	public String getEncryptedAccountId() {
-		return encryptedAccountId;
-	}
-
-	public void setEncryptedAccountId(String accountId) {
-		this.encryptedAccountId = accountId;
 	}
 
 	@Column(nullable = false)
@@ -188,7 +178,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				"playerId=" + playerId +
 				", platform='" + platform + '\'' +
 				", encryptedPuuid='" + encryptedPuuid + '\'' +
-				", encryptedAccountId='" + encryptedAccountId + '\'' +
 				", encryptedSummonerId='" + encryptedSummonerId + '\'' +
 				", summonerName='" + summonerName + '\'' +
 				", revisionDateInstant=" + revisionDateInstant +
