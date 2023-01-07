@@ -1,4 +1,4 @@
-FROM node:gallium AS build
+FROM node:hydrogen AS build
 WORKDIR /cmgg
 COPY tsconfig.json ./
 COPY package.json ./
@@ -8,7 +8,7 @@ RUN npm install
 COPY ts/ ts/
 RUN npm run compile
 
-FROM node:gallium AS run
+FROM node:hydrogen AS run
 WORKDIR /cmgg
 RUN apt-get update && apt-get install -y libjemalloc2
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
