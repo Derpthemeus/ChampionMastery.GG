@@ -1,4 +1,5 @@
 {
+	"LOCALE_CODE": "en_US",
 	"Help & Info": "Help & Info",
 	"Legal info": "Legal info",
 	"Player privacy": "Player privacy",
@@ -9,7 +10,7 @@
 	"Region": "Region",
 	"Highscores": "Highscores",
 	"Error": "Error",
-	"Summoner X not found in region Y": "Summoner %s not found in region %s",
+	"Summoner X not found in region Y": "Summoner %summoner% not found in region %region%",
 	"Try again later": "Try again later",
 	"Double check the summoner name and region, then try again later": "Double check the summoner name and region, then try again later",
 	"Mastery points": "Mastery points",

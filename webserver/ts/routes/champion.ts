@@ -6,13 +6,13 @@ import express = require("express");
 export function renderChampion(req: express.Request, res: express.Response): void {
 	const championId: number = +req.query.champion;
 	if (!championId) {
-		renderError(req, res, 400, "No champion specified");
+		renderError(req, res, 400, "No champion specified", null, null);
 		return;
 	}
 
 	const champion: Champion = Champion.getChampionById(championId);
 	if (!champion) {
-		renderError(req, res, 404, "Champion not found");
+		renderError(req, res, 404, "Champion not found", null, null);
 		return;
 	}
 

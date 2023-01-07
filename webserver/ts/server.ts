@@ -27,9 +27,22 @@ const app = express();
  * @param res The Response to send the error to
  * @param code The HTTP status code to use
  * @param error A short summary of the error
- * @param details More info about the error (optional)
+ * @param details More info about the error (can be null)
+ * @param localizedMessage A localized error message. If truthy, this will be used for the error summary, and the
+ * unlocalized summary + details will be used as the details.
  */
-export function renderError(req: express.Request, res: express.Response, code: number, error: string, details?: string): void {
+export function renderError(req: express.Request, res: express.Response, code: number, error: string, details: string, localizedMessage: string): void {
+	if (localizedMessage) {
+		// Use unlocalized message as details since it contains more context than the localized summary.
+		let unlocalizedMessage = error;
+		if (details) {
+			unlocalizedMessage += " - " + details;
+		}
+
+		error = localizedMessage;
+		details = unlocalizedMessage;
+	}
+
 	res.status(code).render("error", {
 		...getCommonData(req),
 		error: {
