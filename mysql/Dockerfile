@@ -1,4 +1,5 @@
-FROM mysql:8
+# TODO investigate why builds break by 8.0.31
+FROM mysql:8.0.19
 
 ARG MYSQL_ROOT_PASSWORD
 
