@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 });
 
+// TODO set a language cookie if lang header is set (and consider the cookie when determining best locale)
+
 function formatNumbers() {
 	const elements = document.querySelectorAll("[data-format-number]");
 	for (const element of elements) {

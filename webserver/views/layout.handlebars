@@ -8,12 +8,12 @@
 	<meta property="og:title" content="{{#block "title"}}ChampionMastery.GG{{/block}}">
 	<meta name="description" content="
 		{{~#block "meta-description" ~}}
-			View any player's champion mastery scores and the players with the most mastery points on each champion
+			{{T.[League of Legends]}} {{T.[champion mastery highscores]}} {{T.[and player lookup]}}
 		{{~/block ~}}
 	">
 	<meta property="og:description" content="
 		{{~#block "meta-description" ~}}
-			View any player's champion mastery scores and the players with the most mastery points on each champion
+			{{T.[League of Legends]}} {{T.[champion mastery highscores]}} {{T.[and player lookup]}}
 		{{~/block ~}}
 	">
 	<meta property="og:type" content="website">
@@ -64,7 +64,7 @@
 	<button id="toggle-search-button" onclick="toggleNavbarLookupForm()">&#x25BC;</button>
 	<div id="navbar-lookup" class="summoner-lookup">
 		<form id="navbar-form" class="summoner-form" action="/summoner">
-			<input type="text" name="summoner" placeholder="Summoner Name">
+			<input type="text" name="summoner" placeholder="{{T.[Summoner name]}}">
 			<select class="region" name="region">
 				{{#each regions}}
 					<option value="{{this}}">
@@ -96,9 +96,9 @@
 	<div id="footer">
 		<div>
 			<span><a href="https://github.com/Derpthemeus/ChampionMastery.GG">Made with &#9825; by Derpthemeus <img src="/img/github-mark.svg" width="17" alt="(GitHub))"/></a></span>
-			<span><a href="/faq">Help & Info</a></span>
-			<span><a href="/legal">Legal info</a></span>
-			<span><a href="/privacy">Player privacy info</a></span>
+			<span><a href="/faq">{{T.[Help & Info]}}</a></span>
+			<span><a href="/legal">{{T.[Legal info]}}</a></span>
+			<span><a href="/privacy">{{T.[Player privacy]}}</a></span>
 		</div>
 		<div>
 			<a href="https://www.digitalocean.com/?refcode=52977c31ea5b&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="Powered by DigitalOcean" /></a>

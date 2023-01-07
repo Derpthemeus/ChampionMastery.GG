@@ -2,10 +2,11 @@
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/error.css">
 	{{/content}}
-	{{#content "title"}}ChampionMastery.GG - Error{{/content}}
+	{{#content "title"}}ChampionMastery.GG - {{T.[Error]}}{{/content}}
 	{{#content "body"}}
 		<div id="container">
-			<h1>An error has occurred</h1>
+			<!-- TODO localize 404 error and default message -->
+			<h1>{{T.[Error]}}</h1>
 			<h2>{{error.error}}</h2>
 			{{#if error.details}}
 				{{{error.details}}}

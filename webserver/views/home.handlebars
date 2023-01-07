@@ -16,7 +16,7 @@
 		<!-- TODO make this taller/bigger -->
 		<div class="summoner-lookup">
 			<form class="summoner-form" action="/summoner">
-				<input type="text" name="summoner" placeholder="Summoner Name">
+				<input type="text" name="summoner" placeholder="{{T.[Summoner name]}}">
 				<select class="region" name="region">
 					{{#each regions}}
 						<option value="{{this}}">
@@ -45,7 +45,7 @@
 		</script>
 
 		<div id="champion-filter-container">
-			<input type="text" placeholder="Champion name" id="champion-filter"><span class="material-symbols-outlined">filter_list</span>
+			<input type="text" placeholder="{{T.[Champion name]}}" id="champion-filter"><span class="material-symbols-outlined">filter_list</span>
 		</div>
 
 		<!-- TODO fix bug when 2/3 champs are displayed on last row -->

@@ -1,3 +1,4 @@
+// TODO try to find a library for this that supports localization.
 const timeUnits = [
 	{value: 1000 * 60, name: "minute", max: 60},
 	{value: 1000 * 60 * 60, name: "hour", max: 23},

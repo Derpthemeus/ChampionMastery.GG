@@ -1,15 +1,8 @@
 {{#extend "layout"}}
-	{{#content "title"}}ChampionMastery.GG - League of Legends {{champion.name}} champion mastery highscores{{/content}}
+	{{#content "title"}}ChampionMastery.GG - {{T.[League of Legends]}} {{champion.name}} {{T.[champion mastery highscores]}}{{/content}}
 
 	{{#content "meta-description" ~}}
-		Highscores for players with the {{#noop}}<!--This block is used for spacing. -->{{/noop}}
-		{{~#eq champion.id -1 ~}}
-			most total champion mastery points
-		{{~else eq champion.id -2 ~}}
-			highest combined champion mastery level
-		{{~else ~}}
-			most champion mastery points on {{champion.name}}
-		{{~/eq ~}}
+		{{T.[League of Legends]}} {{champion.name}} {{T.[champion mastery highscores]}}
 	{{/content}}
 
 	{{#content "css"}}
@@ -25,16 +18,13 @@
 			<img id="championIcon" src="{{dragonUrl}}/img/championIcons/{{champion.icon}}">
 			<span>{{champion.name}}</span>
 		</h1>
-		<div id="disclaimer">
-			Players must be looked up on this site to appear on this list
-		</div>
 		<div id="container">
 			<table class="well">
 				<thead>
 					<tr>
-						<th>Place</th>
-						<th>Name (Region)</th>
-						<th>{{#eq this.champion.id -2}}Total Level{{else}}Mastery Points{{/eq}}</th>
+						<th>{{T.[Rank]}}</th>
+						<th>{{T.[Summoner name]}} ({{T.[Region]}})</th>
+						<th>{{#eq this.champion.id -2}}{{T.[Total level]}}{{else}}{{T.[Mastery points]}}{{/eq}}</th>
 					</tr>
 				</thead>
 				<tbody>

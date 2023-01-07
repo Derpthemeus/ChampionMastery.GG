@@ -13,6 +13,7 @@ import https = require("https");
 import handlebars = require("handlebars");
 import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
+import {getLocalization, Localization} from "./Localization";
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
@@ -51,17 +52,24 @@ function useStaticPage(pagePath: string, view: string): void {
 	});
 }
 
+type CommonData = {
+	regions: string[],
+	announcement: { message: string, link: string },
+	siteUrl: string,
+	dragonUrl: string ,
+	T: Localization
+};
+
 /** Returns common data and localized translations. */
-export function getCommonData(req: express.Request) {
+export function getCommonData(req: express.Request): CommonData {
 	/** Data that is used in every rendered view */
-	const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string, dragonUrl: string } = {
+	return {
 		regions: Region.REGIONS.map((region) => region.id),
 		announcement: Config.announcement,
 		siteUrl: Config.siteUrl,
-		dragonUrl: Config.publicDragonUrl
+		dragonUrl: Config.publicDragonUrl,
+		T: getLocalization(req)
 	};
-
-	return COMMON_DATA;
 }
 
 async function start(): Promise<void> {
@@ -87,6 +95,7 @@ async function start(): Promise<void> {
 
 	// gte, eq
 	helpers.comparison();
+	// TODO localize ordinalization
 	// ordinalize
 	helpers.inflection();
 	// lowercase

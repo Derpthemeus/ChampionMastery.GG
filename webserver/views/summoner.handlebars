@@ -1,9 +1,10 @@
 {{#extend "layout"}}
 	{{#content "title"~}}
-		ChampionMastery.GG - League of Legends champion mastery scores for {{summoner.name}} ({{summoner.region}})
+		ChampionMastery.GG - {{T.[League of Legends]}} {{T.[champion mastery scores for]}} {{summoner.name}} ({{summoner.region}})
 	{{/content}}
 
-	{{#content "meta-description"}}Champion mastery scores for {{summoner.name}} ({{summoner.region}}){{/content}}
+
+	{{#content "meta-description"}}{{T.[League of Legends champion mastery scores for]}} {{summoner.name}} ({{summoner.region}}){{/content}}
 
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/summoner.css">
@@ -26,7 +27,6 @@
 				<a class="profileLink" href="https://www.leagueofgraphs.com/summoner/{{lowercase summoner.region}}/{{encodeURI summoner.name}}">League of Graphs</a>
 				<a class="profileLink" href="https://u.gg/lol/profile/{{lowercase summoner.platform}}/{{encodeURI (lowercase summoner.name)}}/overview">u.gg</a>
 			</div>
-			<div>Information will only update once every 10 minutes.</div>
 		</div>
 		<div class="responsiveAd">
 			<script async
@@ -47,13 +47,13 @@
 			<table class="well">
 				<thead>
 					<tr>
-						{{>headerColumn name="Champion"}}
-						{{>headerColumn name="Level"}}
-						{{>headerColumn name="Points"}}
-						{{>headerColumn name="Chest Earned"}}
-						{{>headerColumn name="Last Played"}}
-						{{>headerColumn name="Progress"}}
-						{{>headerColumn name="Points To Next Level"}}
+						{{>headerColumn name=T.[Champion name]}}
+						{{>headerColumn name=T.[Level]}}
+						{{>headerColumn name=T.[Points]}}
+						{{>headerColumn name=T.[Chest]}}
+						{{>headerColumn name=T.[Last played]}}
+						{{>headerColumn name=T.[Progress]}}
+						{{>headerColumn name=T.[Points until next level]}}
 					</tr>
 				</thead>
 				<tbody id="tbody">
@@ -69,7 +69,7 @@
 								<td data-format-time="{{this.lastPlayTime}}" data-value="{{this.lastPlayTime}}" data-toggle="tooltip"></td>
 								<td class="{{#lt this.championLevel 5}}collapsible{{/lt}}" data-value="{{this.sortingValue}}" data-tooltip="tooltip" title="{{this.tooltip}}">
 									{{#eq this.championLevel 7}}
-										Mastered
+										{{T.[Mastered]}}
 									{{else}}
 										{{#gte this.championLevel 5}}
 											{{{getTokens}}}
@@ -82,11 +82,10 @@
 									{{/eq}}
 								</td>
 								<td class="{{#gte this.championLevel 5}}collapsible{{/gte}}" {{#lt this.championLevel 5}}data-format-number="{{this.championPointsUntilNextLevel}}"{{/lt}} data-value="{{this.pointsToNextLevel}}">
-									{{#gte this.championLevel 5}}
-										N/A
-									{{else}}
+
+									{{#lt this.championLevel 5}}
 										{{this.championPointsUntilNextLevel}}
-									{{/gte}}
+									{{/lt}}
 								</td>
 							</td>
 						</tr>
@@ -94,7 +93,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td><a class="regionableLink" href="/champion?champion=-1">{{totals.champions}} champions</a></td>
+						<td><a class="regionableLink" href="/champion?champion=-1">{{totals.champions}} {{T.[champions]}}</a></td>
 						<td data-format-number="{{totals.level}}">{{totals.level}}</td>
 						<td data-format-number="{{totals.points}}">{{totals.points}}</td>
 						<td>{{totals.chests}}/{{totals.champions}}</td>
