@@ -19,10 +19,13 @@ sourceCompatibility = 1.8
 repositories {
 	mavenCentral()
 	mavenLocal()
+	// TODO remove once SEA region support is released in Ori
+	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
-	implementation "com.merakianalytics.orianna:orianna:4.0.0-rc8"
+	// TODO move to an RC once SEA region support is released
+	implementation "com.merakianalytics.orianna:orianna:4.0.0-SNAPSHOT"
 	implementation "org.eclipse.jetty:jetty-server:9.4.43.v20210629"
 	implementation "org.hibernate:hibernate-c3p0:5.6.2.Final"
 	implementation "org.hibernate:hibernate-core:5.6.1.Final"

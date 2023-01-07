@@ -14,7 +14,12 @@ export default class Region {
 		new Region("LAS", "LA2"),
 		new Region("LAN", "LA1"),
 		new Region("RU", "RU"),
-		new Region("JP", "JP1")
+		new Region("JP", "JP1"),
+		new Region("VN", "VN2"),
+		new Region("PH", "PH2"),
+		new Region("SG", "SG2"),
+		new Region("TW", "TW2"),
+		new Region("TH", "TH2")
 	];
 
 	/** Regions mapped to their region ID. */
