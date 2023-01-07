@@ -26,6 +26,7 @@
 	<meta name="msapplication-TileColor" content="#00aba9">
 	<meta name="theme-color" content="#ffffff">
 	<link rel="stylesheet" type="text/css" href="/css/styles.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,500,0,200" />
 	{{{block "css"}}}
 	<script src="/js/script.js"></script>
 
@@ -53,20 +54,18 @@
 
 <body>
 <nav id="navbar">
-	<a id="navbar-logo" href="/">
-		<img id="navbar-logo-icon" src="/img/logo-icon.png" alt="ChampionMastery.GG">
+	<a id="navbar-logo" class="regionableLink" href="/">
+		<img src="/img/logo-icon.png" alt="ChampionMastery.GG">
 		<img id="navbar-logo-title" src="/img/logo-text.png" alt="ChampionMastery.GG">
 	</a>
+	<!-- TODO use or remove -->
 	<div id="navbar-items">
-		<a class="navbar-item" href="/highscores">Highscores</a>
-		<a class="navbar-item" href="/faq">FAQ</a>
-		<a class="navbar-item" href="https://github.com/Derpthemeus/ChampionMastery.GG">GitHub</a>
 	</div>
 	<button id="toggle-search-button" onclick="toggleNavbarLookupForm()">&#x25BC;</button>
-	<div id="navbar-lookup">
-		<form id="navbar-form" action="/summoner">
+	<div id="navbar-lookup" class="summoner-lookup">
+		<form id="navbar-form" class="summoner-form" action="/summoner">
 			<input type="text" name="summoner" placeholder="Summoner Name">
-			<select id="region" name="region">
+			<select class="region" name="region">
 				{{#each regions}}
 					<option value="{{this}}">
 						{{this}}
@@ -74,7 +73,7 @@
 				{{/each}}
 			</select>
 			<button type="submit">
-				<span>Lookup</span>
+				<span class="material-symbols-outlined">search</span>
 			</button>
 		</form>
 	</div>
@@ -95,9 +94,15 @@
 </div>
 
 	<div id="footer">
-		<span><a href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me on Reddit</a> or <a href="mailto:championmastery.gg@gmail.com">email me</a> (please read <a href="/faq">the FAQ</a> first)</span>
-		<span><a href="/legal">Legal info</a></span>
-		<span><a href="/privacy">Player privacy info</a></span>
+		<div>
+			<span><a href="https://github.com/Derpthemeus/ChampionMastery.GG">Made with &#9825; by Derpthemeus <img src="/img/github-mark.svg" width="17" alt="(GitHub))"/></a></span>
+			<span><a href="/faq">Help & Info</a></span>
+			<span><a href="/legal">Legal info</a></span>
+			<span><a href="/privacy">Player privacy info</a></span>
+		</div>
+		<div>
+			<a href="https://www.digitalocean.com/?refcode=52977c31ea5b&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="Powered by DigitalOcean" /></a>
+		</div>
 	</div>
 </body>
 </html>

@@ -4,7 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Update selected region
 	const region = getURLParameter("region");
 	if (region) {
-		document.getElementById("region").value = region;
+		for (let element of document.getElementsByClassName("region")) {
+			element.value = region;
+		}
+
+		for (let element of document.getElementsByClassName("regionableLink")) {
+			let separator = element.href.includes("?") ? "&" : "?";
+			element.href += `${separator}region=${region}`;
+		}
 	}
 });
 

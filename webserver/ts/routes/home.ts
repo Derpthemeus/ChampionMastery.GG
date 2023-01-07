@@ -3,7 +3,7 @@ import {Highscore} from "../Highscores";
 import Champion from "../Champion";
 import express = require("express");
 
-export function renderHighscores(req: express.Request, res: express.Response): void {
+export function renderHome(req: express.Request, res: express.Response): void {
 	// FIXME this whole response should really be cached.
 	const champions: ChampionInfo[] = [];
 	for (const champion of Champion.CHAMPIONS.values()) {
@@ -14,7 +14,7 @@ export function renderHighscores(req: express.Request, res: express.Response): v
 		champions.push(championInfo);
 	}
 
-	res.status(200).render("highscores", {
+	res.status(200).render("home", {
 		...COMMON_DATA,
 		highscores: champions
 	});

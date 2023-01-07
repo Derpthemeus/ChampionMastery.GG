@@ -60,7 +60,7 @@
 					{{#each champions}}
 						<tr>
 							<td>
-								<a href="/champion?champion={{this.championId}}">{{this.championName}}</a>
+								<a class="regionableLink" href="/champion?champion={{this.championId}}">{{this.championName}}</a>
 								<td>{{this.championLevel}}</td>
 								<td data-format-number="{{this.championPoints}}" data-value="{{this.championPoints}}">{{this.championPoints}}</td>
 								<td data-value="{{#if this.chestGranted}}1{{else}}0{{/if}}">
@@ -94,7 +94,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td><a href="/champion?champion=-1">{{totals.champions}} champions</a></td>
+						<td><a class="regionableLink" href="/champion?champion=-1">{{totals.champions}} champions</a></td>
 						<td data-format-number="{{totals.level}}">{{totals.level}}</td>
 						<td data-format-number="{{totals.points}}">{{totals.points}}</td>
 						<td>{{totals.chests}}/{{totals.champions}}</td>

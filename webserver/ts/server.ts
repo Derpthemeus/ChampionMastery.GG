@@ -1,7 +1,7 @@
 import Region from "./Region";
 import {renderSummoner} from "./routes/summoner";
 import {renderChampion} from "./routes/champion";
-import {renderHighscores} from "./routes/highscores";
+import {renderHome} from "./routes/home";
 import Highscores from "./Highscores";
 import Config from "./Config";
 import * as staticDataUpdater from "./staticDataUpdater";
@@ -100,11 +100,15 @@ async function start(): Promise<void> {
 	handlebars.registerPartial("layout", fs.readFileSync(path.join(viewsPath, "layout.handlebars"), "utf8"));
 
 	app.use(express.static(path.join(__dirname, "..", "public")));
-	useStaticPage("/", "home");
+	app.get("/", renderHome);
 	useStaticPage("/faq", "faq");
 	useStaticPage("/legal", "legal");
 	useStaticPage("/privacy", "privacy");
-	app.get("/highscores", renderHighscores);
+	app.get("/highscores", (req, res, next) => {
+		// TODO change to 301.
+		res.redirect(302,"/");
+		next();
+	});
 	app.get("/champion", renderChampion);
 	app.get("/summoner", renderSummoner);
 	// TODO remove Venatus from ads.txt
