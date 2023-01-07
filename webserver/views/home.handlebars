@@ -44,14 +44,9 @@
 			(adsbygoogle = window.adsbygoogle || []).push({});
 		</script>
 
-		<!-- TODO replace with champion list filter -->
-		<select id="quickJump">
-			<option value="quick_jump">Quick jump</option>
-			{{#each highscores}}
-				<option value="{{this.id}}">{{this.name}}</option>
-			{{/each}}
-		</select>
+		<input type="text" placeholder="Champion name" id="champion-filter">
 
+		<!-- TODO fix bug when 2/3 champs are displayed on last row -->
 		<div id="highscores">
 			{{#each highscores}}
 				<div class="champion well">
@@ -63,7 +58,7 @@
 					</div>
 					<div class="champion-info">
 						<a class="regionableLink" href="/champion?champion={{this.id}}">
-						<strong>{{this.name}}</strong>
+						<strong class="champion-name">{{this.name}}</strong>
 						</a>
 						{{#each this.scores}}
 							<div>

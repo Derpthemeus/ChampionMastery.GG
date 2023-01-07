@@ -3,6 +3,7 @@
 	flex-wrap: wrap;
 	justify-content: space-between;
 	margin-top: 10px;
+	width: 100%;
 }
 
 .champion {
@@ -28,9 +29,12 @@
 	display: inline-block;
 }
 
-#quickJump {
-	margin-top: 40px;
-	margin-bottom: 10px;
+#champion-filter {
+	margin-top: 60px;
+	margin-bottom: 5px;
+	line-height: 33px;
+	border-radius: 5px;
+	border: 2px solid var(--well-trim-color);
 }
 
 #home-logo {
