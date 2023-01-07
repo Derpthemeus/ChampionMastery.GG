@@ -37,6 +37,13 @@
 	border: 2px solid var(--well-trim-color);
 }
 
+#champion-filter-container {
+	margin-left: auto;
+}
+#champion-filter-container>span {
+	vertical-align: middle;
+}
+
 #home-logo {
 	margin-top: 40px;
 }
