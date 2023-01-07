@@ -16,13 +16,6 @@ import VError = require("verror");
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
-/** Data that is used in every rendered view */
-export const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string, dragonUrl: string } = {
-	regions: Region.REGIONS.map((region) => region.id),
-	announcement: Config.announcement,
-	siteUrl: Config.siteUrl,
-	dragonUrl: Config.publicDragonUrl
-};
 
 export let highscores: Highscores;
 
@@ -35,9 +28,9 @@ const app = express();
  * @param error A short summary of the error
  * @param details More info about the error (optional)
  */
-export function renderError(res: express.Response, code: number, error: string, details?: string): void {
+export function renderError(req: express.Request, res: express.Response, code: number, error: string, details?: string): void {
 	res.status(code).render("error", {
-		...COMMON_DATA,
+		...getCommonData(req),
 		error: {
 			error: error,
 			details: details
@@ -53,9 +46,22 @@ export function renderError(res: express.Response, code: number, error: string, 
 function useStaticPage(pagePath: string, view: string): void {
 	app.get(pagePath, (req, res) => {
 		res.status(200).render(view, {
-			...COMMON_DATA
+			...getCommonData(req)
 		});
 	});
+}
+
+/** Returns common data and localized translations. */
+export function getCommonData(req: express.Request) {
+	/** Data that is used in every rendered view */
+	const COMMON_DATA: { regions: string[], announcement: { message: string, link: string }, siteUrl: string, dragonUrl: string } = {
+		regions: Region.REGIONS.map((region) => region.id),
+		announcement: Config.announcement,
+		siteUrl: Config.siteUrl,
+		dragonUrl: Config.publicDragonUrl
+	};
+
+	return COMMON_DATA;
 }
 
 async function start(): Promise<void> {

@@ -1,7 +1,7 @@
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
 import {ChampionMasteryResponse, SummonerInfo} from "../apiHandler";
-import {COMMON_DATA, renderError} from "../server";
+import {getCommonData, renderError} from "../server";
 import Champion from "../Champion";
 import express = require("express");
 import XRegExp = require("xregexp");
@@ -15,23 +15,23 @@ const TOKENS_NEEDED = new Map([[5, 2], [6, 3]]);
 
 export async function renderSummoner(req: express.Request, res: express.Response): Promise<void> {
 	if (!req.query.summoner || typeof req.query.summoner !== "string") {
-		renderError(res, 400, "No summoner name specified");
+		renderError(req, res, 400, "No summoner name specified");
 		return;
 	}
 
 	if (!req.query.region || typeof req.query.region !== "string") {
-		renderError(res, 400, "No region specified");
+		renderError(req, res, 400, "No region specified");
 		return;
 	}
 
 	const region: Region = Region.getByRegionId(req.query.region.toUpperCase());
 	if (!region) {
-		renderError(res, 400, "Invalid region");
+		renderError(req, res, 400, "Invalid region");
 		return;
 	}
 
 	if (!SUMMONER_NAME_REGEX.test(req.query.summoner)) {
-		renderError(res, 400, "Name contains invalid characters", "Make sure the summoner name is correct.");
+		renderError(req, res, 400, "Name contains invalid characters", "Make sure the summoner name is correct.");
 		return;
 	}
 
@@ -98,7 +98,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 		}
 
 		res.status(200).render("summoner", {
-			...COMMON_DATA,
+			...getCommonData(req),
 			summoner: {
 				icon: summoner.profileIconId,
 				name: summoner.name,
@@ -124,15 +124,15 @@ export async function renderSummoner(req: express.Request, res: express.Response
 	} catch (ex) {
 		if (ex instanceof apiHandler.APIError) {
 			if (ex.statusCode === 429) {
-				renderError(res, 503, "Server overloaded", "Try again later. Retrying immediately will only make the problem worse.");
+				renderError(req, res, 503, "Server overloaded", "Try again later. Retrying immediately will only make the problem worse.");
 			} else if (ex.statusCode === 404) {
-				renderError(res, 404, "Player not found", "Make sure the summoner name and region are correct.");
+				renderError(req, res, 404, "Player not found", "Make sure the summoner name and region are correct.");
 			} else {
-				renderError(res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in site footer).");
+				renderError(req, res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in site footer).");
 			}
 		} else {
 			console.error(VError.fullStack(new VError(ex, "%s", `Error creating page for summoner "${req.query.summoner}" (${req.query.region})`)));
-			renderError(res, 500, "Unknown error", "Please send me a message (contact info in site footer).");
+			renderError(req, res, 500, "Unknown error", "Please send me a message (contact info in site footer).");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import {COMMON_DATA, highscores} from "../server";
+import {getCommonData, highscores} from "../server";
 import {Highscore} from "../Highscores";
 import Champion from "../Champion";
 import express = require("express");
@@ -15,7 +15,7 @@ export function renderHome(req: express.Request, res: express.Response): void {
 	}
 
 	res.status(200).render("home", {
-		...COMMON_DATA,
+		...getCommonData(req),
 		highscores: champions
 	});
 
