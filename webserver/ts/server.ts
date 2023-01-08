@@ -65,23 +65,27 @@ function useStaticPage(pagePath: string, view: string): void {
 	});
 }
 
+/** Data that is used in every rendered view */
 type CommonData = {
 	regions: string[],
 	announcement: { message: string, link: string },
 	siteUrl: string,
-	dragonUrl: string ,
-	T: Localization
+	dragonUrl: string,
+	T: Localization,
+	/** 2 character language code */
+	langCode: string
 };
 
 /** Returns common data and localized translations. */
 export function getCommonData(req: express.Request): CommonData {
-	/** Data that is used in every rendered view */
+	const localization = getLocalization(req);
 	return {
 		regions: Region.REGIONS.map((region) => region.id),
 		announcement: Config.announcement,
 		siteUrl: Config.siteUrl,
 		dragonUrl: Config.publicDragonUrl,
-		T: getLocalization(req)
+		T: localization,
+		langCode: localization.LOCALE_CODE.split("_")[0]
 	};
 }
 
