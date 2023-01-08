@@ -1,8 +1,8 @@
 {{#extend "layout"}}
-	{{#content "title"}}ChampionMastery.GG - {{T.[League of Legends]}} {{champion.name}} {{T.[champion mastery highscores]}}{{/content}}
+	{{#content "title"}}ChampionMastery.GG - {{T.[League of Legends]}} {{this.localizedChampionName}} {{T.[champion mastery highscores]}}{{/content}}
 
 	{{#content "meta-description" ~}}
-		{{T.[League of Legends]}} {{champion.name}} {{T.[champion mastery highscores]}}
+		{{T.[League of Legends]}} {{this.localizedChampionName}} {{T.[champion mastery highscores]}}
 	{{/content}}
 
 	{{#content "css"}}
@@ -16,7 +16,7 @@
 	{{#content "body"}}
 		<h1>
 			<img id="championIcon" src="{{dragonUrl}}/img/championIcons/{{champion.icon}}">
-			<span>{{champion.name}}</span>
+			<span>{{this.localizedChampionName}}</span>
 		</h1>
 		<div id="container">
 			<table class="well">
@@ -41,7 +41,7 @@
 										</a>
 									{{else}}
 										<a href="/privacy">
-											[HIDDEN] ({{this.region}})
+											[{{T.[HIDDEN]}}] ({{this.region}})
 										</a>
 									{{/if}}
 								{{else}}

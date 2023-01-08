@@ -1,4 +1,4 @@
-import Champion from "./Champion";
+import Champion, {ChampionStaticData} from "./Champion";
 import Config from "./Config";
 import VError = require("verror");
 import fetch = require("node-fetch");
@@ -21,8 +21,10 @@ export const updateStaticData = async (): Promise<void> => {
 				return;
 			}
 
-			const championList: [number, Champion][] = await response.json() as [number, Champion][];
-			Champion.CHAMPIONS = new Map(championList);
+			const championList: [number, ChampionStaticData][] = await response.json() as [number, ChampionStaticData][];
+			Champion.CHAMPIONS = new Map(championList.map((pair) => {
+				return [pair[0], new Champion(pair[1])];
+			}));
 
 			console.log(`Updated champion list with ${Champion.CHAMPIONS.size} champions from static-data-service.`);
 		} catch (ex) {

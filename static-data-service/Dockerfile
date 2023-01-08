@@ -18,6 +18,7 @@ COPY package-lock.json ./
 # Install only runtime dependencies.
 RUN npm install --only=prod
 COPY static static/
+COPY locales locales/
 
 EXPOSE 8080
 ENTRYPOINT ["node", "js/server.js"]

@@ -21,9 +21,10 @@ const championIconsPath: string = path.join(imagesPath, "championIcons");
 /** The directory where profile icons are stored */
 const profileIconsPath: string = path.join(imagesPath, "profileIcons");
 /** The file where the champion list is saved */
-const championListPath: string = path.join(Config.staticDataPath, "champion.json");
+const championListPath: string = path.join(Config.staticDataPath, "en_US", "champion.json");
 /** The path of a text file containing the DDragon version of the currently downloaded data */
 const ddragonVersionPath: string = path.join(Config.staticDataPath, "ddragonVersion.txt");
+const supportedLocales = ["en_US", "vn_VN"];
 /** The DDragon version of the currently downloaded static data */
 let currentDDragonVersion: string;
 
@@ -121,8 +122,16 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 			if (!fs.existsSync(profileIconsPath)) {
 				mkdirp.sync(profileIconsPath);
 			}
+
+			// Create directory for each locale
+			for (const locale of supportedLocales) {
+				const localePath = path.join(Config.staticDataPath, locale);
+				if (!fs.existsSync(localePath)) {
+					mkdirp.sync(localePath);
+				}
+			}
 		} catch (ex) {
-			reject(new VError(ex, "%s", "Unable to create icon directories"));
+			reject(new VError(ex, "%s", "Unable to create directories"));
 			return;
 		}
 
@@ -137,7 +146,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 					reject(new VError(err, "%s", "Error reading tarball stream"));
 				});
 
-				const championJsonRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/data\\/en_US\\/champion\\.json$`);
+				const championJsonRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/data\\/(?<locale>.+)\\/champion\\.json$`);
 				const profileIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/profileicon\\/.+[^\\/]$`);
 				const championIconRegex = XRegExp(`^(.\\/)?${XRegExp.escape(ddragonVersion)}\\/img\\/champion\\/.+[^\\/]$`);
 
@@ -157,12 +166,15 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 						promise.catch(() => { });
 						promises.push(promise);
 					} else if (championJsonRegex.test(header.name)) {
-						const promise: Promise<void> = saveEntry(entryStream, Config.staticDataPath, header.name);
-						promise.then(() => {
-							updateChampions();
+						const locale = XRegExp.exec(header.name, championJsonRegex).groups.locale;
+						if (supportedLocales.includes(locale)) {
+							const promise: Promise<void> = saveEntry(entryStream, path.join(Config.staticDataPath, locale), header.name);
 							// This is needed to suppress an UnhandledPromiseRejectionWarning (the rejection will actually be handled later by Promise.all())
-						}, () => { });
-						promises.push(promise);
+							promise.catch(() => { });
+							promises.push(promise);
+						} else {
+							entryStream.resume();
+						}
 					} else {
 						/* "The tar archive is streamed sequentially, meaning you must drain each entry's stream as
 						you get them or else the main extract stream will receive backpressure and stop reading."
@@ -175,6 +187,7 @@ const downloadData = (ddragonVersion: string): Promise<void> => {
 					console.log(`Finished checking tarball, waiting for ${promises.length} files to finish saving...`);
 					Promise.all(promises).then(() => {
 						console.log("All files finished saving");
+						updateChampions();
 						resolve();
 					}, (err) => {
 						reject(new VError(err, "%s", "Error updating static data"));
@@ -241,33 +254,73 @@ const updateChampions = () => {
 		const champion: ChampionListEntry = championList.data[key];
 		champions.set(+champion.key, {
 			id: +champion.key,
-			name: champion.name,
+			unlocalizedName: champion.name,
+			localizedNames: {},
 			icon: champion.image.full
 		});
+	}
+
+	// Translate champion names.
+	const totalPointsLocalizations: { [locale: string]: string } = {};
+	const totalLevelLocalizations: { [locale: string]: string } = {};
+	for (const locale of supportedLocales) {
+		let localizedChampionList;
+		try {
+			const localizedChampionListString = fs.readFileSync(path.join(Config.staticDataPath, locale, "champion.json"), "utf-8");
+			localizedChampionList = JSON.parse(localizedChampionListString);
+		} catch (ex) {
+			throw new VError(ex, "Error loading %s champion list", locale);
+		}
+
+		for (const key of Object.keys(localizedChampionList.data)) {
+			const champion: ChampionListEntry = localizedChampionList.data[key];
+			champions.get(+champion.key).localizedNames[locale] = champion.name;
+		}
+
+		let localization;
+		try {
+			const localizationString = fs.readFileSync(path.join(__dirname, "..", "locales", `${locale}.json`), "utf-8");
+			localization = JSON.parse(localizationString);
+		} catch (ex) {
+			throw new VError(ex, "Error loading localization for %s", locale);
+		}
+		totalPointsLocalizations[locale] = localization["Total points"];
+		totalLevelLocalizations[locale] = localization["Total level"];
 	}
 
 	Champion.CHAMPIONS = new Map<number, Champion>([
 		// Set "Total Points" to be the first entry in the new Map
 		[-1, {
 			id: -1,
-			name: "Total Points",
+			unlocalizedName: "Total Points",
+			localizedNames: totalPointsLocalizations,
 			// This is relative to the championIcons directory
 			icon: "../masteryIcon.png"
 		}],
 		// Set "Total Level" to be the second entry in the new Map
 		[-2, {
 			id: -2,
-			name: "Total Level",
+			unlocalizedName: "Total Level",
+			localizedNames: totalLevelLocalizations,
 			// This is relative to the championIcons directory
 			icon: "../masteryIcon.png"
 		}],
 		// Add all champions to the new Map, in alphabetical order of their name
 		...[...champions.entries()].sort((a: [number, Champion], b: [number, Champion]) => {
-			const nameA: string = a[1].name.toUpperCase();
-			const nameB: string = b[1].name.toUpperCase();
+			const nameA: string = a[1].unlocalizedName.toUpperCase();
+			const nameB: string = b[1].unlocalizedName.toUpperCase();
 			return (nameA < nameB) ? -1 : 1;
 		})
 	]);
+
+	// Add spongecase localizations.
+	for (const champion of Champion.CHAMPIONS.values()) {
+		let localizedName = "";
+		for (let i = 0; i < champion.unlocalizedName.length; i++) {
+			localizedName += (i % 2 === 0) ? champion.unlocalizedName[i].toLowerCase() : champion.unlocalizedName[i].toUpperCase();
+		}
+		champion.localizedNames["sponge"] = localizedName;
+	}
 
 	console.log(`Updated champion list with ${Champion.CHAMPIONS.size} champions`);
 };

@@ -97,7 +97,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 			const info: ChampionInfo = {
 				...masteryChampion,
 				// Call the champion "???" if static data ha not been updated yet
-				championName: champion ? champion.name : "???",
+				localizedChampionName: champion ? champion.getLocalizedName(localization) : "???",
 				tooltip: tooltip,
 				sortingValue: sortingValue,
 				pointsToNextLevel: pointsToNextLevel
@@ -125,7 +125,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 		});
 
 		interface ChampionInfo extends ChampionMasteryResponse {
-			championName: string;
+			localizedChampionName: string;
 			tooltip: string;
 			sortingValue: number;
 			pointsToNextLevel: number;

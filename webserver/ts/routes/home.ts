@@ -1,14 +1,17 @@
 import {getCommonData, highscores} from "../server";
-import {Highscore} from "../Highscores";
 import Champion from "../Champion";
 import express = require("express");
+import {getLocalization} from "../Localization";
 
 export function renderHome(req: express.Request, res: express.Response): void {
-	// FIXME this whole response should really be cached.
-	const champions: ChampionInfo[] = [];
+	const localization = getLocalization(req);
+
+	// FIXME this whole response should really be cached (1 copy per locale).
+	const champions = [];
 	for (const champion of Champion.CHAMPIONS.values()) {
-		const championInfo: ChampionInfo = {
+		const championInfo = {
 			...champion,
+			localizedName: champion.getLocalizedName(localization),
 			scores: highscores.highscoresSummary[champion.id]
 		};
 		champions.push(championInfo);
@@ -18,8 +21,4 @@ export function renderHome(req: express.Request, res: express.Response): void {
 		...getCommonData(req),
 		highscores: champions
 	});
-
-	interface ChampionInfo extends Champion {
-		scores: Highscore[];
-	}
 }
