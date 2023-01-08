@@ -1,15 +1,24 @@
-// TODO add support for localizing champion names
+/*
+Steps to add a new localization:
+- Verify the language is listed in https://ddragon.leagueoflegends.com/cdn/languages.json
+- Add the new locale file to ../locales and ../../static-data-service/locales
+- Update `supportedLocales` in staticDataUpdater.ts
+- Add the language to `localeMapping`
+ */
 import express = require("express");
 import locale = require("locale");
 import VError = require("verror");
 
 const en_US = require("../locales/en_US.json");
 const sponge = require("../locales/sponge.json");
+const vn_VN = require("../locales/vn_VN.json");
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],
 	["en", en_US],
-	["sponge", sponge]
+	["sponge", sponge],
+	["vn_VN", vn_VN],
+	["vn", vn_VN]
 ]);
 const locales = new locale.Locales(Array.from(localeMapping.keys()), "en_US");
 
@@ -34,6 +43,7 @@ export function getLocalization(req: express.Request) : Localization {
 
 export type Localization = {
 	LOCALE_CODE: string;
+	LANGUAGE_NAME: string;
 	"Help & Info": string;
 	"Legal info": string;
 	"Player privacy": string;
