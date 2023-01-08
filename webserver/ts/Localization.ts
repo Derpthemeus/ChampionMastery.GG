@@ -13,16 +13,19 @@ import VError = require("verror");
 const en_US = require("../locales/en_US.json");
 const sponge = require("../locales/sponge.json");
 const vn_VN = require("../locales/vn_VN.json");
+const ko_KR = require("../locales/ko_KR.json");
 
 /** Officially supported locales (excludes spongecase). */
-export const SUPPORTED_LOCALES = [en_US, vn_VN];
+export const SUPPORTED_LOCALES = [en_US, vn_VN, ko_KR];
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],
 	["en", en_US],
 	["sponge", sponge],
 	["vn_VN", vn_VN],
-	["vn", vn_VN]
+	["vn", vn_VN],
+	["kr", ko_KR],
+	["ko_KR", ko_KR]
 ]);
 const locales = new locale.Locales(Array.from(localeMapping.keys()), "en_US");
 
@@ -78,5 +81,5 @@ export type Localization = {
 	"League of Legends": string;
 	"champion mastery highscores": string;
 	"and player lookup": string;
-	"champion mastery scores for": string;
+	"champion mastery scores for X": string;
 };

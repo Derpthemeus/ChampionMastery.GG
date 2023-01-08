@@ -1,10 +1,12 @@
 {{#extend "layout"}}
 	{{#content "title"~}}
-		ChampionMastery.GG - {{T.[League of Legends]}} {{T.[champion mastery scores for]}} {{summoner.name}} ({{summoner.region}})
+		{{{localizeTitle}}}
 	{{/content}}
 
 
-	{{#content "meta-description"}}{{T.[League of Legends champion mastery scores for]}} {{summoner.name}} ({{summoner.region}}){{/content}}
+	{{#content "meta-description"~}}
+		{{{localizeDescription}}}
+	{{/content}}
 
 	{{#content "css"}}
 		<link rel="stylesheet" type="text/css" href="/css/summoner.css">

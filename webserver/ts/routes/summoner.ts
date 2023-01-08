@@ -154,3 +154,15 @@ handlebars.registerHelper("getTokens", function () {
 	}
 	return content;
 });
+
+// A helper to localize the page title
+handlebars.registerHelper("localizeTitle", function () {
+	return `ChampionMastery.GG - ${this.T["League of Legends"]} ${this.T["champion mastery scores for X"]}`
+		.replace("%name%", `${this.summoner.name} (${this.summoner.region})`);
+});
+
+// A helper to localize the page description
+handlebars.registerHelper("localizeDescription", function () {
+	return `${this.T["League of Legends"]} ${this.T["champion mastery scores for X"]}`
+		.replace("%name%", `${this.summoner.name} (${this.summoner.region})`);
+});
