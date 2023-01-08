@@ -1,6 +1,7 @@
 #header {
 	text-align: center;
 	margin-bottom: 15px;
+	min-width: 300px;
 }
 
 #header h1 {
