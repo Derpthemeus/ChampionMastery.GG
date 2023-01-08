@@ -49,6 +49,10 @@
 
 	<script data-ad-client="ca-pub-5598552437938145" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
+	{{#each supportedLocales}}
+		{{{hreflang ../currentUrl}}}
+	{{/each}}
+
 	{{{block "scripts"}}}
 </head>
 

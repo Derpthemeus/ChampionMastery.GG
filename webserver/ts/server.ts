@@ -13,7 +13,7 @@ import https = require("https");
 import handlebars = require("handlebars");
 import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
-import {getLocalization, Localization} from "./Localization";
+import {getLocalization, Localization, SUPPORTED_LOCALES} from "./Localization";
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
 
@@ -73,7 +73,9 @@ type CommonData = {
 	dragonUrl: string,
 	T: Localization,
 	/** 2 character language code */
-	langCode: string
+	langCode: string,
+	supportedLocales: string[],
+	currentUrl: string
 };
 
 /** Returns common data and localized translations. */
@@ -85,7 +87,9 @@ export function getCommonData(req: express.Request): CommonData {
 		siteUrl: Config.siteUrl,
 		dragonUrl: Config.publicDragonUrl,
 		T: localization,
-		langCode: localization.LOCALE_CODE.split("_")[0]
+		langCode: localization.LOCALE_CODE.split("_")[0],
+		supportedLocales: SUPPORTED_LOCALES,
+		currentUrl: `${req.protocol}://${req.get("host")}${req.originalUrl}`
 	};
 }
 
@@ -122,6 +126,33 @@ async function start(): Promise<void> {
 	// encodeURI
 	helpers.url();
 
+	// A helper to generate the hreflang attribute in alternate links
+	handlebars.registerHelper("hreflang", function (currentUrl: string) {
+		let href: string;
+		// This will need to be changed if another query parameter with a *lang suffix is ever added.
+		if (currentUrl.includes("lang=")) {
+			const startIndex = currentUrl.indexOf("lang=");
+			// End of "lang=en_US"
+			let endIndex;
+			if (currentUrl.indexOf("&", startIndex) > 0) {
+				endIndex = currentUrl.indexOf("&", startIndex);
+			} else {
+				endIndex = currentUrl.length;
+			}
+
+			href = `${currentUrl.slice(0, startIndex)}lang=${this.LOCALE_CODE}${currentUrl.slice(endIndex)}`;
+		} else if (currentUrl.includes("?")) {
+			// If query params are already present, add the new param to the start of the list.
+			const index = currentUrl.indexOf("?") - 1;
+			href = `${currentUrl.slice(0, index)}lang=${this.LOCALE_CODE}${currentUrl.slice(index)}`;
+		} else {
+			// Just add query to end of path
+			href = `${currentUrl}?lang=${this.LOCALE_CODE}`;
+		}
+
+		return `<link rel="alternate" hreflang="${this.LOCALE_CODE.split("_")[0]}" href="${href}" />`;
+	});
+
 	const viewsPath: string = path.join(__dirname, "..", "views");
 	app.engine("handlebars", expressHandlebars.create({
 		defaultLayout: null
@@ -138,7 +169,7 @@ async function start(): Promise<void> {
 	useStaticPage("/privacy", "privacy");
 	app.get("/highscores", (req, res, next) => {
 		// TODO change to 301.
-		res.redirect(302,"/");
+		res.redirect(302, "/");
 		next();
 	});
 	app.get("/champion", renderChampion);

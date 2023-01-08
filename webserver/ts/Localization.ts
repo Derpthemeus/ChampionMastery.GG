@@ -4,6 +4,7 @@ Steps to add a new localization:
 - Add the new locale file to ../locales and ../../static-data-service/locales
 - Update `supportedLocales` in staticDataUpdater.ts
 - Add the language to `localeMapping`
+- Update `supportedLocales`
  */
 import express = require("express");
 import locale = require("locale");
@@ -12,6 +13,9 @@ import VError = require("verror");
 const en_US = require("../locales/en_US.json");
 const sponge = require("../locales/sponge.json");
 const vn_VN = require("../locales/vn_VN.json");
+
+/** Officially supported locales (excludes spongecase). */
+export const SUPPORTED_LOCALES = [en_US, vn_VN];
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],

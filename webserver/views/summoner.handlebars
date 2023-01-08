@@ -69,7 +69,7 @@
 								<td data-format-time="{{this.lastPlayTime}}" data-value="{{this.lastPlayTime}}" data-toggle="tooltip"></td>
 								<td class="{{#lt this.championLevel 5}}collapsible{{/lt}}" data-value="{{this.sortingValue}}" data-tooltip="tooltip" title="{{this.tooltip}}">
 									{{#eq this.championLevel 7}}
-										{{T.[Mastered]}}
+										{{../T.[Mastered]}}
 									{{else}}
 										{{#gte this.championLevel 5}}
 											{{{getTokens}}}
