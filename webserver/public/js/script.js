@@ -8,14 +8,22 @@ document.addEventListener("DOMContentLoaded", () => {
 			element.value = region;
 		}
 
-		for (let element of document.getElementsByClassName("regionableLink")) {
-			let separator = element.href.includes("?") ? "&" : "?";
-			element.href += `${separator}region=${region}`;
+		for (let element of document.getElementsByClassName("internalLink")) {
+			if (!element.href.includes("region=")) {
+				element.href += `${element.href.includes("?") ? "&" : "?"}region=${region}`;
+			}
+		}
+	}
+
+	const lang = getURLParameter("lang");
+	if (lang) {
+		for (let element of document.getElementsByClassName("internalLink")) {
+			if (!element.href.includes("lang=")) {
+				element.href += `${element.href.includes("?") ? "&" : "?"}lang=${lang}`;
+			}
 		}
 	}
 });
-
-// TODO set a language cookie if lang header is set (and consider the cookie when determining best locale)
 
 function formatNumbers() {
 	const elements = document.querySelectorAll("[data-format-number]");

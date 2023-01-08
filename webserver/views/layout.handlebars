@@ -58,7 +58,7 @@
 
 <body>
 <nav id="navbar">
-	<a id="navbar-logo" class="regionableLink" href="/">
+	<a id="navbar-logo" class="internalLink" href="/">
 		<img src="/img/logo-icon.png" alt="ChampionMastery.GG">
 		<img id="navbar-logo-title" src="/img/logo-text.png" alt="ChampionMastery.GG">
 	</a>
@@ -76,6 +76,7 @@
 					</option>
 				{{/each}}
 			</select>
+			<input type="hidden" name="lang" value="{{T.[LOCALE_CODE]}}">
 			<button type="submit">
 				<span class="material-symbols-outlined">search</span>
 			</button>
@@ -100,9 +101,9 @@
 	<div id="footer">
 		<div>
 			<span><a href="https://github.com/Derpthemeus/ChampionMastery.GG">Made with &#9825; by Derpthemeus <img src="/img/github-mark.svg" width="17" alt="(GitHub))"/></a></span>
-			<span><a href="/faq">{{T.[Help & Info]}}</a></span>
-			<span><a href="/legal">{{T.[Legal info]}}</a></span>
-			<span><a href="/privacy">{{T.[Player privacy]}}</a></span>
+			<span><a class="internalLink" href="/faq">{{T.[Help & Info]}}</a></span>
+			<span><a class="internalLink" href="/legal">{{T.[Legal info]}}</a></span>
+			<span><a class="internalLink" href="/privacy">{{T.[Player privacy]}}</a></span>
 		</div>
 		<div>
 			<a href="https://www.digitalocean.com/?refcode=52977c31ea5b&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg" alt="Powered by DigitalOcean" /></a>

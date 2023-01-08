@@ -24,6 +24,7 @@
 						</option>
 					{{/each}}
 				</select>
+				<input type="hidden" name="lang" value="{{T.[LOCALE_CODE]}}">
 				<button type="submit">
 					<span class="material-symbols-outlined">search</span>
 				</button>
@@ -53,13 +54,13 @@
 			{{#each highscores}}
 				<div class="champion well">
 					<div class="champion-icon">
-						<a class="regionableLink" href="/champion?champion={{this.id}}">
+						<a class="internalLink" href="/champion?champion={{this.id}}">
 						<span class="championSpritesheet"
 							  style='background: url("{{../dragonUrl}}/img/championSpritesheet.png") 0 -{{this.spritesheetY}}px'></span>
 						</a>
 					</div>
 					<div class="champion-info">
-						<a class="regionableLink" href="/champion?champion={{this.id}}">
+						<a class="internalLink" href="/champion?champion={{this.id}}">
 						<strong class="champion-name">{{this.localizedName}}</strong>
 						</a>
 						{{#each this.scores}}
@@ -67,11 +68,11 @@
 								<strong>{{ordinalize (add @index 1)}}</strong>
 								{{#if this}}
 									{{#if this.name}}
-										<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
+										<a class="internalLink" href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
 										{{this.name}} ({{this.region}})
 										</a>
 									{{else}}
-										<a href="/privacy">
+										<a class="internalLink" href="/privacy">
 											[HIDDEN] ({{this.region}})
 										</a>
 									{{/if}}

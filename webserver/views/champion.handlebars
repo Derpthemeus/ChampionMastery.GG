@@ -36,11 +36,11 @@
 							<td>
 								{{#if this}}
 									{{#if this.name}}
-										<a href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
+										<a class="internalLink" href="/summoner?summoner={{encodeURI this.name}}&region={{this.region}}">
 											{{this.name}} ({{this.region}})
 										</a>
 									{{else}}
-										<a href="/privacy">
+										<a class="internalLink" href="/privacy">
 											[{{../T.[HIDDEN]}}] ({{this.region}})
 										</a>
 									{{/if}}
