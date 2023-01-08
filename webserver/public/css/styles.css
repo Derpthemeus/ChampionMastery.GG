@@ -32,24 +32,6 @@ body {
 	display: flex;
 }
 
-#navbar-items {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-left: 1%;
-}
-
-.navbar-item {
-	color: #777;
-	text-decoration: none;
-	padding-right: 15px;
-}
-
-.navbar-item:hover {
-	color: black;
-	text-decoration: none;
-}
-
 #toggle-search-button {
 	display: none;
 	width: 30px;

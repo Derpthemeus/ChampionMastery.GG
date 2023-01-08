@@ -168,8 +168,7 @@ async function start(): Promise<void> {
 	useStaticPage("/legal", "legal");
 	useStaticPage("/privacy", "privacy");
 	app.get("/highscores", (req, res, next) => {
-		// TODO change to 301.
-		res.redirect(302, "/");
+		res.redirect(301, "/");
 		next();
 	});
 	app.get("/champion", renderChampion);
