@@ -12,7 +12,6 @@ export class ChampionStaticData {
 }
 
 export default class Champion extends ChampionStaticData {
-	// TODO make it possible to sort by localized name.
 	/** Champions mapped to their ID, in alphabetical order of their name (with "Total Level" and "Total Points" first) */
 	public static CHAMPIONS: Map<number, Champion>;
 

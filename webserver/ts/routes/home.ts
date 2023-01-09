@@ -17,6 +17,18 @@ export function renderHome(req: express.Request, res: express.Response): void {
 		champions.push(championInfo);
 	}
 
+	champions.sort((a, b) => {
+		if (a.id > 0 && b.id > 0) {
+			return (a.localizedName.toUpperCase() < b.localizedName.toUpperCase()) ? -1 : 1;
+		} if (a.id < 0 && b.id < 0) {
+			return a.id > b.id ? -1 : 1;
+		} else if (a.id < 0) {
+			return -1;
+		} else {
+			return 1;
+		}
+	});
+
 	res.status(200).render("home", {
 		...getCommonData(req),
 		highscores: champions

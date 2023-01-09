@@ -288,39 +288,31 @@ const updateChampions = () => {
 		totalLevelLocalizations[locale] = localization["Total level"];
 	}
 
-	Champion.CHAMPIONS = new Map<number, Champion>([
-		// Set "Total Points" to be the first entry in the new Map
-		[-1, {
-			id: -1,
-			unlocalizedName: "Total Points",
-			localizedNames: totalPointsLocalizations,
-			// This is relative to the championIcons directory
-			icon: "../masteryIcon.png"
-		}],
-		// Set "Total Level" to be the second entry in the new Map
-		[-2, {
-			id: -2,
-			unlocalizedName: "Total Level",
-			localizedNames: totalLevelLocalizations,
-			// This is relative to the championIcons directory
-			icon: "../masteryIcon.png"
-		}],
-		// Add all champions to the new Map, in alphabetical order of their name
-		...[...champions.entries()].sort((a: [number, Champion], b: [number, Champion]) => {
-			const nameA: string = a[1].unlocalizedName.toUpperCase();
-			const nameB: string = b[1].unlocalizedName.toUpperCase();
-			return (nameA < nameB) ? -1 : 1;
-		})
-	]);
+	champions.set(-1, {
+		id: -1,
+		unlocalizedName: "Total Points",
+		localizedNames: totalPointsLocalizations,
+		// This is relative to the championIcons directory
+		icon: "../masteryIcon.png"
+	});
+	champions.set(-2, {
+		id: -2,
+		unlocalizedName: "Total Level",
+		localizedNames: totalLevelLocalizations,
+		// This is relative to the championIcons directory
+		icon: "../masteryIcon.png"
+	});
 
 	// Add spongecase localizations.
-	for (const champion of Champion.CHAMPIONS.values()) {
+	for (const champion of champions.values()) {
 		let localizedName = "";
 		for (let i = 0; i < champion.unlocalizedName.length; i++) {
 			localizedName += (i % 2 === 0) ? champion.unlocalizedName[i].toLowerCase() : champion.unlocalizedName[i].toUpperCase();
 		}
 		champion.localizedNames["sponge"] = localizedName;
 	}
+
+	Champion.CHAMPIONS = champions;
 
 	console.log(`Updated champion list with ${Champion.CHAMPIONS.size} champions`);
 };
