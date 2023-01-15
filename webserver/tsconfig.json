@@ -8,7 +8,8 @@
 		"outDir": "js/",
 		"sourceMap": true,
 		"skipLibCheck": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"jsx": "react"
 	},
 	"include": [
 		"ts/**/*"

@@ -8,11 +8,10 @@ import * as staticDataUpdater from "./staticDataUpdater";
 import express = require("express");
 import fs = require("fs");
 import path = require("path");
-import http = require("http");
-import https = require("https");
 import handlebars = require("handlebars");
 import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
+import * as React from "react";
 import {getLocalization, Localization, SUPPORTED_LOCALES} from "./Localization";
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
@@ -66,7 +65,7 @@ function useStaticPage(pagePath: string, view: string): void {
 }
 
 /** Data that is used in every rendered view */
-type CommonData = {
+export type CommonData = {
 	regions: string[],
 	announcement: { message: string, link: string },
 	siteUrl: string,
@@ -74,7 +73,7 @@ type CommonData = {
 	T: Localization,
 	/** 2 character language code */
 	langCode: string,
-	supportedLocales: string[],
+	supportedLocales: Localization[],
 	currentUrl: string
 };
 
@@ -149,7 +148,6 @@ async function start(): Promise<void> {
 			// Just add query to end of path
 			href = `${currentUrl}?lang=${this.LOCALE_CODE}`;
 		}
-
 		return `<link rel="alternate" hreflang="${this.LOCALE_CODE.split("_")[0]}" href="${href}" />`;
 	});
 

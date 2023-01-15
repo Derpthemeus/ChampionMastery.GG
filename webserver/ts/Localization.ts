@@ -16,7 +16,7 @@ const vn_VN = require("../locales/vn_VN.json");
 const ko_KR = require("../locales/ko_KR.json");
 
 /** Officially supported locales (excludes spongecase). */
-export const SUPPORTED_LOCALES = [en_US, vn_VN, ko_KR];
+export const SUPPORTED_LOCALES: Localization[] = [en_US, vn_VN, ko_KR];
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],

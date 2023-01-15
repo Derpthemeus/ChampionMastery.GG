@@ -8,7 +8,7 @@ export class ChampionStaticData {
 	/** The filename of the icon (e.g. "Annie.png") */
 	public icon: string;
 	/** The location of the top of this champion's icon on the spritesheet (in pixels from the top). */
-	public spritesheetY?: number;
+	public spritesheetY: number;
 }
 
 export default class Champion extends ChampionStaticData {
