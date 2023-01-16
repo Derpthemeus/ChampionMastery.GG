@@ -53,19 +53,6 @@ export function renderError(req: express.Request, res: express.Response, code: n
 	});
 }
 
-/**
- * Sets up a page that doesn't use the express.Request object for anything, and only uses data from COMMON_DATA
- * @param pagePath The path of the page
- * @param view The name of the template to use
- */
-function useStaticPage(pagePath: string, view: string): void {
-	app.get(pagePath, (req, res) => {
-		res.status(200).render(view, {
-			...getCommonData(req)
-		});
-	});
-}
-
 /** Data that is used in every rendered view */
 export type CommonData = {
 	regions: string[],
