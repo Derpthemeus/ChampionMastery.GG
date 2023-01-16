@@ -13,7 +13,7 @@ import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
 import * as React from "react";
 import {getLocalization, Localization, SUPPORTED_LOCALES} from "./Localization";
-import {renderFaq, renderPrivacyInfo} from "./routes/staticPage";
+import {renderFaq, renderLegalInfo, renderPrivacyInfo} from "./routes/staticPage";
 
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
@@ -165,7 +165,7 @@ async function start(): Promise<void> {
 	app.use(express.static(path.join(__dirname, "..", "public")));
 	app.get("/", renderHome);
 	app.get("/faq", renderFaq);
-	useStaticPage("/legal", "legal");
+	app.get("/legal", renderLegalInfo);
 	app.get("/privacy", renderPrivacyInfo);
 	app.get("/highscores", (req, res, next) => {
 		res.redirect(301, "/");
