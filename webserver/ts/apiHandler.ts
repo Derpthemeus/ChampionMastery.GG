@@ -4,7 +4,6 @@ import Config from "./Config";
 import http = require("http");
 import https = require("https");
 import VError = require("verror");
-import {Highscore} from "./Highscores";
 
 const cacheHandler: CacheHandler = new CacheHandler();
 const httpModule = Config.highscoresServiceUrl.startsWith("https://") ? https : http;
@@ -185,4 +184,18 @@ export interface SummonerInfo {
 	 * value than the one specified by the user when they looked up the player.
 	 */
 	hasNewName: boolean;
+}
+
+/**
+ * A single highscores entry.
+ */
+export interface Highscore {
+	/** Summoner name */
+	name: string;
+	/** The name of the summoner, all lowercase with spaces removed */
+	standardizedName: string;
+	/** The ID of the player's region. */
+	region: string;
+	/** How many mastery points the player has on the champion */
+	points: number;
 }

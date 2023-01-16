@@ -3,7 +3,7 @@ import {ReactNode} from "react";
 import {ordinalize} from "../utils";
 import {CommonDataProps, RegionSelect} from "./Layout";
 import {Localization} from "../Localization";
-import {Highscore} from "../Highscores";
+import {Highscore} from "../apiHandler";
 
 export default class Home extends React.Component<HomeProps> {
 	public render(): ReactNode {
@@ -83,7 +83,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 							</a>
 							:
 							<a className="internalLink" href="/privacy">
-								[HIDDEN] ({score.region})
+								[{this.props.localization["HIDDEN"]}] ({score.region})
 							</a>
 						}
 						<span>: </span>
