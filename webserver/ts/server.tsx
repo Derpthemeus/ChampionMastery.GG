@@ -14,6 +14,9 @@ import VError = require("verror");
 import * as React from "react";
 import {getLocalization, Localization, SUPPORTED_LOCALES} from "./Localization";
 import {renderFaq, renderLegalInfo, renderPrivacyInfo} from "./routes/staticPage";
+import * as ReactDOMServer from "react-dom/server";
+import Layout from "./components/Layout";
+import ErrorPage from "./components/ErrorPage";
 
 const layouts = require("handlebars-layouts");
 const helpers = require("handlebars-helpers");
@@ -44,13 +47,18 @@ export function renderError(req: express.Request, res: express.Response, code: n
 		details = unlocalizedMessage;
 	}
 
-	res.status(code).render("error", {
-		...getCommonData(req),
-		error: {
-			error: error,
-			details: details
-		}
-	});
+	const T: Localization = getLocalization(req);
+	const commonData = getCommonData(req);
+	const body = ReactDOMServer.renderToString(<Layout
+		commonData={commonData}
+		title={`ChampionMastery.GG - ${T["Error"]}`}
+		description={`ChampionMastery.GG - ${T["Error"]}`}
+		body={<ErrorPage error={error} details={details} commonData={commonData}/>}
+		stylesheets={["/css/error.css"]}
+		scripts={[]}
+	/>);
+
+	res.status(200).send(body);
 }
 
 /** Data that is used in every rendered view */
