@@ -1,8 +1,7 @@
 import * as React from "react";
 import {ReactNode} from "react";
-import {CommonData} from "../server";
 import {ordinalize} from "../utils";
-import {RegionSelect} from "./Layout";
+import {CommonDataProps, RegionSelect} from "./Layout";
 import {Localization} from "../Localization";
 import {Highscore} from "../Highscores";
 
@@ -96,8 +95,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 	}
 }
 
-interface HomeProps {
-	commonData: CommonData;
+interface HomeProps extends CommonDataProps{
 	champions: ChampionHighscoreSummary[];
 }
 

@@ -174,11 +174,14 @@ interface RegionSelectProps {
 	regions: string[];
 }
 
-interface LayoutProps {
-	commonData: CommonData;
+interface LayoutProps extends CommonDataProps {
 	body: ReactNode;
 	title: string;
 	description: string;
 	stylesheets: string[];
 	scripts: string[];
+}
+
+export interface CommonDataProps {
+	commonData: CommonData;
 }
