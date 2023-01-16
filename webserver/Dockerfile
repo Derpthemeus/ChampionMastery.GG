@@ -16,7 +16,6 @@ COPY package-lock.json ./
 # Install only runtime dependencies.
 RUN npm install --only=prod
 COPY locales/ locales/
-COPY views/ views/
 COPY public/ public/
 
 EXPOSE 8080

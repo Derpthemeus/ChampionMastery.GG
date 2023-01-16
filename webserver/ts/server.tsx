@@ -6,10 +6,7 @@ import Highscores from "./Highscores";
 import Config from "./Config";
 import * as staticDataUpdater from "./staticDataUpdater";
 import express = require("express");
-import fs = require("fs");
 import path = require("path");
-import handlebars = require("handlebars");
-import expressHandlebars = require("express-handlebars");
 import VError = require("verror");
 import * as React from "react";
 import {getLocalization, Localization, SUPPORTED_LOCALES} from "./Localization";
@@ -17,9 +14,6 @@ import {renderFaq, renderLegalInfo, renderPrivacyInfo} from "./routes/staticPage
 import * as ReactDOMServer from "react-dom/server";
 import Layout from "./components/Layout";
 import ErrorPage from "./components/ErrorPage";
-
-const layouts = require("handlebars-layouts");
-const helpers = require("handlebars-helpers");
 
 
 export let highscores: Highscores;
@@ -107,55 +101,6 @@ async function start(): Promise<void> {
 	}, Config.staticDataUpdateInterval * 1000 * 60);
 
 	highscores = new Highscores();
-
-	layouts.register(handlebars);
-
-	// gte, eq
-	helpers.comparison();
-	// TODO localize ordinalization
-	// ordinalize
-	helpers.inflection();
-	// lowercase
-	helpers.string();
-	// add
-	helpers.math();
-	// encodeURI
-	helpers.url();
-
-	// A helper to generate the hreflang attribute in alternate links
-	handlebars.registerHelper("hreflang", function (currentUrl: string) {
-		let href: string;
-		// This will need to be changed if another query parameter with a *lang suffix is ever added.
-		if (currentUrl.includes("lang=")) {
-			const startIndex = currentUrl.indexOf("lang=");
-			// End of "lang=en_US"
-			let endIndex;
-			if (currentUrl.indexOf("&", startIndex) > 0) {
-				endIndex = currentUrl.indexOf("&", startIndex);
-			} else {
-				endIndex = currentUrl.length;
-			}
-
-			href = `${currentUrl.slice(0, startIndex)}lang=${this.LOCALE_CODE}${currentUrl.slice(endIndex)}`;
-		} else if (currentUrl.includes("?")) {
-			// If query params are already present, add the new param to the start of the list.
-			const index = currentUrl.indexOf("?") - 1;
-			href = `${currentUrl.slice(0, index)}lang=${this.LOCALE_CODE}${currentUrl.slice(index)}`;
-		} else {
-			// Just add query to end of path
-			href = `${currentUrl}?lang=${this.LOCALE_CODE}`;
-		}
-		return `<link rel="alternate" hreflang="${this.LOCALE_CODE.split("_")[0]}" href="${href}" />`;
-	});
-
-	const viewsPath: string = path.join(__dirname, "..", "views");
-	app.engine("handlebars", expressHandlebars.create({
-		defaultLayout: null
-	}).engine);
-	app.set("view engine", "handlebars");
-	app.set("views", viewsPath);
-
-	handlebars.registerPartial("layout", fs.readFileSync(path.join(viewsPath, "layout.handlebars"), "utf8"));
 
 	app.use(express.static(path.join(__dirname, "..", "public")));
 	app.get("/", renderHome);
