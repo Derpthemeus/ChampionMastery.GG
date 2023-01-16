@@ -11,7 +11,7 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 		return (<React.Fragment>
 			<h1>
 				<img id="championIcon"
-					 src={`${this.props.commonData.dragonUrl}}/img/championIcons/${this.props.champion.icon}`}/>
+					 src={`${this.props.commonData.dragonUrl}/img/championIcons/${this.props.champion.icon}`}/>
 				<span>{this.props.champion.getLocalizedName(this.props.commonData.T)}</span>
 			</h1>
 			<div id="container">

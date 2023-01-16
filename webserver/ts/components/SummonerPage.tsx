@@ -12,7 +12,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 			<div id="header">
 				<h1>
 					<img
-						src={`${this.props.commonData.dragonUrl}}/img/profileIcons/${this.props.summoner.profileIconId}.png`}
+						src={`${this.props.commonData.dragonUrl}/img/profileIcons/${this.props.summoner.profileIconId}.png`}
 						id="summonerIcon"/>
 					<span id="summonerName">{this.props.summoner.name} ({this.props.region.id})</span>
 				</h1>
