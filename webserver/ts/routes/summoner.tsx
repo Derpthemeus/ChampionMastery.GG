@@ -5,9 +5,12 @@ import {getCommonData, renderError} from "../server";
 import Champion from "../Champion";
 import express = require("express");
 import XRegExp = require("xregexp");
-import handlebars = require("handlebars");
 import VError = require("verror");
-import {getLocalization} from "../Localization";
+import {getLocalization, Localization} from "../Localization";
+import * as ReactDOMServer from "react-dom/server";
+import Layout from "../components/Layout";
+import * as React from "react";
+import SummonerPage from "../components/SummonerPage";
 
 /** A regex to match valid summoner names (from https://developer.riotgames.com/getting-started.html) */
 const SUMMONER_NAME_REGEX = XRegExp("^[0-9\\p{L} _\\.]+$");
@@ -106,30 +109,33 @@ export async function renderSummoner(req: express.Request, res: express.Response
 			champions[i] = info;
 		}
 
-		res.status(200).render("summoner", {
-			...getCommonData(req),
-			summoner: {
-				icon: summoner.profileIconId,
-				name: summoner.name,
-				id: summoner.id,
-				region: region.id,
-				platform: region.platformId
-			},
-			champions: champions,
-			totals: {
-				level: totalLevel,
-				points: totalPoints,
-				chests: totalChests,
-				champions: champions.length
-			}
-		});
+		const totals = {
+			level: totalLevel,
+			points: totalPoints,
+			chests: totalChests,
+			champions: champions.length
+		};
 
-		interface ChampionInfo extends ChampionMasteryResponse {
-			localizedChampionName: string;
-			tooltip: string;
-			sortingValue: number;
-			pointsToNextLevel: number;
-		}
+		const commonData = getCommonData(req);
+
+		const body = ReactDOMServer.renderToString(<Layout
+			commonData={commonData}
+			title={localizeTitle(localization, summoner, region)}
+			description={localizeDescription(localization, summoner, region)}
+			body={<SummonerPage
+				commonData={commonData}
+				region={region}
+				summoner={summoner}
+				champions={champions}
+				totals={totals}
+			/>}
+			stylesheets={["/css/summoner.css"]}
+			scripts={["/js/summoner.js", "/js/rgea.js"]}
+		/>);
+
+		res.status(200).send(body);
+
+
 	} catch (ex) {
 		if (ex instanceof apiHandler.APIError) {
 			if (ex.statusCode === 429) {
@@ -146,23 +152,19 @@ export async function renderSummoner(req: express.Request, res: express.Response
 	}
 }
 
-// A helper to generate the correct number of token icons
-handlebars.registerHelper("getTokens", function () {
-	let content: string = "";
-	for (let i = 0; i < TOKENS_NEEDED.get(this.championLevel); i++) {
-		content += `<img class="token${i >= this.tokensEarned ? " notEarned" : ""}" src="/img/token.png">`;
-	}
-	return content;
-});
+function localizeTitle (T: Localization, summoner: SummonerInfo, region: Region) {
+	return `ChampionMastery.GG - ${T["League of Legends"]} ${T["champion mastery scores for X"]}`
+		.replace("%name%", `${summoner.name} (${region.id})`);
+}
 
-// A helper to localize the page title
-handlebars.registerHelper("localizeTitle", function () {
-	return `ChampionMastery.GG - ${this.T["League of Legends"]} ${this.T["champion mastery scores for X"]}`
-		.replace("%name%", `${this.summoner.name} (${this.summoner.region})`);
-});
+function localizeDescription(T: Localization, summoner: SummonerInfo, region: Region) {
+	return `${T["League of Legends"]} ${T["champion mastery scores for X"]}`
+		.replace("%name%", `${summoner.name} (${region.id})`);
+}
 
-// A helper to localize the page description
-handlebars.registerHelper("localizeDescription", function () {
-	return `${this.T["League of Legends"]} ${this.T["champion mastery scores for X"]}`
-		.replace("%name%", `${this.summoner.name} (${this.summoner.region})`);
-});
+export interface ChampionInfo extends ChampionMasteryResponse {
+	localizedChampionName: string;
+	tooltip: string;
+	sortingValue: number;
+	pointsToNextLevel: number;
+}
