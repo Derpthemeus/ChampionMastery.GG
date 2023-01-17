@@ -2,6 +2,9 @@
 	--navbar-height: 52px;
 	--well-color: #f6f6f6;
 	--well-trim-color: #e7e7e7;
+	--background-color: white;
+	--link-color: #337ab7;
+	--link-color-hover: #23527c;
 }
 
 * {
@@ -10,6 +13,7 @@
 
 body {
 	margin: var(--navbar-height) 0 0 0;
+	background-color: var(--background-color);
 }
 
 #navbar {
@@ -36,7 +40,7 @@ body {
 	display: none;
 	width: 30px;
 	height: 30px;
-	background-color: white;
+	background-color: var(--background-color);
 	border-radius: 5px;
 	border: 2px solid var(--well-trim-color);
 }
@@ -48,7 +52,7 @@ body {
 }
 
 .summoner-lookup button {
-	background-color: white;
+	background-color: var(--background-color);
 }
 
 .summoner-form {
@@ -98,12 +102,12 @@ body {
 }
 
 a {
-	color: #337ab7;
+	color: var(--link-color);
 	text-decoration: none;
 }
 
 a:hover {
-	color: #23527c;
+	color: var(--link-color-hover);
 	text-decoration: underline;
 }
 
