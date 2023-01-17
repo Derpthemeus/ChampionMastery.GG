@@ -5,6 +5,7 @@ import {ordinalize} from "../utils";
 import Champion from "../Champion";
 import {CommonData} from "../server";
 import {Highscore} from "../apiHandler";
+import ResponsiveAd from "./ResponsiveAd";
 
 export default class ChampionPage extends React.Component<ChampionProps> {
 	public render(): ReactNode {
@@ -42,21 +43,9 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 					</tbody>
 				</table>
 			</div>
-			<div className="responsiveAd">
-				<script async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598552437938145"
-						crossOrigin="anonymous"/>
-				{/*CMGG/champion-footer-responsive*/}
-				<ins className="adsbygoogle"
-					 style={{display: "block"}}
-					 data-ad-client="ca-pub-5598552437938145"
-					 data-ad-slot="6258924078"
-					 data-ad-format="auto"
-					 data-full-width-responsive="true"/>
-				<script>
-					(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			</div>
+
+			{/*CMGG/champion-footer-responsive*/}
+			<ResponsiveAd adSlot={6258924078}/>
 		</React.Fragment>);
 	}
 }

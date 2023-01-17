@@ -35,7 +35,7 @@ export default class Layout extends React.Component<LayoutProps> {
 					<link rel="stylesheet" type="text/css" href={url} key={index}/>
 				))}
 
-				<script src="/js/script.js"></script>
+				<script src="/js/script.js"/>
 
 				{/* Google Analytics*/}
 				<script dangerouslySetInnerHTML={{
@@ -44,11 +44,11 @@ export default class Layout extends React.Component<LayoutProps> {
 					ga('create', 'UA-72665536-1', 'auto');
 					ga('send', 'pageview');
 				`
-				}}></script>
-				<script async src="https://www.google-analytics.com/analytics.js"></script>
+				}}/>
+				<script async src="https://www.google-analytics.com/analytics.js"/>
 
 				{/* Google tag (gtag.js)*/}
-				<script async src="https://www.googletagmanager.com/gtag/js?id=G-KL0MJEHFX0"></script>
+				<script async src="https://www.googletagmanager.com/gtag/js?id=G-KL0MJEHFX0"/>
 				<script dangerouslySetInnerHTML={{
 					__html: `
 					window.dataLayer = window.dataLayer || [];
@@ -57,11 +57,11 @@ export default class Layout extends React.Component<LayoutProps> {
 
 					gtag('config', 'G-KL0MJEHFX0');
 					`
-				}}></script>
+				}}/>
 
 				{/* Google AdSense*/}
 				<script data-ad-client="ca-pub-5598552437938145" async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"/>
 
 				{this.props.commonData.supportedLocales.map((localization: Localization) => (
 					this.generateAlternateLangLink(localization)

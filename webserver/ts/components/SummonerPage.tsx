@@ -5,6 +5,7 @@ import {ChampionInfo} from "../routes/summoner";
 import {SummonerInfo} from "../apiHandler";
 import Region from "../Region";
 import {CommonData} from "../server";
+import ResponsiveAd from "./ResponsiveAd";
 
 export default class SummonerPage extends React.Component<SummonerProps> {
 	public render(): ReactNode {
@@ -27,22 +28,8 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 				</div>
 			</div>
 
-			<div className="responsiveAd">
-				<script async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598552437938145"
-						crossOrigin="anonymous"></script>
-				{/*summoner-header-responsive*/}
-				<ins className="adsbygoogle"
-					 style={{display: "block"}}
-					 data-ad-client="ca-pub-5598552437938145"
-					 data-ad-slot="4796081437"
-					 data-ad-format="auto"
-					 data-full-width-responsive="true"></ins>
-				<script>
-					(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			</div>
-
+			{/*summoner-header-responsive*/}
+			<ResponsiveAd adSlot={4796081437}/>
 
 			<div id="container">
 				<table className="well">
@@ -100,21 +87,9 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 					</tfoot>
 				</table>
 			</div>
-			<div className="responsiveAd">
-				<script async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598552437938145"
-						crossOrigin="anonymous"></script>
-				{/*CMGG/summoner-footer-responsive*/}
-				<ins className="adsbygoogle"
-					 style={{display: "block"}}
-					 data-ad-client="ca-pub-5598552437938145"
-					 data-ad-slot="9866104978"
-					 data-ad-format="auto"
-					 data-full-width-responsive="true"></ins>
-				<script>
-					(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			</div>
+
+			{/*summoner-footer-responsive*/}
+			<ResponsiveAd adSlot={9866104978}/>
 		</React.Fragment>);
 	}
 }

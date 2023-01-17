@@ -4,6 +4,7 @@ import {ordinalize} from "../utils";
 import {CommonDataProps, RegionSelect} from "./Layout";
 import {Localization} from "../Localization";
 import {Highscore} from "../apiHandler";
+import ResponsiveAd from "./ResponsiveAd";
 
 export default class HomePage extends React.Component<HomeProps> {
 	public render(): ReactNode {
@@ -24,22 +25,8 @@ export default class HomePage extends React.Component<HomeProps> {
 					</button>
 				</form>
 			</div>
-
-			<div className="responsiveAd">
-				<script async
-						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5598552437938145"
-						crossOrigin="anonymous"></script>
-				{/*CMGG/home-mid-responsive*/}
-				<ins className="adsbygoogle"
-					 style={{display: "block"}}
-					 data-ad-client="ca-pub-5598552437938145"
-					 data-ad-slot="8405530677"
-					 data-ad-format="auto"
-					 data-full-width-responsive="true"></ins>
-				<script>
-					(adsbygoogle = window.adsbygoogle || []).push({});
-				</script>
-			</div>
+			{/*CMGG/home-mid-responsive*/}
+			<ResponsiveAd adSlot={8405530677}/>
 
 			<div id="champion-filter-container">
 				<input type="text" placeholder={this.props.commonData.T["Champion name"]} id="champion-filter"/>
@@ -56,6 +43,9 @@ export default class HomePage extends React.Component<HomeProps> {
 						key={champion.id}/>
 				))}
 			</div>
+
+			{/*CMGG/home-bottom-responsive*/}
+			<ResponsiveAd adSlot={1508949837}/>
 		</React.Fragment>);
 	}
 }
@@ -95,7 +85,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 	}
 }
 
-interface HomeProps extends CommonDataProps{
+interface HomeProps extends CommonDataProps {
 	champions: ChampionHighscoreSummary[];
 }
 
