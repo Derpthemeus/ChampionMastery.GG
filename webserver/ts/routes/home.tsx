@@ -5,7 +5,7 @@ import {getLocalization} from "../Localization";
 import * as ReactDOMServer from "react-dom/server";
 import Layout from "../components/Layout";
 import * as React from "react";
-import Home, {ChampionHighscoreSummary} from "../components/Home";
+import HomePage, {ChampionHighscoreSummary} from "../components/HomePage";
 
 export async function renderHome(req: express.Request, res: express.Response): Promise<void> {
 	const localization = getLocalization(req);
@@ -39,7 +39,7 @@ export async function renderHome(req: express.Request, res: express.Response): P
 		commonData={commonData}
 		title={`ChampionMastery.GG - ${localization["League of Legends"]} ${localization["champion mastery highscores"]} ${localization["and player lookup"]}`}
 		description={`${localization["League of Legends"]} ${localization["champion mastery highscores"]} ${localization["and player lookup"]}`}
-		body={<Home
+		body={<HomePage
 			commonData={commonData}
 			champions={champions}
 		/>}

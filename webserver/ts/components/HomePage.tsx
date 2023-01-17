@@ -5,7 +5,7 @@ import {CommonDataProps, RegionSelect} from "./Layout";
 import {Localization} from "../Localization";
 import {Highscore} from "../apiHandler";
 
-export default class Home extends React.Component<HomeProps> {
+export default class HomePage extends React.Component<HomeProps> {
 	public render(): ReactNode {
 		return (<React.Fragment>
 			<div id="home-logo">
