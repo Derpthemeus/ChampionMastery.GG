@@ -12,19 +12,21 @@ import VError = require("verror");
 
 const en_US = require("../locales/en_US.json");
 const sponge = require("../locales/sponge.json");
-const vn_VN = require("../locales/vn_VN.json");
+const vi_VN = require("../locales/vi_VN.json");
 const ko_KR = require("../locales/ko_KR.json");
 const zh_TW = require("../locales/zh_TW.json");
 
 /** Officially supported locales (excludes spongecase). */
-export const SUPPORTED_LOCALES: Localization[] = [en_US, vn_VN, ko_KR, zh_TW];
+export const SUPPORTED_LOCALES: Localization[] = [en_US, vi_VN, ko_KR, zh_TW];
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],
 	["en", en_US],
 	["sponge", sponge],
-	["vn_VN", vn_VN],
-	["vn", vn_VN],
+	["vn_VN", vi_VN],
+	["vn", vi_VN],
+	["vi_VN", vi_VN],
+	["vi", vi_VN],
 	["kr", ko_KR],
 	["ko_KR", ko_KR],
 	["zh_TW", zh_TW],
