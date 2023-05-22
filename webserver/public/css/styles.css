@@ -5,10 +5,12 @@
 	--background-color: white;
 	--link-color: #337ab7;
 	--link-color-hover: #23527c;
+	--text-color: black;
 }
 
 * {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: var(--text-color);
 }
 
 body {
