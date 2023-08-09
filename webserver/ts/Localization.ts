@@ -15,9 +15,10 @@ const sponge = require("../locales/sponge.json");
 const vi_VN = require("../locales/vi_VN.json");
 const ko_KR = require("../locales/ko_KR.json");
 const zh_TW = require("../locales/zh_TW.json");
+const de_DE = require("../locales/de_DE.json");
 
 /** Officially supported locales (excludes spongecase). */
-export const SUPPORTED_LOCALES: Localization[] = [en_US, vi_VN, ko_KR, zh_TW];
+export const SUPPORTED_LOCALES: Localization[] = [en_US, vi_VN, ko_KR, zh_TW, de_DE];
 
 const localeMapping = new Map<string, Localization>([
 	["en_US", en_US],
@@ -30,7 +31,9 @@ const localeMapping = new Map<string, Localization>([
 	["kr", ko_KR],
 	["ko_KR", ko_KR],
 	["zh_TW", zh_TW],
-	["zh", zh_TW]
+	["zh", zh_TW],
+	["de", de_DE],
+	["de_DE", de_DE]
 ]);
 const locales = new locale.Locales(Array.from(localeMapping.keys()), "en_US");
 

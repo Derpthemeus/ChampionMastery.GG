@@ -24,7 +24,7 @@ const profileIconsPath: string = path.join(imagesPath, "profileIcons");
 const championListPath: string = path.join(Config.staticDataPath, "en_US", "champion.json");
 /** The path of a text file containing the DDragon version of the currently downloaded data */
 const ddragonVersionPath: string = path.join(Config.staticDataPath, "ddragonVersion.txt");
-const supportedLocales = ["en_US", "vi_VN", "ko_KR", "zh_TW"];
+const supportedLocales = ["en_US", "vi_VN", "ko_KR", "zh_TW", "de_DE"];
 /** The DDragon version of the currently downloaded static data */
 let currentDDragonVersion: string;
 
