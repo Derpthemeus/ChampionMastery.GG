@@ -6,4 +6,4 @@ RUN ["gradle", "shadowJar", "--no-daemon", "--console=plain"]
 
 FROM openjdk:8-jre AS run
 ENTRYPOINT ["java", "-jar", "shadowed.jar"]
-COPY --from=build ["/home/gradle/build/libs/shadowed.jar", "shadowed.jar"]
+COPY --from=build ["/home/gradle/build/libs/highscores-service-all.jar", "shadowed.jar"]
