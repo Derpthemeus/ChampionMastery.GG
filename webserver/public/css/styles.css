@@ -136,7 +136,7 @@ td {
 	padding: 8px 8px;
 }
 
-tr:hover {
+tr:not(thead>tr):hover {
     background-color: rgba(0, 0, 0, 0.15);
 }
 
