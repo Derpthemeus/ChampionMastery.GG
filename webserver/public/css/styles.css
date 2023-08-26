@@ -136,6 +136,10 @@ td {
 	padding: 8px 8px;
 }
 
+tr:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
 tfoot td {
 	font-weight: bold;
 }
