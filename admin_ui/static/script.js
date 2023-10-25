@@ -27,11 +27,6 @@ const services = [
 		icon: "/logos/digitalocean.png"
 	},
 	{
-		name: "Sematext",
-		target: "https://apps.sematext.com/ui/logs/",
-		icon: "/logos/sematext.png"
-	},
-	{
 		name: "AWS S3",
 		target: "https://s3.console.aws.amazon.com/s3/home",
 		icon: "/logos/aws_s3.png"
