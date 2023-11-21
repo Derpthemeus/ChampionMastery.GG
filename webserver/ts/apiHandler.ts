@@ -179,11 +179,6 @@ export interface SummonerInfo {
 	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
 	summonerLevel: number;
 	scores: ChampionMasteryResponse[];
-	/**
-	 * Indicates if the summoner has changed their name. If set to true, the `summonerName` field will contain a different
-	 * value than the one specified by the user when they looked up the player.
-	 */
-	hasNewName: boolean;
 }
 
 /**
@@ -192,8 +187,6 @@ export interface SummonerInfo {
 export interface Highscore {
 	/** Summoner name */
 	name: string;
-	/** The name of the summoner, all lowercase with spaces removed */
-	standardizedName: string;
 	/** The ID of the player's region. */
 	region: string;
 	/** How many mastery points the player has on the champion */

@@ -49,15 +49,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 
 	try {
 		const summoner: SummonerInfo = await apiHandler.getSummonerInfo(region, req.query.summoner);
-
 		const masteries: ChampionMasteryResponse[] = summoner.scores;
-
-		// Redirect the user if the summoner has changed their name.
-		if (summoner.hasNewName) {
-			res.redirect(302, `?summoner=${encodeURIComponent(summoner.name)}&region=${region.id}`);
-			return;
-		}
-
 		const champions: ChampionInfo[] = new Array(masteries.length);
 
 		let totalLevel: number = 0, totalPoints: number = 0, totalChests: number = 0;

@@ -36,7 +36,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	private String encryptedPuuid;
 	private String encryptedSummonerId;
 	private String summonerName;
-	private String standardizedName;
 	private Instant revisionDateInstant;
 	private Instant nameLastUpdatedInstant = DEFAULT_INSTANT;
 	private Instant masteriesLastUpdatedInstant = DEFAULT_INSTANT;
@@ -90,16 +89,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setSummonerName(String summonerName) {
 		this.summonerName = summonerName;
-	}
-
-	@Column
-	@Generated(value = GenerationTime.ALWAYS)
-	public String getStandardizedName() {
-		return standardizedName;
-	}
-
-	private void setStandardizedName(String standardizedName) {
-		this.standardizedName = standardizedName;
 	}
 
 	@Column(name = "revision_date", nullable = false)
@@ -186,10 +175,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				", status=" + status +
 				", masteryScores=" + masteryScores +
 				'}';
-	}
-
-	public static String standardizeName(String name) {
-		return name.replaceAll(" ", "").toLowerCase();
 	}
 
 	public static SummonerInstantiator getInstantiator() {

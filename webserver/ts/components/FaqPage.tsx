@@ -19,11 +19,7 @@ export default class FaqPage extends React.Component<CommonDataProps> {
 					Try refreshing the page in a few minutes to update it.
 					<br/>
 
-					<b>If a link brought you to a player with a different name, but they have the correct mastery
-						data: </b>
-					the player changed their name, and you have been automatically redirected.
-					<br/>
-
+					{/*https://github.com/Derpthemeus/ChampionMastery.GG/issues/8*/}
 					<b>If the mastery data is completely incorrect: </b>
 					this can happen in certain rare situations. <a
 					href="https://www.reddit.com/message/compose/?to=Derpthemeus">Message me on

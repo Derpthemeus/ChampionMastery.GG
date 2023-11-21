@@ -17,16 +17,13 @@ import com.merakianalytics.orianna.types.common.Platform;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMasteries;
 import com.merakianalytics.orianna.types.dto.summoner.Summoner;
 import gg.championmastery.highscoresService.HighscoresService;
-import gg.championmastery.highscoresService.persistence.SummonerEntity;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.hibernate.Session;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SummonerScoresHandler extends AbstractHandler {
@@ -78,36 +75,11 @@ public class SummonerScoresHandler extends AbstractHandler {
 			return;
 		}
 
-		boolean hasNewName = false;
 		if (summoner == null) {
-			// If the summoner can't be found, check if they changed their name and their old name is still in the database.
-			try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
-				List<SummonerEntity> entities = session.createQuery("FROM SummonerEntity WHERE platform=:platform AND standardizedName=:standardizedName ORDER BY nameLastUpdatedInstant DESC", SummonerEntity.class)
-						.setParameter("platform", platform.getTag())
-						.setParameter("standardizedName", SummonerEntity.standardizeName(summonerName))
-						// Multiple players may be listed with the same name if they haven't been updated recently.
-						.getResultList();
-
-				if (entities.size() == 0) {
-					// The player really doesn't exist.
-					response.setStatus(404);
-					response.setContentType("text/plain");
-					response.getWriter().write("Summoner does not exist");
-					return;
-				}
-
-				// Try to find the summoner by their ID from the database.
-				summoner = HighscoresService.getOriannaPipeline().get(Summoner.class, ImmutableMap.of(
-						"platform", platform,
-						"id", entities.get(0).getEncryptedSummonerId()
-				));
-				hasNewName = true;
-			} catch (Exception ex) {
-				response.setStatus(500);
-				response.setContentType("text/plain");
-				response.getWriter().write("Error recovering summoner name");
-				return;
-			}
+			response.setStatus(404);
+			response.setContentType("text/plain");
+			response.getWriter().write("Summoner does not exist");
+			return;
 		}
 
 		ChampionMasteries summonerScores;
@@ -121,7 +93,6 @@ public class SummonerScoresHandler extends AbstractHandler {
 		ObjectNode node = mapper.createObjectNode();
 		node.setAll(mapper.convertValue(summoner, ObjectNode.class));
 		node.set("scores", mapper.convertValue(summonerScores, JsonNode.class));
-		node.set("hasNewName", mapper.convertValue(hasNewName, JsonNode.class));
 
 		response.setStatus(200);
 		response.setContentType("text/json");
