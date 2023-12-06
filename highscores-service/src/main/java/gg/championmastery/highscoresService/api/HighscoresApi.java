@@ -41,7 +41,7 @@ public class HighscoresApi {
 	public ChampionMasteries getSummonerScores(Summoner summoner) throws OriannaException {
 		ChampionMasteries masteries = HighscoresService.getOriannaPipeline().get(ChampionMasteries.class, ImmutableMap.of(
 				"platform", Platform.withTag(summoner.getPlatform()),
-				"summonerId", summoner.getId()
+				"puuid", summoner.getPuuid()
 		));
 
 		// Asynchronously check if the summoner is in the database, and add them if they're not.
