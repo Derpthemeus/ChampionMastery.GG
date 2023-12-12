@@ -38,7 +38,7 @@ public class HighscoresApi {
 	 * @return The summoner's mastery scores for every champion.
 	 * @throws OriannaException thrown if the Riot Games API returns an error.
 	 */
-	public ChampionMasteries getSummonerScores(Summoner summoner) throws OriannaException {
+	public ChampionMasteries getSummonerScores(Summoner summoner, String riotId) throws OriannaException {
 		ChampionMasteries masteries = HighscoresService.getOriannaPipeline().get(ChampionMasteries.class, ImmutableMap.of(
 				"platform", Platform.withTag(summoner.getPlatform()),
 				"puuid", summoner.getPuuid()
@@ -62,6 +62,7 @@ public class HighscoresApi {
 
 				// Update the summoner entity.
 				summonerEntity.setSummonerName(summoner.getName());
+				summonerEntity.setRiotId(riotId);
 				summonerEntity.setEncryptedPuuid(summoner.getPuuid());
 				summonerEntity.setNameLastUpdatedInstant(Instant.now());
 				summonerEntity.setRevisionDateInstant(Instant.ofEpochMilli(summoner.getRevisionDate()));

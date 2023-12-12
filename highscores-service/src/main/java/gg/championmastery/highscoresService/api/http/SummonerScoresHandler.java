@@ -14,11 +14,14 @@ import com.merakianalytics.orianna.datapipeline.riotapi.exceptions.UnauthorizedE
 import com.merakianalytics.orianna.datapipeline.riotapi.exceptions.UnsupportedMediaTypeException;
 import com.merakianalytics.orianna.types.common.OriannaException;
 import com.merakianalytics.orianna.types.common.Platform;
+import com.merakianalytics.orianna.types.dto.account.Account;
 import com.merakianalytics.orianna.types.dto.championmastery.ChampionMasteries;
 import com.merakianalytics.orianna.types.dto.summoner.Summoner;
 import gg.championmastery.highscoresService.HighscoresService;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,15 +32,17 @@ import java.util.Map;
 public class SummonerScoresHandler extends AbstractHandler {
 
 	private static final Map<Class<? extends OriannaException>, Integer> errorCodes = new HashMap<Class<? extends OriannaException>, Integer>() {{
-			put(BadRequestException.class, 400);
-			put(ForbiddenException.class, 403);
-			put(InternalServerErrorException.class, 500);
-			put(NotFoundException.class, 404);
-			put(RateLimitExceededException.class, 429);
-			put(ServiceUnavailableException.class, 503);
-			put(UnauthorizedException.class, 403);
-			put(UnsupportedMediaTypeException.class, 415);
+		put(BadRequestException.class, 400);
+		put(ForbiddenException.class, 403);
+		put(InternalServerErrorException.class, 500);
+		put(NotFoundException.class, 404);
+		put(RateLimitExceededException.class, 429);
+		put(ServiceUnavailableException.class, 503);
+		put(UnauthorizedException.class, 403);
+		put(UnsupportedMediaTypeException.class, 415);
 	}};
+
+	private static final Logger logger = LoggerFactory.getLogger(SummonerScoresHandler.class);
 
 	private final ObjectMapper mapper;
 
@@ -74,7 +79,6 @@ public class SummonerScoresHandler extends AbstractHandler {
 			sendOriannaError(ex, response);
 			return;
 		}
-
 		if (summoner == null) {
 			response.setStatus(404);
 			response.setContentType("text/plain");
@@ -82,9 +86,29 @@ public class SummonerScoresHandler extends AbstractHandler {
 			return;
 		}
 
+		// TODO page load times could be significantly improved by fetching account and masteries from API in parallel,
+		//  then sending the response before asynchronously updating the database.
+		Account account;
+		try {
+			account = HighscoresService.getOriannaPipeline().get(Account.class, ImmutableMap.of(
+					"puuid", summoner.getPuuid(),
+					"platform", platform
+			));
+		} catch (OriannaException ex) {
+			sendOriannaError(ex, response);
+			return;
+		}
+		if (account == null) {
+			response.setStatus(404);
+			response.setContentType("text/plain");
+			response.getWriter().write("Riot Account does not exist");
+			logger.error("Could not find account for PUUID {}", summoner.getPuuid());
+			return;
+		}
+
 		ChampionMasteries summonerScores;
 		try {
-			summonerScores = HighscoresService.getApi().getSummonerScores(summoner);
+			summonerScores = HighscoresService.getApi().getSummonerScores(summoner, account.getGameName() + " #" + account.getTagLine());
 		} catch (OriannaException ex) {
 			sendOriannaError(ex, response);
 			return;

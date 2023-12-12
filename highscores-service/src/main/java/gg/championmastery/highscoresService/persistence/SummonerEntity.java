@@ -36,6 +36,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	private String encryptedPuuid;
 	private String encryptedSummonerId;
 	private String summonerName;
+	private String riotId;
 	private Instant revisionDateInstant;
 	private Instant nameLastUpdatedInstant = DEFAULT_INSTANT;
 	private Instant masteriesLastUpdatedInstant = DEFAULT_INSTANT;
@@ -89,6 +90,16 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setSummonerName(String summonerName) {
 		this.summonerName = summonerName;
+	}
+
+	// TODO set nullable = false once all rows have been populated.
+	@Column(nullable = true)
+	public String getRiotId() {
+		return riotId;
+	}
+
+	public void setRiotId(String riotId) {
+		this.riotId = riotId;
 	}
 
 	@Column(name = "revision_date", nullable = false)
@@ -169,6 +180,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				", encryptedPuuid='" + encryptedPuuid + '\'' +
 				", encryptedSummonerId='" + encryptedSummonerId + '\'' +
 				", summonerName='" + summonerName + '\'' +
+				", riotId='" + riotId + '\'' +
 				", revisionDateInstant=" + revisionDateInstant +
 				", nameLastUpdatedInstant=" + nameLastUpdatedInstant +
 				", masteriesLastUpdatedInstant=" + masteriesLastUpdatedInstant +

@@ -26,8 +26,11 @@ CREATE TABLE summoners (
 	/** Lengths are from https://discordapp.com/channels/187652476080488449/379429593829867521/529295034973945906 */
 	encrypted_puuid        CHAR(78)                                                      NULL,
 	encrypted_summoner_id  VARCHAR(63)                                                   NOT NULL,
+	-- TODO remove this column once migration is complete.
 	/** The last known name of the summoner. */
 	summoner_name          VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+	-- TODO make this non-nullable once migration is complete.
+	riot_id                VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci     NULL,
 	masteries_last_updated TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
 	name_last_updated      TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
     /** The value of the `revisionDate` field from the Summoner-v4 API. */
