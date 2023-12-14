@@ -188,6 +188,20 @@ services:
     depends_on:
       - "highscores_service"
     restart: unless-stopped
+  freshness_automation:
+    build:
+      context: ./freshness_automation
+    environment:
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_HOST: "mysql"
+      HIGHSCORES_SERVICE_URL: "http://highscores_service:8181"
+    networks:
+      mysql:
+      highscoresService:
+    depends_on:
+      - "highscores_service"
+    restart: unless-stopped
 volumes:
   staticData:
   acmeCerts:

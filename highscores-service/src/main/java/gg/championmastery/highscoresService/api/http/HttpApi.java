@@ -22,8 +22,11 @@ public class HttpApi {
 		ContextHandler championHighscoresHandler = new ContextHandler("/championHighscores");
 		championHighscoresHandler.setHandler(new ChampionHighscoresHandler());
 
+		ContextHandler playerRefreshHandler = new ContextHandler("/refreshPlayer");
+		playerRefreshHandler.setHandler(new PlayerRefreshHandler());
+
 		HandlerCollection handlers = new HandlerCollection(
-				summonerScoresHandler, highscoresSummaryHandler, championHighscoresHandler
+				summonerScoresHandler, highscoresSummaryHandler, championHighscoresHandler, playerRefreshHandler
 		);
 
 		jettyServer.setHandler(handlers);
