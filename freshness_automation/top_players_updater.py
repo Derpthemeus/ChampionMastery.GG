@@ -20,13 +20,13 @@ with mysql.connector.connect(
     with conn.cursor() as cursor:
         cursor.execute("CALL cmgg.get_top_players()")
         rows = cursor.fetchall()
-        for row in rows:
-            platform = row[1]
-            puuid = row[2]
-            url = "%s/refreshPlayer?puuid=%s&platform=%s" % (os.environ["HIGHSCORES_SERVICE_URL"], urllib.parse.quote(puuid), platform)
-            print("Making request to %s" % (url))
-            try:
-                urllib.request.urlopen(url).read()
-            except Exception as ex:
-                print("Error for %s: %s" % (url, ex))
-            time.sleep(1)
+for row in rows:
+    platform = row[1]
+    puuid = row[2]
+    url = "%s/refreshPlayer?puuid=%s&platform=%s" % (os.environ["HIGHSCORES_SERVICE_URL"], urllib.parse.quote(puuid), platform)
+    print("Making request to %s" % (url))
+    try:
+        urllib.request.urlopen(url).read()
+    except Exception as ex:
+        print("Error for %s: %s" % (url, ex))
+    time.sleep(1)
