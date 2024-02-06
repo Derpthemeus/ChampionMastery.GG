@@ -85,7 +85,7 @@ public class PlayerScoresHandler extends AbstractHandler {
 		if (summoner == null) {
 			response.setStatus(404);
 			response.setContentType("text/plain");
-			logger.error("Summoner does not exist for PUUID '%s'", account.getPuuid());
+			logger.error("Summoner does not exist for PUUID '{}'", account.getPuuid());
 			response.getWriter().write("Summoner does not exist");
 			return;
 		}
