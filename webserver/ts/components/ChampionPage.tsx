@@ -20,7 +20,7 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 					<thead>
 					<tr>
 						<th>{this.props.commonData.T["Rank"]}</th>
-						<th>{this.props.commonData.T["Summoner name"]} ({this.props.commonData.T["Region"]})</th>
+						<th>{this.props.commonData.T["Riot ID"]} ({this.props.commonData.T["Region"]})</th>
 						<th>{this.props.champion.id === -2 ? this.props.commonData.T["Total level"] : this.props.commonData.T["Mastery points"]}</th>
 					</tr>
 					</thead>
@@ -31,7 +31,7 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 								{ordinalize(index + 1, this.props.commonData.T)}
 							</td>
 							<td>
-								<SummonerLink summonerName={score.name}
+								<SummonerLink riotId={score.name}
 											  regionId={score.region}
 											  commonData={this.props.commonData}/>
 							</td>
@@ -51,16 +51,16 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 }
 
 // TODO can this be reused on home?
-function SummonerLink(props: { summonerName: string, regionId: string, commonData: CommonData }) {
-	if (!props.summonerName) {
+function SummonerLink(props: { riotId: string, regionId: string, commonData: CommonData }) {
+	if (!props.riotId) {
 		return <a className="internalLink" href="/privacy">
 			[{props.commonData.T["HIDDEN"]}] ({props.regionId})
 		</a>;
 	}
 
 	return <a className="internalLink"
-			  href={`/summoner?summoner=${encodeURIComponent(props.summonerName)}&region=${props.regionId}`}>
-		{props.summonerName} ({props.regionId})
+			  href={`/player?riotId=${encodeURIComponent(props.riotId)}&region=${props.regionId}`}>
+		{props.riotId} ({props.regionId})
 	</a>;
 }
 

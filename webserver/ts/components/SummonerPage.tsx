@@ -1,7 +1,7 @@
 import * as React from "react";
 import {ReactElement, ReactNode} from "react";
 import {CommonDataProps} from "./Layout";
-import {ChampionInfo} from "../routes/summoner";
+import {ChampionInfo} from "../routes/player";
 import {SummonerInfo} from "../apiHandler";
 import Region from "../Region";
 import {CommonData} from "../server";
@@ -15,16 +15,16 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 					<img
 						src={`${this.props.commonData.dragonUrl}/img/profileIcons/${this.props.summoner.profileIconId}.png`}
 						id="summonerIcon"/>
-					<span id="summonerName">{this.props.summoner.name} ({this.props.region.id})</span>
+					<span id="summonerName">{this.props.summoner.riotId} ({this.props.region.id})</span>
 				</h1>
 				<div id="profileLinks">
 					<a className="profileLink"
-					   href={`https://${this.props.region.id}.op.gg/summoner/userName=${encodeURIComponent(this.props.summoner.name)}`}>op.gg</a>
+					   href={`https://op.gg/summoners/${this.props.region.id.toLowerCase()}/${encodeURIComponent(this.props.summoner.riotId.replace("#", "-"))}`}>op.gg</a>
 					<a className="profileLink"
-					   href={`https://www.leagueofgraphs.com/summoner/${this.props.region.id.toLowerCase()}/${encodeURIComponent(this.props.summoner.name)}`}>League
+					   href={`https://www.leagueofgraphs.com/summoner/${this.props.region.id.toLowerCase()}/${encodeURIComponent(this.props.summoner.riotId.replace("#", "-"))}`}>League
 						of Graphs</a>
 					<a className="profileLink"
-					   href={`https://u.gg/lol/profile/${this.props.region.platformId.toLowerCase()}/${encodeURIComponent(this.props.summoner.name.toLowerCase())}/overview`}>u.gg</a>
+					   href={`https://u.gg/lol/profile/${this.props.region.platformId.toLowerCase()}/${encodeURIComponent(this.props.summoner.name.toLowerCase().replace("#", "-"))}/overview`}>u.gg</a>
 				</div>
 			</div>
 

@@ -47,18 +47,18 @@ function makeHighscoresServiceAPIRequest(path: string, query: {[key: string]: st
 /**
  * Retrieves summoner info and champion mastery scores for the specified summoner, first checking the cache then the
  * highscores service.
- * @param region The summoner's region.
- * @param summonerName The summoner's summoner name.
+ * @param region The player's region.
+ * @param riotId The player's Riot ID.
  * @return A Promise that will be resolved with information about this summoner and their mastery scores, or rejected
  * with an error.
  */
-export async function getSummonerInfo(region: Region, summonerName: string): Promise<SummonerInfo> {
+export async function getSummonerInfo(region: Region, riotId: string): Promise<SummonerInfo> {
 	// Check the cache.
-	const key: string = cacheHandler.makeSummonerKey(region, summonerName);
+	const key: string = cacheHandler.makePlayerKey(region, riotId);
 
 	const cachedId: string = await cacheHandler.retrieve(key);
 	if (cachedId !== undefined) {
-		const cachedResponse: SummonerInfo = await cacheHandler.retrieve(cacheHandler.makeSummonerKey(region, cachedId));
+		const cachedResponse: SummonerInfo = await cacheHandler.retrieve(cacheHandler.makePlayerKey(region, cachedId));
 		if (cachedResponse !== undefined) {
 			return cachedResponse;
 		}
@@ -67,11 +67,11 @@ export async function getSummonerInfo(region: Region, summonerName: string): Pro
 	// Make a request to the highscore service if the data wasn't in the cache.
 	try {
 		const body: string = await makeHighscoresServiceAPIRequest("summonerInfo", {
-			summonerName: summonerName,
+			riotId: encodeURIComponent(riotId),
 			platform: region.platformId
 		});
 		const response: SummonerInfo = JSON.parse(body);
-		cacheHandler.store(cacheHandler.makeSummonerKey(region, response.id), response, Config.cacheDurations.summoner);
+		cacheHandler.store(cacheHandler.makePlayerKey(region, response.id), response, Config.cacheDurations.summoner);
 		return response;
 	} catch (ex) {
 		if (ex instanceof APIError && ex.statusCode !== 404) {
@@ -82,6 +82,29 @@ export async function getSummonerInfo(region: Region, summonerName: string): Pro
 			throw ex;
 		} else {
 			throw new VError(ex, "%s", "Error getting summoner by name");
+		}
+	}
+}
+
+/**
+ * Retrieves the Riot ID for a given summoner name.
+ */
+export async function getRiotId(region: Region, summonerName: string): Promise<PlayerInfo> {
+	try {
+		const body: string = await makeHighscoresServiceAPIRequest("convertSummonerName", {
+			summonerName: encodeURIComponent(summonerName),
+			platform: region.platformId
+		});
+		return JSON.parse(body);
+	} catch (ex) {
+		if (ex instanceof APIError && ex.statusCode !== 404) {
+			logApiError(ex);
+		}
+		// APIErrors are not caused by the code, so they don't need stack traces.
+		if (ex instanceof APIError) {
+			throw ex;
+		} else {
+			throw new VError(ex, "%s", "Error converting summoner name");
 		}
 	}
 }
@@ -179,13 +202,18 @@ export interface SummonerInfo {
 	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
 	summonerLevel: number;
 	scores: ChampionMasteryResponse[];
+	riotId: string;
 }
 
+export interface PlayerInfo {
+	gameName: string;
+	tagLine: string;
+}
 /**
  * A single highscores entry.
  */
 export interface Highscore {
-	/** Summoner name */
+	/** Riot ID */
 	name: string;
 	/** The ID of the player's region. */
 	region: string;

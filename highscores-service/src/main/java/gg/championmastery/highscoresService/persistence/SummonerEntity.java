@@ -151,10 +151,10 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	}
 
 	/**
-	 * Returns the player's summoner name, or {@code null} if they have requested not to have their name shown on the
+	 * Returns the player's Riot ID, or {@code null} if they have requested not to have their name shown on the
 	 * site.
 	 *
-	 * @return The player's summoner name, or {@code null} if they have requested not to have their name shown on the
+	 * @return The player's Riot ID, or {@code null} if they have requested not to have their name shown on the
 	 * 		site.
 	 */
 	@Transient
@@ -162,7 +162,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 		if (getStatus() == Status.FORGOTTEN || getStatus() == Status.REQUESTED_REMOVAL) {
 			return null;
 		} else {
-			return getSummonerName();
+			return getRiotId();
 		}
 	}
 

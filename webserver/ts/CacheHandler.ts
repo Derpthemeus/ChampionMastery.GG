@@ -41,12 +41,12 @@ export default class CacheHandler {
 
 
 	/**
-	 * Formats a cache key that is used to store a Summoner object with the summoner's ID and region as the key
+	 * Formats a cache key that is used to store a Summoner object with the player's Riot ID and region as the key
 	 * @param region
-	 * @param summonerId An encrypted summoner ID.
+	 * @param riotId An Riot ID.
 	 * @returns A key that can be used to store/retrieve a Summoner object from the cache
 	 */
-	public makeSummonerKey = (region: Region, summonerId: string): string => {
-		return `summoner/${region.id}:${summonerId}`;
+	public makePlayerKey = (region: Region, riotId: string): string => {
+		return `player/${region.id}:${riotId}`;
 	}
 }

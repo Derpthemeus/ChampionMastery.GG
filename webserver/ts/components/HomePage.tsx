@@ -16,8 +16,8 @@ export default class HomePage extends React.Component<HomeProps> {
 
 			{/* TODO make this taller/bigger */}
 			<div className="summoner-lookup">
-				<form className="summoner-form" action="/summoner">
-					<input type="text" name="summoner" placeholder={this.props.commonData.T["Summoner name"]}/>
+				<form className="summoner-form" action="/player">
+					<input type="text" name="riotId" placeholder={this.props.commonData.T["Riot ID #TAG"]}/>
 					<RegionSelect regions={this.props.commonData.regions}/>
 					<input type="hidden" name="lang" value={this.props.commonData.T["LOCALE_CODE"]}/>
 					<button type="submit">
@@ -68,7 +68,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 						<strong>{ordinalize(index + 1, this.props.localization)} </strong>
 						{score.name ?
 							<a className="internalLink"
-							   href={`/summoner?summoner=${encodeURIComponent(score.name)}&region=${score.region}`}>
+							   href={`/player?riotId=${encodeURIComponent(score.name)}&region=${score.region}`}>
 								{score.name} ({score.region})
 							</a>
 							:

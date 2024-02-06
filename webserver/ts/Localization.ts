@@ -65,13 +65,16 @@ export type Localization = {
 	"Contact": string;
 	"Champion name": string;
 	"champions": string;
-	"Summoner name": string;
+	"Riot ID": string;
+	"Riot ID #TAG": string;
 	"Region": string;
 	"Highscores": string;
 	"Error": string;
+	// TODO "player" instead of "summoner"
 	"Summoner X not found in region Y": string;
 	"Try again later": string;
 	"Double check the summoner name and region, then try again later": string;
+	"Double check the Riot ID and region, then try again later": string;
 	"Mastery points": string;
 	"Points": string;
 	"Points until next level": string;

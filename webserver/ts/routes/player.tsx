@@ -12,14 +12,13 @@ import Layout from "../components/Layout";
 import * as React from "react";
 import SummonerPage from "../components/SummonerPage";
 
-/** A regex to match valid summoner names (from https://developer.riotgames.com/getting-started.html) */
-const SUMMONER_NAME_REGEX = XRegExp("^[0-9\\p{L} _\\.]+$");
+const RIOT_ID_REGEX = XRegExp("^.+#.+$");
 /** How many tokens are needed to continue from a level (the key) to the next */
 const TOKENS_NEEDED = new Map([[5, 2], [6, 3]]);
 
-export async function renderSummoner(req: express.Request, res: express.Response): Promise<void> {
-	if (!req.query.summoner || typeof req.query.summoner !== "string") {
-		renderError(req, res, 400, "No summoner name specified", null, null);
+export async function renderPlayer(req: express.Request, res: express.Response): Promise<void> {
+	if (!req.query.riotId || typeof req.query.riotId !== "string") {
+		renderError(req, res, 400, "No Riot ID specified", null, null);
 		return;
 	}
 
@@ -30,10 +29,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 
 	const localization = getLocalization(req);
 	const localize = localization.LOCALE_CODE !== "en_US";
-	const checkSummonerNameMessage = localize ? localization["Double check the summoner name and region, then try again later"]
-			.replace("%summoner%", req.query.summoner)
-			.replace("%region%", req.query.region)
-		: null;
+	const checkRiotIdMessage = localize ? localization["Double check the Riot ID and region, then try again later"] : null;
 	const tryAgainLaterMessage = localize ? localization["Try again later"] : null;
 
 	const region: Region = Region.getByRegionId(req.query.region.toUpperCase());
@@ -42,13 +38,13 @@ export async function renderSummoner(req: express.Request, res: express.Response
 		return;
 	}
 
-	if (!SUMMONER_NAME_REGEX.test(req.query.summoner)) {
-		renderError(req, res, 400, "Name contains invalid characters", "Make sure the summoner name is correct.", checkSummonerNameMessage);
+	if (!RIOT_ID_REGEX.test(req.query.riotId)) {
+		renderError(req, res, 400, "Invalid Riot ID", "Name must include the display name and tag", checkRiotIdMessage);
 		return;
 	}
 
 	try {
-		const summoner: SummonerInfo = await apiHandler.getSummonerInfo(region, req.query.summoner);
+		const summoner: SummonerInfo = await apiHandler.getSummonerInfo(region, req.query.riotId);
 		const masteries: ChampionMasteryResponse[] = summoner.scores;
 		const champions: ChampionInfo[] = new Array(masteries.length);
 
@@ -133,7 +129,7 @@ export async function renderSummoner(req: express.Request, res: express.Response
 			if (ex.statusCode === 429) {
 				renderError(req, res, 503, "Server overloaded", "Try again later. Retrying immediately will only make the problem worse.", tryAgainLaterMessage);
 			} else if (ex.statusCode === 404) {
-				renderError(req, res, 404, "Player not found", "Make sure the summoner name and region are correct.", checkSummonerNameMessage);
+				renderError(req, res, 404, "Player not found", "Double check the Riot ID and region, then try again later", checkRiotIdMessage);
 			} else {
 				renderError(req, res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in Help & Info on site footer).", tryAgainLaterMessage);
 			}

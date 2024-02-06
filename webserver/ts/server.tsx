@@ -1,7 +1,8 @@
 import Region from "./Region";
-import {renderSummoner} from "./routes/summoner";
+import {renderPlayer} from "./routes/player";
 import {renderChampion} from "./routes/champion";
 import {renderHome} from "./routes/home";
+import {redirectToRiotId} from "./routes/redirectToRiotId";
 import Highscores from "./Highscores";
 import Config from "./Config";
 import * as staticDataUpdater from "./staticDataUpdater";
@@ -112,7 +113,8 @@ async function start(): Promise<void> {
 		next();
 	});
 	app.get("/champion", renderChampion);
-	app.get("/summoner", renderSummoner);
+	app.get("/summoner", redirectToRiotId);
+	app.get("/player", renderPlayer);
 	app.get("/ads.txt", (req, res) => {
 		res.status(200).send("google.com, pub-5598552437938145, DIRECT, f08c47fec0942fa0");
 	});

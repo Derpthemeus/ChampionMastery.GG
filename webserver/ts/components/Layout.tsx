@@ -80,8 +80,8 @@ export default class Layout extends React.Component<LayoutProps> {
 				</a>
 				<button id="toggle-search-button">&#x25BC;</button>
 				<div id="navbar-lookup" className="summoner-lookup">
-					<form id="navbar-form" className="summoner-form" action="/summoner">
-						<input type="text" name="summoner" placeholder={this.props.commonData.T["Summoner name"]}/>
+					<form id="navbar-form" className="summoner-form" action="/player">
+						<input type="text" name="riotId" placeholder={this.props.commonData.T["Riot ID #TAG"]}/>
 						<RegionSelect regions={this.props.commonData.regions}/>
 						<input type="hidden" name="lang" value={this.props.commonData.T["LOCALE_CODE"]}/>
 						<button type="submit">
