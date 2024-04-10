@@ -134,7 +134,7 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 				renderError(req, res, 500, `API error (${ex.statusCode})`, "Try refreshing the page. If the problem persists, let me know (contact info in Help & Info on site footer).", tryAgainLaterMessage);
 			}
 		} else {
-			console.error(VError.fullStack(new VError(ex, "%s", `Error creating page for summoner "${req.query.summoner}" (${req.query.region})`)));
+			console.error(VError.fullStack(new VError(ex, "%s", `Error creating page for player "${req.query.riotId}" (${req.query.region})`)));
 			renderError(req, res, 500, "Unknown error", "Please send me a message (contact info in Help & Info in site footer).", tryAgainLaterMessage);
 		}
 	}

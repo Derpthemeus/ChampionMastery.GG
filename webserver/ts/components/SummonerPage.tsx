@@ -24,7 +24,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 					   href={`https://www.leagueofgraphs.com/summoner/${this.props.region.id.toLowerCase()}/${encodeURIComponent(this.props.summoner.riotId.replace("#", "-"))}`}>League
 						of Graphs</a>
 					<a className="profileLink"
-					   href={`https://u.gg/lol/profile/${this.props.region.platformId.toLowerCase()}/${encodeURIComponent(this.props.summoner.name.toLowerCase().replace("#", "-"))}/overview`}>u.gg</a>
+					   href={`https://u.gg/lol/profile/${this.props.region.platformId.toLowerCase()}/${encodeURIComponent(this.props.summoner.riotId.toLowerCase().replace("#", "-"))}/overview`}>u.gg</a>
 				</div>
 			</div>
 
