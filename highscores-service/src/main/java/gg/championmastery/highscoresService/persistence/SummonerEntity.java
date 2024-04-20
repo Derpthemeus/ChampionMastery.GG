@@ -83,7 +83,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 		this.encryptedSummonerId = summonerId;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	public String getSummonerName() {
 		return summonerName;
 	}

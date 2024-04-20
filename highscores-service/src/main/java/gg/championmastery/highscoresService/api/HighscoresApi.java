@@ -96,7 +96,7 @@ public class HighscoresApi {
 					tx.setRollbackOnly();
 				}
 
-				logger.error(String.format("Error updating mastery scores for summoner '%s' (%s)", summoner.getName(), summoner.getPlatform()), ex);
+				logger.error(String.format("Error updating mastery scores for summoner '%s' (%s)", riotId, summoner.getPlatform()), ex);
 			} finally {
 				// Release the entity if it was locked by the instantiator.
 				SummonerEntity.getInstantiator().persistEntity(summonerKey);
