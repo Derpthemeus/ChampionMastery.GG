@@ -62,6 +62,15 @@ CREATE TABLE platforms (
 	PRIMARY KEY (platform_id)
 ) ENGINE = InnoDB;
 
+CREATE TABLE rank_thresholds (
+    /** The ID of the champion (or -1 to indicate total points, or -2 to indicate total level). */
+    champion_id    SMALLINT        NOT NULL,
+    mastery_points INT UNSIGNED    NOT NULL,
+    `rank`         INT UNSIGNED    NOT NULL,
+
+    PRIMARY KEY (champion_id, `rank`)
+) ENGINE = InnoDB;
+
 
 ALTER TABLE mastery_scores
 	ADD CONSTRAINT FK__mastery_scores__id FOREIGN KEY (player_id) REFERENCES summoners (player_id),
@@ -107,6 +116,16 @@ BEGIN
 			 ELSE 1 END;
 END $$
 
+CREATE PROCEDURE update_rank_thresholds_table()
+BEGIN
+    START TRANSACTION;
+    DELETE FROM rank_thresholds WHERE TRUE;
+    INSERT INTO rank_thresholds (champion_id, `rank`, mastery_points)  SELECT champion_id, `rank`, mastery_points
+    FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY champion_id ORDER BY mastery_points DESC) AS `rank` FROM mastery_scores) ranked
+    WHERE `rank` IN (100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000);
+    COMMIT;
+END $$
+
 DELIMITER ;
 
 
@@ -115,3 +134,9 @@ CREATE EVENT find_transferred_accounts
 	ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 6 HOUR
 	DO
 	CALL mark_transferred_summoners();
+
+/* Update rank thresholds at regular intervals. */
+CREATE EVENT update_rank_thresholds_table
+    ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 HOUR
+    DO
+    CALL update_rank_thresholds_table();
