@@ -10,7 +10,6 @@ BEGIN
     DROP TEMPORARY TABLE IF EXISTS highscores_summary;
     CREATE TEMPORARY TABLE highscores_summary (
         champion_id     SMALLINT     NOT NULL,
-        summoner_name   VARCHAR(100) NULL,
         platform        VARCHAR(6)   NOT NULL,
         encrypted_puuid CHAR(78),
         riot_id         VARCHAR(100)
@@ -27,7 +26,6 @@ BEGIN
         INSERT INTO highscores_summary
         SELECT
             champion_id,
-            summoner_name,
             summoners.platform,
             encrypted_puuid,
             riot_id
@@ -39,7 +37,7 @@ BEGIN
     END LOOP;
     CLOSE cur;
 
-    SELECT summoner_name, platform, encrypted_puuid, riot_id FROM highscores_summary;
+    SELECT platform, encrypted_puuid, riot_id FROM highscores_summary;
 
     DROP TEMPORARY TABLE highscores_summary;
 END;
