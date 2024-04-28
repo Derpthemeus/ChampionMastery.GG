@@ -8,6 +8,7 @@ import com.merakianalytics.orianna.types.dto.championmastery.ChampionMastery;
 import com.merakianalytics.orianna.types.dto.summoner.Summoner;
 import gg.championmastery.highscoresService.HighscoresService;
 import gg.championmastery.highscoresService.persistence.MasteryScoreEntity;
+import gg.championmastery.highscoresService.persistence.RankThresholdEntity;
 import gg.championmastery.highscoresService.persistence.SummonerEntity;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -137,9 +138,18 @@ public class HighscoresApi {
 		try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
 			Query<MasteryScoreEntity> query = session.createQuery("FROM MasteryScoreEntity WHERE championId=:championId AND summoner.status != 1 ORDER BY masteryPoints DESC", MasteryScoreEntity.class)
 					.setParameter("championId", championId)
-					.setMaxResults(50);
+					.setMaxResults(HighscoresService.CHAMPION_HIGHSCORES_LENGTH);
 
 			return query.getResultList();
+		}
+	}
+
+	public List<RankThresholdEntity> getRankThresholds() {
+		try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
+			Query<RankThresholdEntity> query = session.createQuery("FROM RankThresholdEntity", RankThresholdEntity.class);
+			List<RankThresholdEntity> results = query.getResultList();
+			logger.info(String.format("Fetched %d rows from rank_thresholds", results.size()));
+			return results;
 		}
 	}
 

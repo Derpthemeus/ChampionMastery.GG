@@ -2,11 +2,16 @@ import * as apiHandler from "./apiHandler";
 import Champion from "./Champion";
 import Config from "./Config";
 import {Highscore} from "./apiHandler";
+import RankThresholds from "./RankThresholds";
 
 export default class Highscores {
+	public static readonly CHAMPION_HIGHSCORES_LENGTH = 50;
+
 	public highscoresSummary: {[championId: string]: Highscore[]} = {};
 	/** Arrays of highscores (index 0 is first place) keyed by champion IDs */
 	public championHighscores: Map<number, Highscore[]> = new Map<number, Highscore[]>();
+	public rankThresholds: RankThresholds = new RankThresholds();
+
 
 	public constructor() {
 		this.refreshHighscoresSummary();
@@ -39,5 +44,6 @@ export default class Highscores {
 
 	private refreshChampionHighscores = async (championId: number) => {
 		this.championHighscores.set(championId, await apiHandler.getChampionHighscores(championId));
+		this.rankThresholds.refreshTopEntries();
 	}
 }

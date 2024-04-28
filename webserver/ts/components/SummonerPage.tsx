@@ -6,6 +6,8 @@ import {SummonerInfo} from "../apiHandler";
 import Region from "../Region";
 import {CommonData} from "../server";
 import ResponsiveAd from "./ResponsiveAd";
+import RankThresholds from "../RankThresholds";
+import {Localization} from "../Localization";
 
 export default class SummonerPage extends React.Component<SummonerProps> {
 	public render(): ReactNode {
@@ -38,6 +40,12 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<HeaderColumn name={this.props.commonData.T["Champion name"]}/>
 						<HeaderColumn name={this.props.commonData.T["Level"]}/>
 						<HeaderColumn name={this.props.commonData.T["Points"]}/>
+						{/*FIXME use HeaderColumn (after completing beta testing) */}
+						<th className="beta" data-sorting-order="0">
+							{this.props.commonData.T["Rank"]}
+							{/*Used for the sorting icon*/}
+							<span className="collapsible"/>
+						</th>
 						<HeaderColumn name={this.props.commonData.T["Chest"]}/>
 						<HeaderColumn name={this.props.commonData.T["Last played"]}/>
 						<HeaderColumn name={this.props.commonData.T["Progress"]} collapsible={true}/>
@@ -56,6 +64,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 							<td data-format-number={champion.championPoints} data-value={champion.championPoints}>
 								{champion.championPoints}
 							</td>
+							<td className="beta" data-value={champion.rank}>{RankThresholds.localizeRank(champion.rank, this.props.commonData.T)}</td>
 							<td data-value={champion.chestGranted ? 1 : 0}>
 								<img src="/img/chest.png"
 									 className={champion.chestGranted ? "chest" : "chest notEarned"}/>
@@ -79,6 +88,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						</td>
 						<td data-format-number={this.props.totals.level}>{this.props.totals.level}</td>
 						<td data-format-number={this.props.totals.points}>{this.props.totals.points}</td>
+						<TotalsRank levelRank={this.props.totals.levelRank} pointsRank={this.props.totals.pointsRank} localization={this.props.commonData.T}/>
 						<td>{this.props.totals.chests}/{this.props.totals.champions}</td>
 						<td></td>
 						<td></td>
@@ -136,6 +146,21 @@ function ProgressCell(props: { commonData: CommonData, champion: ChampionInfo })
 	</td>;
 }
 
+function TotalsRank(props: { levelRank: number, pointsRank: number, localization: Localization }): ReactElement {
+	let rank = "";
+	if (props.pointsRank) {
+		rank += `${RankThresholds.localizeRank(props.pointsRank, props.localization)} ${props.localization["Points"]}`;
+	}
+	if (props.pointsRank && props.levelRank) {
+		rank += " / ";
+	}
+	if (props.levelRank) {
+		rank += `${RankThresholds.localizeRank(props.levelRank, props.localization)} ${props.localization["Level"]}`;
+	}
+
+	return <td className="beta">{rank}</td>;
+}
+
 interface SummonerProps extends CommonDataProps {
 	region: Region;
 	summoner: SummonerInfo;
@@ -145,5 +170,7 @@ interface SummonerProps extends CommonDataProps {
 		points: number;
 		chests: number;
 		champions: number;
+		pointsRank: number;
+		levelRank: number;
 	};
 }

@@ -4,6 +4,7 @@ import Config from "./Config";
 import http = require("http");
 import https = require("https");
 import VError = require("verror");
+import {RankThreshold} from "./RankThresholds";
 
 const cacheHandler: CacheHandler = new CacheHandler();
 const httpModule = Config.highscoresServiceUrl.startsWith("https://") ? https : http;
@@ -134,6 +135,32 @@ export async function getChampionHighscores(championId: number): Promise<Highsco
 		return JSON.parse(body);
 	} catch (ex) {
 		throw new VError(ex, "%s", `Error retrieving champion highscores from highscores service for champion ${championId}`);
+	}
+}
+
+/**
+ * Fetches all rank thresholds, used to determine if a player is in the top 5k etc.
+ * @return A Promise that will be resolved with the rank thresholds keyed by champion ID, or rejected with an error.
+ */
+export async function getRankThresholds(): Promise<Map<number, RankThreshold[]>> {
+	try {
+		const body: string = await makeHighscoresServiceAPIRequest("rankThresholds");
+		const entries: RankThreshold[] = JSON.parse(body);
+		const results = new Map<number, RankThreshold[]>();
+		for (const threshold of entries) {
+			if (!results.has(threshold.championId)) {
+				results.set(threshold.championId, []);
+			}
+			results.get(threshold.championId).push(threshold);
+		}
+
+		// Make sure thresholds for each champion are sorted.
+		for (const [championId, thresholds] of results.entries()) {
+			results.set(championId, thresholds.sort((a, b) => a.masteryPoints - b.masteryPoints));
+		}
+		return results;
+	} catch (ex) {
+		throw new VError(ex, "%s", `Error retrieving rank thresholds from highscores service`);
 	}
 }
 

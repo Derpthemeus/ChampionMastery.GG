@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class HighscoresService {
 
+	public static int CHAMPION_HIGHSCORES_LENGTH = 50;
 	private static SessionFactory hibernateSessionFactory;
 	private static final Logger logger = LoggerFactory.getLogger(HighscoresService.class);
 	private static HighscoresApi highscoresApi;

@@ -30,6 +30,9 @@ export default class Config {
 		champion: 60
 	};
 
+	/** How often rank thresholds should be fetched from the highscores service (in seconds), */
+	public static readonly rankThresholdsRefreshInterval = 180;
+
 	/** How often to fetch champion list from static-data-service (in minutes). */
 	public static readonly staticDataUpdateInterval: number = 5;
 

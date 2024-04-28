@@ -18,5 +18,6 @@
 		<mapping class="gg.championmastery.highscoresService.persistence.MasteryScoreEntity"/>
 		<mapping class="gg.championmastery.highscoresService.persistence.PlatformEntity"/>
 		<mapping class="gg.championmastery.highscoresService.persistence.SummonerEntity"/>
+		<mapping class="gg.championmastery.highscoresService.persistence.RankThresholdEntity"/>
 	</session-factory>
 </hibernate-configuration>

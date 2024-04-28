@@ -1,7 +1,7 @@
 import Region from "../Region";
 import * as apiHandler from "../apiHandler";
 import {ChampionMasteryResponse, SummonerInfo} from "../apiHandler";
-import {getCommonData, renderError} from "../server";
+import {getCommonData, highscores, renderError} from "../server";
 import Champion from "../Champion";
 import express = require("express");
 import XRegExp = require("xregexp");
@@ -91,7 +91,8 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 				localizedChampionName: champion ? champion.getLocalizedName(localization) : "???",
 				tooltip: tooltip,
 				sortingValue: sortingValue,
-				pointsToNextLevel: pointsToNextLevel
+				pointsToNextLevel: pointsToNextLevel,
+				rank: highscores.rankThresholds.getRank(masteryChampion.championId, masteryChampion.championPoints)
 			};
 
 			champions[i] = info;
@@ -101,7 +102,9 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 			level: totalLevel,
 			points: totalPoints,
 			chests: totalChests,
-			champions: champions.length
+			champions: champions.length,
+			pointsRank: highscores.rankThresholds.getRank(-1, totalPoints),
+			levelRank: highscores.rankThresholds.getRank(-2, totalLevel)
 		};
 
 		const commonData = getCommonData(req);
@@ -155,4 +158,5 @@ export interface ChampionInfo extends ChampionMasteryResponse {
 	tooltip: string;
 	sortingValue: number;
 	pointsToNextLevel: number;
+	rank: number;
 }
