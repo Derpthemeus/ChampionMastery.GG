@@ -88,29 +88,6 @@ export async function getSummonerInfo(region: Region, riotId: string): Promise<S
 }
 
 /**
- * Retrieves the Riot ID for a given summoner name.
- */
-export async function getRiotId(region: Region, summonerName: string): Promise<PlayerInfo> {
-	try {
-		const body: string = await makeHighscoresServiceAPIRequest("convertSummonerName", {
-			summonerName: encodeURIComponent(summonerName),
-			platform: region.platformId
-		});
-		return JSON.parse(body);
-	} catch (ex) {
-		if (ex instanceof APIError && ex.statusCode !== 404) {
-			logApiError(ex);
-		}
-		// APIErrors are not caused by the code, so they don't need stack traces.
-		if (ex instanceof APIError) {
-			throw ex;
-		} else {
-			throw new VError(ex, "%s", "Error converting summoner name");
-		}
-	}
-}
-
-/**
  * Retrieves the top players for each champion.
  * @return A Promise that will be resolved with the top 3 scores for each champion (mapped by champion ID), or rejected
  * with an error.

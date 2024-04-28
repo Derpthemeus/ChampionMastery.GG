@@ -39,15 +39,12 @@ public class HttpApi {
 		ContextHandler playerRefreshHandler = new ContextHandler("/refreshPlayer");
 		playerRefreshHandler.setHandler(new PlayerRefreshHandler());
 
-		ContextHandler summonerNameHandler = new ContextHandler("/convertSummonerName");
-		summonerNameHandler.setHandler(new SummonerNameHandler());
-
 		ContextHandler rankThresholdsHandler = new ContextHandler("/rankThresholds");
 		rankThresholdsHandler.setHandler(new RankThresholdsHandler());
 
 
 		HandlerCollection handlers = new HandlerCollection(
-				summonerScoresHandler, highscoresSummaryHandler, championHighscoresHandler, playerRefreshHandler, summonerNameHandler, rankThresholdsHandler
+				summonerScoresHandler, highscoresSummaryHandler, championHighscoresHandler, playerRefreshHandler, rankThresholdsHandler
 		);
 
 		jettyServer.setHandler(handlers);
