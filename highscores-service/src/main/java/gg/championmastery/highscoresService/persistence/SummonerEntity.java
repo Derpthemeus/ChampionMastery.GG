@@ -35,7 +35,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	private String platform;
 	private String encryptedPuuid;
 	private String encryptedSummonerId;
-	private String summonerName;
 	private String riotId;
 	private Instant revisionDateInstant;
 	private Instant nameLastUpdatedInstant = DEFAULT_INSTANT;
@@ -81,15 +80,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setEncryptedSummonerId(String summonerId) {
 		this.encryptedSummonerId = summonerId;
-	}
-
-	@Column(nullable = true)
-	public String getSummonerName() {
-		return summonerName;
-	}
-
-	public void setSummonerName(String summonerName) {
-		this.summonerName = summonerName;
 	}
 
 	// TODO set nullable = false once all rows have been populated.
@@ -179,7 +169,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				", platform='" + platform + '\'' +
 				", encryptedPuuid='" + encryptedPuuid + '\'' +
 				", encryptedSummonerId='" + encryptedSummonerId + '\'' +
-				", summonerName='" + summonerName + '\'' +
 				", riotId='" + riotId + '\'' +
 				", revisionDateInstant=" + revisionDateInstant +
 				", nameLastUpdatedInstant=" + nameLastUpdatedInstant +

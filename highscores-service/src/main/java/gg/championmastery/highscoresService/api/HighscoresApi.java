@@ -62,7 +62,6 @@ public class HighscoresApi {
 				}
 
 				// Update the summoner entity.
-				summonerEntity.setSummonerName(summoner.getName());
 				summonerEntity.setRiotId(riotId);
 				summonerEntity.setEncryptedPuuid(summoner.getPuuid());
 				summonerEntity.setNameLastUpdatedInstant(Instant.now());
