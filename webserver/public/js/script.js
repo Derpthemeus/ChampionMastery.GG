@@ -29,6 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		}
 	}
+
+	if (getURLParameter("beta") !== null) {
+		console.log("Welcome to super secret beta mode :O");
+		for (let element of document.getElementsByClassName("beta")) {
+			element.style.display = "revert";
+		}
+	}
 });
 
 function formatNumbers() {

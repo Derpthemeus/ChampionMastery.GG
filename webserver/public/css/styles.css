@@ -192,3 +192,7 @@ button {
 	text-align: center;
 	min-height: 100px;
 }
+
+.beta {
+	display: none;
+}
