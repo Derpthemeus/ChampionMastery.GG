@@ -133,7 +133,7 @@ export async function getRankThresholds(): Promise<Map<number, RankThreshold[]>>
 
 		// Make sure thresholds for each champion are sorted.
 		for (const [championId, thresholds] of results.entries()) {
-			results.set(championId, thresholds.sort((a, b) => a.masteryPoints - b.masteryPoints));
+			results.set(championId, thresholds.sort((a, b) => a.rank - b.rank));
 		}
 		return results;
 	} catch (ex) {
