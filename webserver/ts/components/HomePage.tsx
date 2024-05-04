@@ -5,6 +5,7 @@ import {CommonDataProps, RegionSelect} from "./Layout";
 import {Localization} from "../Localization";
 import {Highscore} from "../apiHandler";
 import ResponsiveAd from "./ResponsiveAd";
+import {SummonerLink} from "./Components";
 
 export default class HomePage extends React.Component<HomeProps> {
 	public render(): ReactNode {
@@ -66,16 +67,10 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 				{this.props.champion.scores.map((score, index) => (
 					<div key={index}>
 						<strong>{ordinalize(index + 1, this.props.localization)} </strong>
-						{score.name ?
-							<a className="internalLink"
-							   href={`/player?riotId=${encodeURIComponent(score.name)}&region=${score.region}`}>
-								{score.name} ({score.region})
-							</a>
-							:
-							<a className="internalLink" href="/privacy">
-								[{this.props.localization["HIDDEN"]}] ({score.region})
-							</a>
-						}
+						<SummonerLink
+							riotId={score.name}
+							regionId={score.region}
+							T={this.props.localization}/>
 						<span>: </span>
 						<span data-format-number={score.points}>{score.points}</span>
 					</div>

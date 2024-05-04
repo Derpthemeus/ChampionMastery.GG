@@ -3,9 +3,9 @@ import {ReactNode} from "react";
 import {CommonDataProps} from "./Layout";
 import {ordinalize} from "../utils";
 import Champion from "../Champion";
-import {CommonData} from "../server";
 import {Highscore} from "../apiHandler";
 import ResponsiveAd from "./ResponsiveAd";
+import {SummonerLink} from "./Components";
 
 export default class ChampionPage extends React.Component<ChampionProps> {
 	public render(): ReactNode {
@@ -33,7 +33,7 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 							<td>
 								<SummonerLink riotId={score.name}
 											  regionId={score.region}
-											  commonData={this.props.commonData}/>
+											  T={this.props.commonData.T}/>
 							</td>
 							<td data-format-number={score ? score.points : 0}>
 								{score ? score.points : 0}
@@ -48,20 +48,6 @@ export default class ChampionPage extends React.Component<ChampionProps> {
 			<ResponsiveAd adSlot={6258924078}/>
 		</React.Fragment>);
 	}
-}
-
-// TODO can this be reused on home?
-function SummonerLink(props: { riotId: string, regionId: string, commonData: CommonData }) {
-	if (!props.riotId) {
-		return <a className="internalLink" href="/privacy">
-			[{props.commonData.T["HIDDEN"]}] ({props.regionId})
-		</a>;
-	}
-
-	return <a className="internalLink"
-			  href={`/player?riotId=${encodeURIComponent(props.riotId)}&region=${props.regionId}`}>
-		{props.riotId} ({props.regionId})
-	</a>;
 }
 
 interface ChampionProps extends CommonDataProps {
