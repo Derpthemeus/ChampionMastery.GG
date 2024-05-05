@@ -40,12 +40,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<HeaderColumn name={this.props.commonData.T["Champion name"]}/>
 						<HeaderColumn name={this.props.commonData.T["Level"]}/>
 						<HeaderColumn name={this.props.commonData.T["Points"]}/>
-						{/*FIXME use HeaderColumn (after completing beta testing) */}
-						<th className="beta" data-sorting-order="0">
-							{this.props.commonData.T["Rank"]}
-							{/*Used for the sorting icon*/}
-							<span className="collapsible"/>
-						</th>
+						<HeaderColumn name={this.props.commonData.T["Rank"]} collapsible={true}/>
 						<HeaderColumn name={this.props.commonData.T["Chest"]}/>
 						<HeaderColumn name={this.props.commonData.T["Last played"]}/>
 						<HeaderColumn name={this.props.commonData.T["Progress"]} collapsible={true}/>
@@ -64,7 +59,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 							<td data-format-number={champion.championPoints} data-value={champion.championPoints}>
 								{champion.championPoints}
 							</td>
-							<td className="beta" data-value={champion.rank}>{RankThresholds.localizeRank(champion.rank, this.props.commonData.T)}</td>
+							<td className="collapsible" data-value={champion.rank}>{RankThresholds.localizeRank(champion.rank, this.props.commonData.T)}</td>
 							<td data-value={champion.chestGranted ? 1 : 0}>
 								<img src="/img/chest.png"
 									 className={champion.chestGranted ? "chest" : "chest notEarned"}/>
@@ -158,7 +153,7 @@ function TotalsRank(props: { levelRank: number, pointsRank: number, localization
 		rank += `${RankThresholds.localizeRank(props.levelRank, props.localization)} ${props.localization["Level"]}`;
 	}
 
-	return <td className="beta">{rank}</td>;
+	return <td className="collapsible">{rank}</td>;
 }
 
 interface SummonerProps extends CommonDataProps {
