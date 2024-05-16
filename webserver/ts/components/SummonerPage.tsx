@@ -147,13 +147,13 @@ function TotalsRank(props: { levelRank: number, pointsRank: number, localization
 		rank += `${RankThresholds.localizeRank(props.pointsRank, props.localization)} ${props.localization["Points"]}`;
 	}
 	if (props.pointsRank && props.levelRank) {
-		rank += " / ";
+		rank += "\n";
 	}
 	if (props.levelRank) {
 		rank += `${RankThresholds.localizeRank(props.levelRank, props.localization)} ${props.localization["Level"]}`;
 	}
 
-	return <td className="collapsible">{rank}</td>;
+	return <td className="collapsible" style={{whiteSpace: "pre"}}>{rank}</td>;
 }
 
 interface SummonerProps extends CommonDataProps {
