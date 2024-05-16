@@ -41,7 +41,8 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<HeaderColumn name={this.props.commonData.T["Level"]}/>
 						<HeaderColumn name={this.props.commonData.T["Points"]}/>
 						<HeaderColumn name={this.props.commonData.T["Rank"]} collapsible={true}/>
-						<HeaderColumn name={this.props.commonData.T["Chest"]}/>
+						{/*FIXME reenable*/}
+						{/*<HeaderColumn name={this.props.commonData.T["Chest"]}/>*/}
 						<HeaderColumn name={this.props.commonData.T["Last played"]}/>
 						<HeaderColumn name={this.props.commonData.T["Points until next level"]}/>
 					</tr>
@@ -59,10 +60,10 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 								{champion.championPoints}
 							</td>
 							<td className="collapsible" data-value={champion.rank}>{RankThresholds.localizeRank(champion.rank, this.props.commonData.T)}</td>
-							<td data-value={champion.chestGranted ? 1 : 0}>
-								<img src="/img/chest.png"
-									 className={champion.chestGranted ? "chest" : "chest notEarned"}/>
-							</td>
+							{/*<td data-value={champion.chestGranted ? 1 : 0}>*/}
+							{/*	<img src="/img/chest.png"*/}
+							{/*		 className={champion.chestGranted ? "chest" : "chest notEarned"}/>*/}
+							{/*</td>*/}
 							<td data-format-time={champion.lastPlayTime} data-value={champion.lastPlayTime}
 								data-toggle="tooltip"></td>
 							<ProgressCell champion={champion} commonData={this.props.commonData}/>
@@ -78,7 +79,7 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<td data-format-number={this.props.totals.level}>{this.props.totals.level}</td>
 						<td data-format-number={this.props.totals.points}>{this.props.totals.points}</td>
 						<TotalsRank levelRank={this.props.totals.levelRank} pointsRank={this.props.totals.pointsRank} localization={this.props.commonData.T}/>
-						<td>{this.props.totals.chests}/{this.props.totals.champions}</td>
+						{/*<td>{this.props.totals.chests}/{this.props.totals.champions}</td>*/}
 						<td></td>
 						<td></td>
 					</tr>
