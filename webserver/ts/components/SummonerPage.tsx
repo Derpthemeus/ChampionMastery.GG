@@ -43,7 +43,6 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<HeaderColumn name={this.props.commonData.T["Rank"]} collapsible={true}/>
 						<HeaderColumn name={this.props.commonData.T["Chest"]}/>
 						<HeaderColumn name={this.props.commonData.T["Last played"]}/>
-						<HeaderColumn name={this.props.commonData.T["Progress"]} collapsible={true}/>
 						<HeaderColumn name={this.props.commonData.T["Points until next level"]}/>
 					</tr>
 					</thead>
@@ -67,11 +66,6 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 							<td data-format-time={champion.lastPlayTime} data-value={champion.lastPlayTime}
 								data-toggle="tooltip"></td>
 							<ProgressCell champion={champion} commonData={this.props.commonData}/>
-							<td className={champion.championLevel >= 5 ? "collapsible" : ""}
-								data-value={champion.pointsToNextLevel}>
-								{champion.championLevel < 5 ?
-									<span data-format-number={champion.championPointsUntilNextLevel}></span> : ""}
-							</td>
 						</tr>
 					)}</tbody>
 					<tfoot>
@@ -87,7 +81,6 @@ export default class SummonerPage extends React.Component<SummonerProps> {
 						<td>{this.props.totals.chests}/{this.props.totals.champions}</td>
 						<td></td>
 						<td></td>
-						<td className="collapsible"></td>
 					</tr>
 					</tfoot>
 				</table>
@@ -122,23 +115,28 @@ function HeaderColumn(props: { name: string, collapsible?: boolean }): ReactElem
 }
 
 function ProgressCell(props: { commonData: CommonData, champion: ChampionInfo }): ReactElement {
-	let innerContent: ReactNode;
-	if (props.champion.championLevel === 7) {
-		innerContent = props.commonData.T["Mastered"];
-	} else if (props.champion.championLevel >= 5) {
-		innerContent = getTokens(props.champion);
-	} else {
-		innerContent = <div className="progressBar-outer">
-			{/* sortingValue is the percentage to next level when champion level is <5 */}
-			<div className="progressBar-inner" style={{width: `${props.champion.sortingValue}%`}}></div>
-		</div>;
+	// TODO support progress for champs above level 5 once Riot unborks the API https://github.com/RiotGames/developer-relations/issues/930
+	if (props.champion.championLevel >= 5) {
+		return <td/>;
 	}
 
-	return <td className={props.champion.championLevel < 5 ? "collapsible" : ""}
-			   data-value={props.champion.sortingValue} data-tooltip="tooltip"
-			   title={props.champion.tooltip}>
-		{innerContent}
-	</td>;
+	const nextLevelPoints = props.champion.championPointsSinceLastLevel + props.champion.championPointsUntilNextLevel;
+	const width = props.champion.championPointsSinceLastLevel / nextLevelPoints * 100;
+	return (
+		<td data-value={props.champion.sortingValue}
+			data-tooltip="tooltip"
+			title={props.champion.tooltip}
+		>
+			<div className="progressBar-outer">
+				<div className="progressBar-inner" style={{width: `${width}%`}}></div>
+				<span className="pointsToNextLevel">
+					<span data-format-number={props.champion.championPointsSinceLastLevel}/>
+					/
+					<span data-format-number={nextLevelPoints}/>
+				</span>
+			</div>
+		</td>
+	);
 }
 
 function TotalsRank(props: { levelRank: number, pointsRank: number, localization: Localization }): ReactElement {

@@ -76,11 +76,21 @@ th[data-sorting-order="1"]>span {
 	background-color: rgb(220, 220, 220);
 	height: 15px;
 	width: 100%;
+	position: relative;
 }
 
 .progressBar-inner {
 	background-color: rgb(160, 180, 230);
 	height: 100%;
+	position: absolute;
+	left: 0;
+}
+
+.pointsToNextLevel {
+	display: block;
+	width: 100%;
+	text-align: center;
+	position: absolute;
 }
 
 /* Make the table wider and much more compact. */
