@@ -116,13 +116,23 @@ function HeaderColumn(props: { name: string, collapsible?: boolean }): ReactElem
 }
 
 function ProgressCell(props: { commonData: CommonData, champion: ChampionInfo }): ReactElement {
-	// TODO support progress for champs above level 5 once Riot unborks the API https://github.com/RiotGames/developer-relations/issues/930
-	if (props.champion.championLevel >= 5) {
-		return <td/>;
+	let nextLevelPoints;
+	if (props.champion.championPointsUntilNextLevel > 0) {
+		nextLevelPoints = props.champion.championPointsSinceLastLevel + props.champion.championPointsUntilNextLevel;
+	} else {
+		if (props.champion.championLevel >= 6) {
+			nextLevelPoints = 11000;
+		} else if (props.champion.championLevel === 5) {
+			nextLevelPoints = 10000;
+		} else if (props.champion.championLevel === 4) {
+			nextLevelPoints = 9000;
+		} else {
+			console.error(`Could not calculate progress for ${props.champion}`);
+			return <td/>;
+		}
 	}
 
-	const nextLevelPoints = props.champion.championPointsSinceLastLevel + props.champion.championPointsUntilNextLevel;
-	const width = props.champion.championPointsSinceLastLevel / nextLevelPoints * 100;
+	const width = Math.min(props.champion.championPointsSinceLastLevel / nextLevelPoints * 100, 100);
 	return (
 		<td data-value={props.champion.sortingValue}
 			data-tooltip="tooltip"
