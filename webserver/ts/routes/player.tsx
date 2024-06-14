@@ -62,27 +62,14 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 			let tooltip: string;
 			/**
 			 * The number used to sort champions when sorting by progress.
-			 * Levels 1-4 have a sorting value equal to their percentage progression to next level. Levels 5-6 have a sorting value of "L0T", where "L" is the level and "T" is the tokens earned.
 			 */
 			let sortingValue: number;
 			let pointsToNextLevel: number;
 
-			if (masteryChampion.championLevel < 5) {
-				// The percentage to the next level, rounded to 2 decimal places
-				sortingValue = Math.round(masteryChampion.championPointsSinceLastLevel / (masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel) * 10000) / 100;
-				tooltip = `${masteryChampion.championPointsSinceLastLevel}/${masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel} ${localization["Points"]} (${sortingValue}%)`;
-				pointsToNextLevel = masteryChampion.championPointsUntilNextLevel;
-			} else {
-				sortingValue = (100 * masteryChampion.championLevel) + masteryChampion.tokensEarned;
-				// Using a higher value to keep lvl 5 and above at the end of the ascending sort
-				pointsToNextLevel = 90000 + (100 * masteryChampion.championLevel);
-
-				if (masteryChampion.championLevel === 7) {
-					tooltip = localization["Mastered"];
-				} else {
-					tooltip = `${masteryChampion.tokensEarned}/${TOKENS_NEEDED.get(masteryChampion.championLevel)} ${localization["tokens"]}`;
-				}
-			}
+			// The percentage to the next level, rounded to 2 decimal places
+			sortingValue = Math.round(masteryChampion.championPointsSinceLastLevel / (masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel) * 10000) / 100;
+			tooltip = `${masteryChampion.championPointsSinceLastLevel}/${masteryChampion.championPointsSinceLastLevel + masteryChampion.championPointsUntilNextLevel} ${localization["Points"]} (${sortingValue}%)`;
+			pointsToNextLevel = masteryChampion.championPointsUntilNextLevel;
 
 			const champion: Champion = Champion.getChampionById(masteryChampion.championId);
 			const info: ChampionInfo = {
