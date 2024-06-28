@@ -51,6 +51,7 @@ export function renderError(req: express.Request, res: express.Response, code: n
 		body={<ErrorPage error={error} details={details} commonData={commonData}/>}
 		stylesheets={["/css/error.css"]}
 		scripts={[]}
+		preload={[]}
 	/>);
 
 	res.status(200).send(body);

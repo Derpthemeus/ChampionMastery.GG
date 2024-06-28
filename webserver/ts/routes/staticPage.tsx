@@ -18,6 +18,7 @@ async function renderStaticPage(req: express.Request, res: express.Response, tit
 		body={content}
 		stylesheets={stylesheets}
 		scripts={[]}
+		preload={[]}
 	/>);
 
 	res.status(200).send(body);

@@ -37,6 +37,7 @@ export function renderChampion(req: express.Request, res: express.Response): voi
 		/>}
 		stylesheets={["/css/champion.css"]}
 		scripts={["/js/rgea.js"]}
+		preload={[]}
 	/>);
 
 	res.status(200).send(body);

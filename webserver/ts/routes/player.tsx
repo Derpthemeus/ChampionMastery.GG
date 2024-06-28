@@ -109,6 +109,7 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 			/>}
 			stylesheets={["/css/summoner.css"]}
 			scripts={["/js/summoner.js", "/js/rgea.js"]}
+			preload={[]}
 		/>);
 
 		res.status(200).send(body);

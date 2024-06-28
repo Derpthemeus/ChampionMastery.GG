@@ -35,6 +35,10 @@ export default class Layout extends React.Component<LayoutProps> {
 					<link rel="stylesheet" type="text/css" href={url} key={index}/>
 				))}
 
+				{this.props.preload.map((url, index) => (
+					<link rel="preload" href={url} key={index}/>
+				))}
+
 				<script src="/js/script.js"/>
 
 				{/* Google Analytics*/}
@@ -180,6 +184,7 @@ interface LayoutProps extends CommonDataProps {
 	description: string;
 	stylesheets: string[];
 	scripts: string[];
+	preload: string[];
 }
 
 export interface CommonDataProps {
