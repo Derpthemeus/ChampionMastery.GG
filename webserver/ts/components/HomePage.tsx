@@ -57,7 +57,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 			<div className="champion-icon">
 				<a className="internalLink" href={`/champion?champion=${this.props.champion.id}`}>
 						<span className="championSpritesheet"
-							  style={{background: `url("${this.props.dragonUrl}/img/championSpritesheet.png") 0 -${this.props.champion.spritesheetY}px`}}></span>
+							  style={{background: `url("${this.props.dragonUrl}/img/championSpritesheet.webp") 0 -${this.props.champion.spritesheetY}px`}}></span>
 				</a>
 			</div>
 			<div className="champion-info">

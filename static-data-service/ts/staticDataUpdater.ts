@@ -379,7 +379,8 @@ const createChampionSpriteSheet = async () => {
 	}
 
 	spritesheet.composite(images);
-	await spritesheet.toFile(path.join(imagesPath, "championSpritesheet.png"));
+	spritesheet.webp();
+	await spritesheet.toFile(path.join(imagesPath, "championSpritesheet.webp"));
 	console.log("Saved champion icon spritesheet");
 };
 
