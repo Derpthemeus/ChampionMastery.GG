@@ -55,13 +55,15 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 	public render(): ReactNode {
 		return <div className="champion well" key={this.props.champion.id}>
 			<div className="champion-icon">
-				<a className="internalLink" href={`/champion?champion=${this.props.champion.id}`}>
+				<a className="internalLink" href={`/champion?champion=${this.props.champion.id}`}
+				   aria-label={`${this.props.champion.localizedName} ${this.props.localization["Highscores"]}`}>
 						<span className="championSpritesheet"
 							  style={{background: `url("${this.props.dragonUrl}/img/championSpritesheet.webp") 0 -${this.props.champion.spritesheetY}px`}}></span>
 				</a>
 			</div>
 			<div className="champion-info">
-				<a className="internalLink" href={`/champion?champion=${this.props.champion.id}`}>
+				<a className="internalLink" href={`/champion?champion=${this.props.champion.id}`}
+				   aria-label={`${this.props.champion.localizedName} ${this.props.localization["Highscores"]}`}>
 					<strong className="champion-name">{this.props.champion.localizedName}</strong>
 				</a>
 				{this.props.champion.scores.map((score, index) => (

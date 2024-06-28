@@ -164,7 +164,7 @@ export default class Layout extends React.Component<LayoutProps> {
 export class RegionSelect extends React.Component<RegionSelectProps> {
 	public render(): ReactNode {
 		return (
-			<select className="region" name="region">
+			<select className="region" name="region" aria-label="Region">
 				{this.props.regions.map((region: string) => (
 					<option value={region} key={region}>{region}</option>
 				))}
