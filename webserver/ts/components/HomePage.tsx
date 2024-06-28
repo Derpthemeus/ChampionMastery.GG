@@ -66,7 +66,7 @@ class ChampionSummary extends React.Component<ChampionSummaryProps> {
 					<strong className="champion-name">{this.props.champion.localizedName}</strong>
 				</a>
 				{this.props.champion.scores.map((score, index) => (
-					<div key={index}>
+					<div className="summoner" key={index}>
 						<strong>{ordinalize(index + 1, this.props.localization)} </strong>
 						<SummonerLink
 							riotId={score.name}

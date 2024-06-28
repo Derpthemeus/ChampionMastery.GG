@@ -48,6 +48,10 @@
 	margin-top: 40px;
 }
 
+.summoner {
+	margin-top: 5px;
+}
+
 /* Use 1 compact column. */
 @media (max-width: 400px) {
 	.champion {
