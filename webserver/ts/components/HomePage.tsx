@@ -21,8 +21,8 @@ export default class HomePage extends React.Component<HomeProps> {
 					<input type="text" name="riotId" placeholder={this.props.commonData.T["Riot ID #TAG"]}/>
 					<RegionSelect regions={this.props.commonData.regions}/>
 					<input type="hidden" name="lang" value={this.props.commonData.T["LOCALE_CODE"]}/>
-					<button type="submit">
-						<span className="material-symbols-outlined">search</span>
+					<button type="submit" aria-label="Search">
+						<img src="/img/search.svg" alt="Search"/>
 					</button>
 				</form>
 			</div>
@@ -31,7 +31,6 @@ export default class HomePage extends React.Component<HomeProps> {
 
 			<div id="champion-filter-container">
 				<input type="text" placeholder={this.props.commonData.T["Champion name"]} id="champion-filter"/>
-				<span className="material-symbols-outlined">filter_list</span>
 			</div>
 
 			{/*TODO fix bug when 2/3 champs are displayed on last row*/}

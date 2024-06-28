@@ -26,9 +26,6 @@ export default class Layout extends React.Component<LayoutProps> {
 				<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"/>
 				<meta name="msapplication-TileColor" content="#00aba9"/>
 				<meta name="theme-color" content="#ffffff"/>
-				<link rel="stylesheet" type="text/css" href="/css/styles.css"/>
-				<link rel="stylesheet"
-					  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,500,0,200"/>
 
 				<link rel="stylesheet" type="text/css" href="/css/styles.css"/>
 				{this.props.stylesheets.map((url, index) => (
@@ -88,8 +85,8 @@ export default class Layout extends React.Component<LayoutProps> {
 						<input type="text" name="riotId" placeholder={this.props.commonData.T["Riot ID #TAG"]}/>
 						<RegionSelect regions={this.props.commonData.regions}/>
 						<input type="hidden" name="lang" value={this.props.commonData.T["LOCALE_CODE"]}/>
-						<button type="submit">
-							<span className="material-symbols-outlined">search</span>
+						<button type="submit" aria-label="Search">
+							<img src="/img/search.svg" alt="Search"/>
 						</button>
 					</form>
 				</div>
