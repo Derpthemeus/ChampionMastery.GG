@@ -93,7 +93,8 @@ VALUES ('BR', 'BR1', 3),
 	('PH', 'PH2', 12),
 	('SG', 'SG2', 13),
 	('TW', 'TW2', 14),
-	('TH', 'TH2', 15);
+	('TH', 'TH2', 15),
+	('MENA', 'ME1', 16);
 
 DELIMITER $$
 

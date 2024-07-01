@@ -19,7 +19,8 @@ export default class Region {
 		new Region("PH", "PH2"),
 		new Region("SG", "SG2"),
 		new Region("TW", "TW2"),
-		new Region("TH", "TH2")
+		new Region("TH", "TH2"),
+		new Region("MENA", "ME1")
 	];
 
 	/** Regions mapped to their region ID. */
