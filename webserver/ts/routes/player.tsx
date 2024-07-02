@@ -133,12 +133,12 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 
 function localizeTitle (T: Localization, summoner: SummonerInfo, region: Region) {
 	return `ChampionMastery.GG - ${T["League of Legends"]} ${T["champion mastery scores for X"]}`
-		.replace("%name%", `${summoner.name} (${region.id})`);
+		.replace("%name%", `${summoner.riotId} (${region.id})`);
 }
 
 function localizeDescription(T: Localization, summoner: SummonerInfo, region: Region) {
 	return `${T["League of Legends"]} ${T["champion mastery scores for X"]}`
-		.replace("%name%", `${summoner.name} (${region.id})`);
+		.replace("%name%", `${summoner.riotId} (${region.id})`);
 }
 
 export interface ChampionInfo extends ChampionMasteryResponse {

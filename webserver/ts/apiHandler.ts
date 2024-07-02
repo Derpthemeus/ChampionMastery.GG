@@ -200,8 +200,6 @@ export interface SummonerInfo {
 	accountId: string;
 	/** Encrypted PUUID */
 	puuid: string;
-	/** Summoner name */
-	name: string;
 	profileIconId: number;
 	/** The summoner's level (used to determine if the player has exercised their right to be forgotten through Riot Games). */
 	summonerLevel: number;
