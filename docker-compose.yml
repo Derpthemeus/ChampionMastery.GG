@@ -91,10 +91,10 @@ services:
   cadvisor:
     image: "gcr.io/cadvisor/cadvisor:latest"
     volumes:
-      - "/:/rootfs:ro"
+      - "/:/rootfs:ro,rslave"
       - "/var/run:/var/run:ro"
       - "/sys:/sys:ro"
-      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro,rslave"
       - "/dev/disk/:/dev/disk:ro"
     networks:
       prometheus:
