@@ -1,11 +1,19 @@
 :root {
 	--navbar-height: 52px;
+
 	--well-color: #f6f6f6;
 	--well-trim-color: #e7e7e7;
 	--background-color: white;
 	--link-color: #337ab7;
 	--link-color-hover: #23527c;
 	--text-color: black;
+	--input-background-color: white;
+	--input-text-color: var(--text-color);
+	--row-hover-color: rgba(0, 0, 0, 0.15);
+	--progress-bar-empty: rgb(220, 220, 220);
+	--progress-bar-filled: rgb(160, 180, 230);
+
+	/* TODO use explicit colors for search icon, sorting icons on /player, GitHub icon, and :focus-visible on textbox inputs? */
 }
 
 * {
@@ -137,7 +145,7 @@ td {
 }
 
 tr:not(thead>tr):hover {
-    background-color: rgba(0, 0, 0, 0.15);
+	background-color: var(--row-hover-color);
 }
 
 tfoot td {
@@ -150,6 +158,16 @@ h1, h2 {
 
 button {
 	cursor: pointer;
+}
+
+input {
+	background-color: var(--input-background-color);
+	color: var(--input-text-color);
+}
+
+select {
+	background-color: var(--input-background-color);
+	color: var(--input-text-color);
 }
 
 /** Wrap and hide the lookup form */

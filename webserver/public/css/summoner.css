@@ -73,14 +73,14 @@ th[data-sorting-order="1"]>span {
 }
 
 .progressBar-outer {
-	background-color: rgb(220, 220, 220);
+	background-color: var(--progress-bar-empty);
 	height: 15px;
 	width: 100%;
 	position: relative;
 }
 
 .progressBar-inner {
-	background-color: rgb(160, 180, 230);
+	background-color: var(--progress-bar-filled);
 	height: 100%;
 	position: absolute;
 	left: 0;
