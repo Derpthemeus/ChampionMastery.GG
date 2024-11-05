@@ -22,6 +22,10 @@
 	padding-left: 7px;
 }
 
+.champion-name {
+	color: var(--link-color);
+}
+
 .champion-icon span {
 	width: 80px;
 	height: 80px;
