@@ -146,8 +146,8 @@ export default class Layout extends React.Component<LayoutProps> {
 			href = `${currentUrl.slice(0, startIndex)}lang=${localeCode}${currentUrl.slice(endIndex)}`;
 		} else if (currentUrl.includes("?")) {
 			// If query params are already present, add the new param to the start of the list.
-			const index = currentUrl.indexOf("?") - 1;
-			href = `${currentUrl.slice(0, index)}lang=${localeCode}${currentUrl.slice(index)}`;
+			const index = currentUrl.indexOf("?") + 1;
+			href = `${currentUrl.slice(0, index)}lang=${localeCode}&${currentUrl.slice(index)}`;
 		} else {
 			// Just add query to end of path
 			href = `${currentUrl}?lang=${localeCode}`;
