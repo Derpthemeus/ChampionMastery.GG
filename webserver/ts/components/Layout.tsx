@@ -64,6 +64,7 @@ export default class Layout extends React.Component<LayoutProps> {
 				<script data-ad-client="ca-pub-5598552437938145" async
 						src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"/>
 
+				<link rel="canonical" href={this.generateCanonicalLink()}/>
 				{this.props.commonData.supportedLocales.map((localization: Localization) => (
 					this.generateAlternateLangLink(localization)
 				))}
@@ -154,6 +155,22 @@ export default class Layout extends React.Component<LayoutProps> {
 		}
 
 		return <link rel="alternate" hrefLang={localeCode.split("_")[0]} href={href} key={localeCode}/>;
+	}
+
+	private generateCanonicalLink(): string {
+		const url = new URL(this.props.commonData.currentUrl);
+		url.protocol = "https:";
+		const params = url.searchParams;
+
+		// Drop `region` parameter (unless it's on `/player`)
+		if (!url.pathname.startsWith("/player")) {
+			params.delete("region");
+		}
+
+		// Ensure param order is consistent.
+		params.sort();
+		url.search = `?${params.toString()}`;
+		return url.toString();
 	}
 }
 
