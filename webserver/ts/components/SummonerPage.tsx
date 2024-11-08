@@ -127,7 +127,7 @@ function ProgressCell(props: { commonData: CommonData, champion: ChampionInfo })
 		} else if (props.champion.championLevel === 4) {
 			nextLevelPoints = 9000;
 		} else {
-			console.error(`Could not calculate progress for ${props.champion}`);
+			console.error(`Could not calculate progress for ${JSON.stringify(props.champion)}`);
 			return <td/>;
 		}
 	}
