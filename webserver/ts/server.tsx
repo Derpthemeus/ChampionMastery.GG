@@ -120,6 +120,21 @@ async function start(): Promise<void> {
 		res.status(200).send("google.com, pub-5598552437938145, DIRECT, f08c47fec0942fa0");
 	});
 
+	/*
+	Prior to commit #9979aba3d0dbe9270fed023dec2b3e796b629645, there was a bug which would create links to pages such
+	as the ones listed below, which were then picked up by Googlebot. Redirect them to existing pages so Googlebot
+	stops crawling the bad URLs.
+
+	/champiolang=de_DEn?champion=91
+	/playelang=de_DEr?riotId=Derpthemeus%20%23DERP&region=NA
+	 */
+	app.get("/champiolang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
+	app.get("/playelang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
+
 	app.listen(Config.serverPort, Config.serverAddress);
 	console.log("Server started");
 }
