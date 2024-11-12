@@ -127,11 +127,15 @@ async function start(): Promise<void> {
 
 	/champiolang=de_DEn?champion=91
 	/playelang=de_DEr?riotId=Derpthemeus%20%23DERP&region=NA
+	/summonelang=de_DE?summoner=Derpthemeus&region=NA
 	 */
 	app.get("/champiolang*", (req: express.Request, res: express.Response) => {
 		res.status(301).redirect("/");
 	});
 	app.get("/playelang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
+	app.get("/summonelang*", (req: express.Request, res: express.Response) => {
 		res.status(301).redirect("/");
 	});
 
