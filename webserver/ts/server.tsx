@@ -138,6 +138,15 @@ async function start(): Promise<void> {
 	app.get("/summonelang*", (req: express.Request, res: express.Response) => {
 		res.status(301).redirect("/");
 	});
+	app.get("/falang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
+	app.get("/legalang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
+	app.get("/privaclang*", (req: express.Request, res: express.Response) => {
+		res.status(301).redirect("/");
+	});
 
 	app.listen(Config.serverPort, Config.serverAddress);
 	console.log("Server started");
