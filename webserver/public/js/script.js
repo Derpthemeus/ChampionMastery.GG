@@ -8,18 +8,17 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	// Update selected region
-	const region = getURLParameter("region");
-	if (region) {
+	const regionParam = getURLParameter("region");
+	if (regionParam) {
+		localStorage.setItem("region", regionParam);
+	}
+	const storedRegion = localStorage.getItem("region");
+	if (storedRegion) {
 		for (let element of document.getElementsByClassName("region")) {
-			element.value = region;
-		}
-
-		for (let element of document.getElementsByClassName("internalLink")) {
-			if (!element.href.includes("region=")) {
-				element.href += `${element.href.includes("?") ? "&" : "?"}region=${region}`;
-			}
+			element.value = storedRegion;
 		}
 	}
+
 
 	const lang = getURLParameter("lang");
 	if (lang) {
