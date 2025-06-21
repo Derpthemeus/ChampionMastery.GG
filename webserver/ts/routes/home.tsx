@@ -44,7 +44,7 @@ export async function renderHome(req: express.Request, res: express.Response): P
 			champions={champions}
 		/>}
 		stylesheets={["/css/home.css"]}
-		scripts={["/js/home.js", "/js/rgea.js"]}
+		scripts={["/js/home.js"]}
 		preload={[`${commonData.dragonUrl}/img/championSpritesheet.webp`]}
 	/>);
 

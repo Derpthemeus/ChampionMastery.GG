@@ -108,7 +108,7 @@ export async function renderPlayer(req: express.Request, res: express.Response):
 				totals={totals}
 			/>}
 			stylesheets={["/css/summoner.css"]}
-			scripts={["/js/summoner.js", "/js/rgea.js"]}
+			scripts={["/js/summoner.js"]}
 			preload={[]}
 		/>);
 
