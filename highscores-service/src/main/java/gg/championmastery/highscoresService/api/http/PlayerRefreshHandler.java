@@ -87,6 +87,7 @@ public class PlayerRefreshHandler extends AbstractHandler {
 	}
 
 	private static void sendOriannaError(OriannaException ex, HttpServletResponse response) throws IOException {
+		response.setStatus(500);
 		response.getWriter().write(String.format("Orianna threw (%s).", ex.getClass().getName()));
 	}
 }
