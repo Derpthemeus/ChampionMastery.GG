@@ -36,6 +36,7 @@ export function renderChampion(req: express.Request, res: express.Response): voi
 			scores={scores}
 		/>}
 		stylesheets={["/css/champion.css"]}
+		scripts={[]}
 		preload={[]}
 	/>);
 
