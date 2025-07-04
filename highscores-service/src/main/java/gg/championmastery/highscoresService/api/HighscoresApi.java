@@ -48,7 +48,7 @@ public class HighscoresApi {
 		// Asynchronously check if the summoner is in the database, and add them if they're not.
 		CompletableFuture.runAsync(() -> {
 			Transaction tx = null;
-			SummonerEntity.Key summonerKey = new SummonerEntity.Key(summoner.getPlatform(), summoner.getId());
+			SummonerEntity.Key summonerKey = new SummonerEntity.Key(summoner.getPlatform(), summoner.getPuuid());
 			try (Session session = HighscoresService.getHibernateSessionFactory().openSession()) {
 				tx = session.beginTransaction();
 				SummonerEntity summonerEntity = session.get(SummonerEntity.class, summonerKey, LockMode.PESSIMISTIC_WRITE);

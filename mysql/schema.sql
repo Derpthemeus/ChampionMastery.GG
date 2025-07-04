@@ -24,8 +24,7 @@ CREATE TABLE summoners (
 	player_id              BIGINT UNSIGNED AUTO_INCREMENT                                NOT NULL,
 	platform               VARCHAR(6)                                                    NOT NULL,
 	/** Lengths are from https://discordapp.com/channels/187652476080488449/379429593829867521/529295034973945906 */
-	encrypted_puuid        CHAR(78)                                                      NULL,
-	encrypted_summoner_id  VARCHAR(63)                                                   NOT NULL,
+	encrypted_puuid        CHAR(78)                                                      NOT NULL,
 	-- TODO make this non-nullable once migration is complete.
 	riot_id                VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci     NULL,
 	masteries_last_updated TIMESTAMP        DEFAULT '2010-01-01 00:00:01'                NOT NULL,
@@ -35,12 +34,13 @@ CREATE TABLE summoners (
 	summoner_status        TINYINT UNSIGNED DEFAULT 0                                    NOT NULL,
 
 	CONSTRAINT UX_player_id UNIQUE (player_id),
+    -- TODO is this still needed after changing primary key from summoner ID to PUUID?
 	/** The platform is used as the secondary index because the same PUUID may exist across multiple regions (if the
 	player transferred regions), and finding transferred accounts requires finding accounts across all regions that share
 	a PUUID */
 	CONSTRAINT UX_puuid UNIQUE (encrypted_puuid, platform),
 
-	PRIMARY KEY (platform, encrypted_summoner_id),
+	PRIMARY KEY (platform, encrypted_puuid),
 
 	/** Used for selecting summoners to automatically update their mastery scores. */
 	INDEX IX_masteries_last_updated (platform, masteries_last_updated),

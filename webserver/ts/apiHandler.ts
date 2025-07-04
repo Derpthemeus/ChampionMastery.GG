@@ -72,7 +72,7 @@ export async function getSummonerInfo(region: Region, riotId: string): Promise<S
 			platform: region.platformId
 		});
 		const response: SummonerInfo = JSON.parse(body);
-		cacheHandler.store(cacheHandler.makePlayerKey(region, response.id), response, Config.cacheDurations.summoner);
+		cacheHandler.store(cacheHandler.makePlayerKey(region, response.puuid), response, Config.cacheDurations.summoner);
 		return response;
 	} catch (ex) {
 		if (ex instanceof APIError && ex.statusCode !== 404) {
@@ -194,10 +194,6 @@ export interface ChampionMasteryResponse {
 }
 
 export interface SummonerInfo {
-	/** Encrypted summoner ID */
-	id: string;
-	/** Encrypted account ID */
-	accountId: string;
 	/** Encrypted PUUID */
 	puuid: string;
 	profileIconId: number;

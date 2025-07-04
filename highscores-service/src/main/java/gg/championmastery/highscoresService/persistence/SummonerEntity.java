@@ -34,7 +34,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	private long playerId;
 	private String platform;
 	private String encryptedPuuid;
-	private String encryptedSummonerId;
 	private String riotId;
 	private Instant revisionDateInstant;
 	private Instant nameLastUpdatedInstant = DEFAULT_INSTANT;
@@ -70,16 +69,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 
 	public void setEncryptedPuuid(String encryptedPuuid) {
 		this.encryptedPuuid = encryptedPuuid;
-	}
-
-	@Column(nullable = false)
-	@Id
-	public String getEncryptedSummonerId() {
-		return encryptedSummonerId;
-	}
-
-	public void setEncryptedSummonerId(String summonerId) {
-		this.encryptedSummonerId = summonerId;
 	}
 
 	// TODO set nullable = false once all rows have been populated.
@@ -159,7 +148,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	@Override
 	@Transient
 	public Key getIdentifier() {
-		return new Key(getPlatform(), getEncryptedSummonerId());
+		return new Key(getPlatform(), getEncryptedPuuid());
 	}
 
 	@Override
@@ -168,7 +157,6 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				"playerId=" + playerId +
 				", platform='" + platform + '\'' +
 				", encryptedPuuid='" + encryptedPuuid + '\'' +
-				", encryptedSummonerId='" + encryptedSummonerId + '\'' +
 				", riotId='" + riotId + '\'' +
 				", revisionDateInstant=" + revisionDateInstant +
 				", nameLastUpdatedInstant=" + nameLastUpdatedInstant +
@@ -210,14 +198,14 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 	public static class Key implements Serializable {
 
 		private String platform;
-		private String encryptedSummonerId;
+		private String encryptedPuuid;
 
 		public Key() {
 		}
 
-		public Key(String platform, String encryptedSummonerId) {
+		public Key(String platform, String encryptedPuuid) {
 			this.platform = platform;
-			this.encryptedSummonerId = encryptedSummonerId;
+			this.encryptedPuuid = encryptedPuuid;
 		}
 
 		public String getPlatform() {
@@ -228,17 +216,17 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 			this.platform = platform;
 		}
 
-		public String getEncryptedSummonerId() {
-			return this.encryptedSummonerId;
+		public String getEncryptedPuuid() {
+			return this.encryptedPuuid;
 		}
 
-		public void setEncryptedSummonerId(String encryptedSummonerId) {
-			this.encryptedSummonerId = encryptedSummonerId;
+		public void setEncryptedPuuid(String encryptedPuuid) {
+			this.encryptedPuuid = encryptedPuuid;
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(platform, encryptedSummonerId);
+			return Objects.hash(platform, encryptedPuuid);
 		}
 
 		@Override
@@ -250,7 +238,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 				return false;
 			}
 			Key that = (Key) o;
-			return platform.equals(that.platform) && Objects.equals(encryptedSummonerId, that.encryptedSummonerId);
+			return platform.equals(that.platform) && Objects.equals(encryptedPuuid, that.encryptedPuuid);
 		}
 	}
 
@@ -265,7 +253,7 @@ public class SummonerEntity implements HibernateEntity<SummonerEntity.Key>, Seri
 		protected SummonerEntity instantiateEntity(SummonerEntity.Key key) {
 			SummonerEntity entity = new SummonerEntity();
 			entity.setPlatform(key.getPlatform());
-			entity.setEncryptedSummonerId(key.getEncryptedSummonerId());
+			entity.setEncryptedPuuid(key.getEncryptedPuuid());
 			return entity;
 		}
 	}
