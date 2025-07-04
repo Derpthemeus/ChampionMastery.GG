@@ -1,4 +1,3 @@
-version: "3.6"
 x-anchors:
   # The name of the configured Traefik TLS cert resolver (defaulting to LE staging environment if not set).
   traefik_cert_resolver: &traefik_cert_resolver "${TRAEFIK_CERT_RESOLVER:-}"
