@@ -13,7 +13,7 @@ with mysql.connector.connect(
 ) as conn:
     with open("./get_top_players.sql") as script:
         with conn.cursor() as cursor:
-            cursor.execute(script.read(), multi=True)
+            cursor.execute(script.read())
 
     # TODO this is janky, why do we need to reconnect?
     conn.reconnect()
@@ -21,8 +21,8 @@ with mysql.connector.connect(
         cursor.execute("CALL cmgg.get_top_players()")
         rows = cursor.fetchall()
 for row in rows:
-    platform = row[1]
-    puuid = row[2]
+    platform = row[0]
+    puuid = row[1]
     url = "%s/refreshPlayer?puuid=%s&platform=%s" % (os.environ["HIGHSCORES_SERVICE_URL"], urllib.parse.quote(puuid), platform)
     print("Making request to %s" % (url))
     try:
