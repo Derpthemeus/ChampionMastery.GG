@@ -1,4 +1,4 @@
-FROM traefik:v2.1
+FROM traefik:v3.7
 
 ENTRYPOINT ["/custom_entrypoint.sh"]
 

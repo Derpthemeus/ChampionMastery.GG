@@ -15,7 +15,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.webserver.loadbalancer.server.port: 8080
-      traefik.http.routers.webserver.rule: &webserver_rule "Host(`${SITE_DOMAIN}`, `www.${SITE_DOMAIN}`)"
+      traefik.http.routers.webserver.rule: &webserver_rule "Host(`${SITE_DOMAIN}`) || Host(`www.${SITE_DOMAIN}`)"
       traefik.http.routers.webserver.entrypoints: "https"
       traefik.http.routers.webserver.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.webserver_redirect.rule: *webserver_rule
@@ -52,7 +52,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.traefik_api.service: "api@internal"
-      traefik.http.routers.traefik_api.rule: &traefik_api_rule "Host(`traefik.admin.${SITE_DOMAIN}`, `www.traefik.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.traefik_api.rule: &traefik_api_rule "Host(`traefik.admin.${SITE_DOMAIN}`) || Host(`www.traefik.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.traefik_api.entrypoints: "https"
       traefik.http.routers.traefik_api.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.traefik_api.middlewares: "admin_panel_auth"
@@ -74,7 +74,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.prometheus.loadbalancer.server.port: 9090
-      traefik.http.routers.prometheus.rule: &prometheus_rule "Host(`prometheus.admin.${SITE_DOMAIN}`, `www.prometheus.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.prometheus.rule: &prometheus_rule "Host(`prometheus.admin.${SITE_DOMAIN}`) || Host(`www.prometheus.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.prometheus.entrypoints: "https"
       traefik.http.routers.prometheus.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.prometheus.middlewares: "admin_panel_auth"
@@ -109,7 +109,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.grafana.loadbalancer.server.port: 3000
-      traefik.http.routers.grafana.rule: &grafana_rule "Host(`grafana.admin.${SITE_DOMAIN}`, `www.grafana.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.grafana.rule: &grafana_rule "Host(`grafana.admin.${SITE_DOMAIN}`) || Host(`www.grafana.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.grafana.entrypoints: "https"
       traefik.http.routers.grafana.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.grafana.middlewares: "admin_panel_auth"
@@ -126,7 +126,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.admin_ui.loadbalancer.server.port: 80
-      traefik.http.routers.admin_ui.rule: &admin_ui_rule "Host(`admin.${SITE_DOMAIN}`, `www.admin.${SITE_DOMAIN}`)"
+      traefik.http.routers.admin_ui.rule: &admin_ui_rule "Host(`admin.${SITE_DOMAIN}`) || Host(`www.admin.${SITE_DOMAIN}`)"
       traefik.http.routers.admin_ui.entrypoints: "https"
       traefik.http.routers.admin_ui.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.admin_ui_redirect.rule: *admin_ui_rule
@@ -167,7 +167,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.dragon.loadbalancer.server.port: 8080
-      traefik.http.routers.dragon.rule: &webserver_rule "Host(`dragon.${SITE_DOMAIN}`, `www.dragon.${SITE_DOMAIN}`)"
+      traefik.http.routers.dragon.rule: &webserver_rule "Host(`dragon.${SITE_DOMAIN}`) || Host(`www.dragon.${SITE_DOMAIN}`)"
       traefik.http.routers.dragon.entrypoints: "https"
       traefik.http.routers.dragon.tls.certResolver: *traefik_cert_resolver
       traefik.http.routers.dragon_redirect.rule: *webserver_rule
