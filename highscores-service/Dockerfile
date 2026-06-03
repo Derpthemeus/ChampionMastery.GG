@@ -4,6 +4,7 @@ COPY ["build.gradle", "settings.gradle", "./"]
 COPY ["src", "src/"]
 RUN ["gradle", "shadowJar", "--no-daemon", "--console=plain"]
 
-FROM openjdk:8-jre AS run
+# FIXME we should problably update from JDK8 (:
+FROM amazoncorretto:8 AS run
 ENTRYPOINT ["java", "-jar", "shadowed.jar"]
 COPY --from=build ["/home/gradle/build/libs/highscores-service-all.jar", "shadowed.jar"]
