@@ -30,3 +30,4 @@ for row in rows:
     except Exception as ex:
         print("Error for %s: %s" % (url, ex))
     time.sleep(1)
+time.sleep(60 * 60)
