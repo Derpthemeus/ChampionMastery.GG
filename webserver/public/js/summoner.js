@@ -142,8 +142,11 @@ function compareRows(a, b, columnIndex, direction) {
 	 * If the `data-value` attribute is undefined or not a valid number, try to parse the column's contents as a number
 	 * If the column doesn't contain a valid number, use the column's contents as a string
 	 */
-	const aVal = +aCol.dataset.value || +aCol.innerText || aCol.innerText;
-	const bVal = +bCol.dataset.value || +bCol.innerText || bCol.innerText;
+	let aVal = +aCol.dataset.value || +aCol.innerText || aCol.innerText;
+	let bVal = +bCol.dataset.value || +bCol.innerText || bCol.innerText;
+	// Treat 0 as 0 instead of null/undefined/NaN (https://github.com/Derpthemeus/ChampionMastery.GG/issues/55)
+	aVal = (+aCol.dataset.value === 0) ? 0 : aVal;
+	bVal = (+bCol.dataset.value === 0) ? 0 : bVal;
 
 	return aVal === bVal ? 0 : (aVal < bVal ? direction : -direction);
 }
