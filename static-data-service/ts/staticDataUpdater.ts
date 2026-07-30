@@ -251,6 +251,11 @@ const updateChampions = () => {
 	/** Champions mapped to their ID (unsorted) */
 	const champions: Map<number, Champion> = new Map<number, Champion>();
 	for (const key of Object.keys(championList.data)) {
+		// Ignore LoL Classic champs.
+		if (key.startsWith("Jade_")) {
+			continue;
+		}
+
 		const champion: ChampionListEntry = championList.data[key];
 		champions.set(+champion.key, {
 			id: +champion.key,
@@ -273,6 +278,11 @@ const updateChampions = () => {
 		}
 
 		for (const key of Object.keys(localizedChampionList.data)) {
+			// Ignore LoL Classic champs.
+			if (key.startsWith("Jade_")) {
+				continue;
+			}
+
 			const champion: ChampionListEntry = localizedChampionList.data[key];
 			champions.get(+champion.key).localizedNames[locale] = champion.name;
 		}

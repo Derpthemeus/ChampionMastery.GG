@@ -45,6 +45,9 @@ public class HighscoresApi {
 				"puuid", summoner.getPuuid()
 		));
 
+		// Filter out LoL Classic champs (makes assumption that champs have ID >60000 iff they are LoL Classic).
+		masteries.removeIf(championMastery -> championMastery.getChampionId() > 60000);
+
 		// Asynchronously check if the summoner is in the database, and add them if they're not.
 		CompletableFuture.runAsync(() -> {
 			Transaction tx = null;
